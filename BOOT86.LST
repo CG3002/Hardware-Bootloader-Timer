@@ -1,0 +1,1130 @@
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE EG0_COMP
+OBJECT MODULE PLACED IN BOOT86.OBJ
+ASSEMBLER INVOKED BY:  D:\EE3208\BOOTZI~1\ASM86.EXE BOOT86.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1 +1  $mod186
+                             2     NAME EG0_COMP
+                             3     ; Bootstrap loader for 80188 based microcomputer system
+                             4     ;
+                             5     ; Author:       A/Prof Tay Teng Tiow
+                             6     ; Address:      Department of Electrical Engineering 
+                             7     ;               National University of Singapore
+                             8     ;               10, Kent Ridge Crescent
+                             9     ;               Singapore 0511. 
+                            10     ; Date:         May 2000
+                            11     ;
+                            12     ; This file contains proprietory information and cannot be copied 
+                            13     ; or distributed without prior permission from the author.
+                            14     ;---------------------------------------------------------------------------
+                            15     
+----                        16     DATA_SEG        SEGMENT 
+0008                        17                     ORG     0008H
+                            18     ; The 4 bytes at 00008H are reserved for the NMI vector.
+                            19     ; The start address of the downloaded program is to be stored at this address.
+                            20     ; Depressing the RESET button: Cause the downloader to be run.
+                            21     ; Depressing the NMI button  : Cause the downloaded program to be re-run.
+                            22     
+0008 ????????               23             START_ADDRESS   DD      ?
+                            24     
+----                        25     DATA_SEG        ENDS
+                            26     
+                            27     
+----                        28     Reset_Seg   SEGMENT
+0000 BAA0FF90               29         MOV DX, UMCR
+0004 B8073E                 30         MOV AX, 03E07H
+0007 EE                     31         OUT DX, AL
+                            32     
+0008 EA0000----     R       33     JMP far PTR start
+----                        34     Reset_Seg  ends
+                            35     
+----                        36     MESSAGE_SEG     SEGMENT
+0000 0A                     37             MESSAGE_START   DB      10,13,'Ram-based Loader by TAY TENG TIOW    ',10,13
+0001 0D
+0002 52616D2D626173
+     6564204C6F6164
+     65722062792054
+     41592054454E47
+     2054494F572020
+     2020
+0027 0A
+0028 0D
+0029 0A                     38             MESSAGE_END     DB      10,13,'END OF DOWNLOAD                      ',10,13
+002A 0D
+002B 454E44204F4620
+     444F574E4C4F41
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+     44202020202020
+     20202020202020
+     20202020202020
+     2020
+0050 0A
+0051 0D
+0052 0A                     39             MESSAGE_TX_ERR  DB      10,13,'ERROR IN TRANSMISSION - ABORTING     ',10,13
+0053 0D
+0054 4552524F522049
+     4E205452414E53
+     4D495353494F4E
+     202D2041424F52
+     54494E47202020
+     2020
+0079 0A
+007A 0D
+007B 0A                     40             MESSAGE_RAM_ERR DB      10,13,'RAM VERIFY ERROR - ABORTING          ',10,13
+007C 0D
+007D 52414D20564552
+     49465920455252
+     4F52202D204142
+     4F5254494E4720
+     20202020202020
+     2020
+00A2 0A
+00A3 0D
+00A4 0A                     41             MESSAGE_CS      DB      10,13,'CHECKSUM ERROR                       ',10,13
+00A5 0D
+00A6 434845434B5355
+     4D204552524F52
+     20202020202020
+     20202020202020
+     20202020202020
+     2020
+00CB 0A
+00CC 0D
+----                        42     MESSAGE_SEG     ENDS
+                            43     
+                            44     
+                            45     
+----                        46     CODE_SEG        SEGMENT
+                            47            
+                            48             PUBLIC          START
+  0008                      49             START_OFF_L     EQU     0008H           
+  0009                      50             START_OFF_H     EQU     0009H   
+  000A                      51             START_SEG_L     EQU     000AH   
+  000B                      52             START_SEG_H     EQU     000BH   
+                            53     
+  003A                      54             SYNCH           EQU     3AH
+                            55     
+                            56     ASSUME  CS:CODE_SEG
+                            57     
+0000                        58     START:
+                            59     
+                            60     ; This file setup the serial port for communication with the PC.
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            61 +1  $include(80188.inc)
+                      =1    62     ;IO Setup for 80C188XL 
+                      =1    63     
+  FFA0                =1    64              UMCR    EQU    0FFA0H ; Upper Memory Control Register
+  FFA2                =1    65              LMCR    EQU    0FFA2H ; Lower Memory control Register         
+  FFA4                =1    66              PCSBA   EQU    0FFA4H ; Peripheral Chip Select Base Address
+  FFA8                =1    67              MPCS    EQU    0FFA8H ; MMCS and PCS Alter Control Register
+                      =1    68     
+                      =1    69     ; Initial 80C188XL UCS Pin
+                      =1    70     ; |start address|block size| value for No waits, No Ready   
+                      =1    71     ;   FE000H            8K                 3E04H
+                      =1    72     ;   FC000H           16K                 3C04H
+                      =1    73     ;   F8000H           32K                 3804H
+                      =1    74           
+                      =1    75     ; Initialize Upper Chip Select pin with 8K ROM 
+                      =1    76     ;         MOV DX, UMCR
+                      =1    77     ;         MOV AX, 03E04H
+                      =1    78     ;         OUT DX, AX
+                      =1    79     
+                      =1    80     ; Initialize Lower Chip Select pin with 8k RAM
+                      =1    81     ;         MOV DX, LMCR
+                      =1    82     ;         MOV AX, 01C4H  ; Start address 1FFFH, 8K, No waits
+                      =1    83     ;         OUT DX, AL
+                      =1    84     
+                      =1    85     ; Initialize MPCS to MAP peripheral to IO address
+0000 BAA8FF           =1    86              MOV DX, MPCS
+0003 B88300           =1    87              MOV AX, 0083H
+0006 EE               =1    88              OUT DX, AL
+                      =1    89     
+                      =1    90     ; PCSBA initial, set the serial port start from 00H
+0007 BAA4FF           =1    91              MOV DX, PCSBA
+000A B80300           =1    92              MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
+000D EE               =1    93              OUT DX, AL
+                      =1    94     
+                      =1    95     ; Serial port definition and initialize 
+  0000                =1    96              SRB     EQU       00H ; Serial Receiver Buffer Register (R)
+  0000                =1    97              STB     EQU       00H ; Serial Transmitter Holding Register(W)  
+  0001                =1    98              SIER    EQU       01H ; Serial Interrupt Enable Register (W)
+  0003                =1    99              SMD     EQU       03H ; Serial Line Control Register
+  0005                =1   100              SST     EQU       05H ; Serial Line Status Register
+  0000                =1   101              DLL     EQU       00H ; Divisor Latch Least Significant BYTE
+  0001                =1   102              DLM     EQU       01H ; Divisor Latch most  Significant BYTE
+                      =1   103     
+                      =1   104     ;Definition of content of SST register
+                      =1   105     ;|Not Use|TE|THRE|BI|FE|PE|OE|DR|
+                      =1   106     ;TE Transmitter empty   ;THRE Transmittor Holding Register Empty
+                      =1   107     ;BI Breakr Interrupt    ;FE Framing Error
+                      =1   108     ;PE Parity Error                ;OE Overrun Error       ;DR Data Ready
+  0001                =1   109              REC_RDY    EQU   00000001B
+  0020                =1   110              TRAN_RDY   EQU   00100000B
+  000E                =1   111              ERR_DET    EQU   00001110B
+  0010                =1   112              BREAK_DET  EQU   00010000B
+                      =1   113     
+                      =1   114     ; Serial Line Control Data
+  0007                =1   115             SMD_DATA     EQU    00000111B
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    4
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                      =1   116     ;1st bit set 1 to access the Divisor latch 
+                      =1   117     ;2 stop bits, 8 data bits, no parity check
+  0087                =1   118             SMD_DATA_DIV EQU    10000111B
+                      =1   119     ; Set divisor value        
+000E BA0300           =1   120             MOV DX, SMD
+0011 B087             =1   121             MOV AL, SMD_DATA_DIV
+0013 EE               =1   122             OUT DX, AL
+0014 BA0000           =1   123             MOV DX, DLL
+0017 B034             =1   124             MOV AL, 52
+0019 EE               =1   125             OUT DX, AL
+001A BA0100           =1   126             MOV DX, DLM
+001D B000             =1   127             MOV AL, 0
+001F EE               =1   128             OUT DX, AL
+                      =1   129     
+                      =1   130     ;SET SERIAL PORT WORKING MODE
+0020 BA0300           =1   131              MOV DX, SMD
+0023 B007             =1   132              MOV AL, SMD_DATA
+0025 EE               =1   133              OUT DX, AL
+                      =1   134     
+                      =1   135     ;DISABLE SERIAL PORT INT
+0026 BA0100           =1   136              MOV DX, SIER
+0029 B000             =1   137              MOV AL, 0
+002B EE               =1   138              OUT DX, AL
+                      =1   139     
+                      =1   140     ; Timer control Unit
+  FF66                =1   141              T2_CON    EQU      0FF66H ; Timer 2 Control Register
+  FF62                =1   142              T2_CA     EQU      0FF62H ; Timer 2 compare register
+  FF60                =1   143              T2_CNT    EQU      0FF60H ;
+                      =1   144     
+  FF5E                =1   145              T1_CON    EQU      0FF5EH ;
+  FF5C                =1   146              T1_CB     EQU      0FF5CH ;
+  FF5A                =1   147              T1_CA     EQU      0FF5AH ;
+  FF58                =1   148              T1_CNT    EQU      0FF58H
+                      =1   149              
+  FF56                =1   150              T0_CON    EQU      0FF56H ;
+  FF54                =1   151              T0_CB     EQU      0FF54H ;
+  FF52                =1   152              T0_CA     EQU      0FF52H ;
+  FF50                =1   153              TO_CNT    EQU      0FF50H   
+                      =1   154     
+                      =1   155     ; Timer1 control Data
+                      =1   156     ; Use Timer1 to generate the clock for serial port  
+002C B80100           =1   157              MOV AX, 1
+002F BA5CFF           =1   158              MOV DX, T1_CB
+0032 EE               =1   159              OUT DX, AL
+0033 BA5AFF           =1   160              MOV DX, T1_CA
+0036 EE               =1   161              OUT DX, AL
+                      =1   162     
+0037 B80000           =1   163              MOV AX, 0
+003A BA58FF           =1   164              MOV DX, T1_CNT
+003D EE               =1   165              OUT DX, AL
+                      =1   166     
+003E BA5EFF           =1   167              MOV DX, T1_CON
+0041 B803C0           =1   168              MOV AX, 0C003H
+0044 EE               =1   169              OUT DX, AL
+                           170     
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    5
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           171     ; This file contains the macros used in the downloading program.
+                           172 +1  $include(boot86mc.inc)
+                      =1   173     ; file:         BOOT86MC.INC
+                      =1   174     ;
+                      =1   175     ; author:       Dr Tay Teng Tiow
+                      =1   176     ;               Dept of Electrical Engineering
+                      =1   177     ;               National University of Singapore
+                      =1   178     ;
+                      =1   179     ; date:         20 April 1992
+                      =1   180     ;
+                      =1   181     ; This file contains proprietory information and should not be copied or
+                      =1   182     ; distributed without permission from the author.
+                      =1   183     ;------------------------------------------------------------------------
+                      =1   184     ;
+                      =1   185     ; This file contains the Macro definition for the bootstrap loader.
+                      =1   186     ; This file is to be included in BOOTLOAD.ASM.
+                      =1   187     ; Contains the following macros
+                      =1   188     ;       GET_CHAR        : Get an ASCII byte from the serial port.
+                      =1   189     ;       PUT_CHAR        : Put an ASCII byte to the serial port.
+                      =1   190     ;       GET_2HEX        : Get 2 Hex byte in ASCII and convert to 8 bit integer.
+                      =1   191     ;       ECHO            : Echo back what is received.
+                      =1   192     ;       PUT_MESSAGE     : Put a string to the serial port.
+                      =1   193     ;-------------------------------------------------------------------------
+                      =1   194     
+                      =1   195     ; Macro to get char from the serial port
+                      =1   196     
+                      =1   197     
+                      =1   198     
+                      =1   199     ; Macro to put a character to screen
+                      =1   200     
+                      =1   201     
+                      =1   202     
+                      =1   203     ; Macro to get 2 hex digits from the serial port and convert to single byte
+                      =1   204     
+                      =1   205     
+                      =1   206     
+                      =1   207     ; Macro to echo a hex character to screen
+                      =1   208     ; In this macro, the transmit ready is not checked
+                      =1   209     
+                      =1   210     
+                      =1   211     
+                      =1   212     ; Macro to put message to the serial port
+                      =1   213     
+                      =1   214     
+                           215     
+                           216     ;initialize LMCS 
+0045 BAA2FF                217         MOV DX, LMCR
+0048 B8C401                218         MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 wai
+                                   ts      
+004B EE                    219         OUT DX, AL
+                           220     
+                           221     ; BEGINNING OF DOWNLOADER PROGRAM
+                           222     ; Send out start message to terminal.
+                           223     
+                           224 +1                  
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    6
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           225 +1  ASSUME  ES:MESSAGE_SEG
+004C B8----         R      226 +1                  MOV     AX, MESSAGE_SEG
+004F 8EC0                  227 +1                  MOV     ES,AX
+0051 BF0000                228 +1                  MOV     DI,00H
+0054 B92A00                229 +1                  MOV     CX,42
+0057 E405                  230 +2  N_RDY_PUT00:    IN      AL,SST
+0059 A820                  231 +1                  TEST    AL,TRAN_RDY
+005B 74FA                  232 +2                  JZ      N_RDY_PUT00
+005D 268A05                233 +2                  MOV     AL,ES:MESSAGE_START[DI]
+0060 E600                  234 +1                  OUT     STB,AL
+0062 47                    235 +1                  INC     DI
+0063 E2F2                  236 +2                  LOOP    N_RDY_PUT00
+                           237 +1  
+                           238     
+                           239     ; The program does the following. 
+                           240     ; Polls the serial port for a downloaded program in the INTEL HEX format. 
+                           241     ; The data received are placed in memory.
+                           242     ; At the end of the downloading, it makes a jump to the beginning
+                           243     ; of the downloaded program and transfers control.
+                           244     
+                           245     ; The INTEL HEX format is define as follows:
+                           246     ;
+                           247     ; Col   #1      #2      #3      #4      #5                      #6
+                           248     ;--------------------------------------------------------------------
+                           249     ;       3A      xx      yyyy    00      zzzzzzzzzzzzzzzzzzzzzzz cs
+                           250     ;       3A      00      0000    01                              cs
+                           251     ;       3A      02      0000    02      ssss                    cs
+                           252     ;       3A      04      0000    03      aaaaaaaa                cs
+                           253     ;
+                           254     ; #1:   synch character.
+                           255     ; #2:   number of bytes to be sent in the records.
+                           256     ; #3:   offset address of data sent.
+                           257     ; #4:   type of record sent.
+                           258     ;       type 00: data streams.
+                           259     ;       type 01: end of file record.
+                           260     ;       type 02: the 02 bytes are the segment address for data of type 00.
+                           261     ;       type 03: the 04 bytes are the segment & offset of 1st instruction.
+                           262     ; #5:   data.
+                           263     ; #6:   checksum.
+                           264     
+                           265     
+                           266     ; The following program does not use any memory locations except 00008H which 
+                           267     ; is the NMI vector location. 
+                           268     
+                           269     ; Note that any downloaded program should normally not use this location 
+                           270     ; except writing an exception routine for NMI. 
+                           271     
+                           272     ; The internal registers are used as follows.
+                           273     ; AX    :       Scrap register.
+                           274     ; BX    :       Contains the checksum.
+                           275     ; CX    :       To store the number of bytes sent in each record.
+                           276     ; DX    :       As scrap data register, OUT and IN commands etc.
+                           277     ; DS    :       As segment address of data sent.
+                           278     ; ES    :       As scrap segment register for messages etc.
+                           279     ; BP    :       Store offset address of data sent.
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    7
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           280     ; SI    :       As scrap register for intermediate values.
+                           281     ; DI    :       As scrap offset address register for messages etc.
+                           282     
+                           283     
+                           284     ; Col #1, check for the synch character.
+0065 33DB                  285     GET_REC:        XOR     BX,BX           ;clear BX for checksum
+0067 B6FF                  286                     mov     dh,0ffh         ;echo back character
+                           287 +1                   
+                           288 +1                ;  MOV     AL,S_SCM_DATA
+                           289 +1                ;  OUT     SCM,AL
+0069 E405                  290 +2  N_RDY001:       IN      AL,SST
+006B A80E                  291 +1                  TEST    AL,ERR_DET
+006D 7403                  292 +2                  JZ      NO_ERR002
+006F E90D04                293 +1                  JMP     ERROR_ROUTINE
+0072 A801                  294 +2  NO_ERR002:      TEST    AL,REC_RDY              ;test for byte received
+0074 74F3                  295 +2                  JZ      N_RDY001
+0076 E400                  296 +1                  IN      AL,SRB
+                           297 +2                   
+0078 F6C6FF                298 +2                  test    dh,0ffh
+007B 7402                  299 +3                  jz      NO_ECHO03
+007D E600                  300 +2                  out     stb,al
+007F                       301 +3  NO_ECHO03:
+                           302 +2  
+                           303 +1  
+007F 343A                  304                     XOR     AL,SYNCH
+0081 75E2                  305                     JNZ     GET_REC         ;check for synch character
+                           306     
+                           307     ; Col #2, get the number of bytes to be sent. This is stored in CX.
+0083 B6FF                  308                     mov     dh,0ffh         ;echo back characters
+                           309 +1                   
+                           310 +1               ;   MOV     AL,S_SCM_DATA
+                           311 +1               ;   OUT     SCM,AL
+0085 E405                  312 +2  N_RDY104:       IN      AL,SST                  ;get status for 1st HEX char
+0087 A80E                  313 +1                  TEST    AL,ERR_DET
+0089 7403                  314 +2                  JZ      NO_ERR106
+008B E9F103                315 +1                  JMP     ERROR_ROUTINE
+008E A801                  316 +2  NO_ERR106:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0090 74F3                  317 +2                  JZ      N_RDY104
+0092 E400                  318 +1                  IN      AL,SRB
+                           319 +2                   
+0094 F6C6FF                320 +2                  test    dh,0ffh
+0097 7402                  321 +3                  jz      NO_ECHO0A
+0099 E600                  322 +2                  out     stb,al
+009B                       323 +3  NO_ECHO0A:
+                           324 +2                  
+009B 3C3A                  325 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+009D 7802                  326 +2                  JS      NUMER008
+009F 0409                  327 +1                  ADD     AL,9
+00A1 C0E004                328 +2  NUMER008:       SHL     AL,4                    ;shift left 4 bits
+00A4 8AE0                  329 +1                  MOV     AH,AL                   ;store temporary in AH
+00A6 E405                  330 +2  N_RDY205:       IN      AL,SST                  ;get status for 2nd HEX char
+00A8 A80E                  331 +1                  TEST    AL,ERR_DET
+00AA 7403                  332 +2                  JZ      NO_ERR207
+00AC E9D003                333 +1                  JMP     ERROR_ROUTINE
+00AF A801                  334 +2  NO_ERR207:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    8
+
+
+LOC  OBJ                  LINE     SOURCE
+
+00B1 74F3                  335 +2                  JZ      N_RDY205
+00B3 E400                  336 +1                  IN      AL,SRB
+                           337 +2                   
+00B5 F6C6FF                338 +2                  test    dh,0ffh
+00B8 7402                  339 +3                  jz      NO_ECHO0B
+00BA E600                  340 +2                  out     stb,al
+00BC                       341 +3  NO_ECHO0B:
+                           342 +2  
+00BC 3C3A                  343 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+00BE 7802                  344 +2                  JS      NUMER109
+00C0 0409                  345 +1                  ADD     AL,9
+00C2 240F                  346 +2  NUMER109:       AND     AL,00001111B
+00C4 0AC4                  347 +1                  OR      AL,AH
+00C6 32E4                  348 +1                  XOR     AH,AH
+00C8 03D8                  349 +1                  ADD     BX,AX                   ;compute the checksum
+                           350 +1  
+00CA 8AC8                  351                     MOV     CL,AL   
+00CC 32ED                  352                     XOR     CH,CH           ;clear CH
+                           353     
+                           354     ; Col #3, get offset address of data sent. This is stored in BP.
+00CE B6FF                  355                     mov     dh,0ffh         ;echo back characters
+                           356 +1                   
+                           357 +1               ;   MOV     AL,S_SCM_DATA
+                           358 +1               ;   OUT     SCM,AL
+00D0 E405                  359 +2  N_RDY10C:       IN      AL,SST                  ;get status for 1st HEX char
+00D2 A80E                  360 +1                  TEST    AL,ERR_DET
+00D4 7403                  361 +2                  JZ      NO_ERR10E
+00D6 E9A603                362 +1                  JMP     ERROR_ROUTINE
+00D9 A801                  363 +2  NO_ERR10E:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+00DB 74F3                  364 +2                  JZ      N_RDY10C
+00DD E400                  365 +1                  IN      AL,SRB
+                           366 +2                   
+00DF F6C6FF                367 +2                  test    dh,0ffh
+00E2 7402                  368 +3                  jz      NO_ECHO12
+00E4 E600                  369 +2                  out     stb,al
+00E6                       370 +3  NO_ECHO12:
+                           371 +2                  
+00E6 3C3A                  372 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+00E8 7802                  373 +2                  JS      NUMER010
+00EA 0409                  374 +1                  ADD     AL,9
+00EC C0E004                375 +2  NUMER010:       SHL     AL,4                    ;shift left 4 bits
+00EF 8AE0                  376 +1                  MOV     AH,AL                   ;store temporary in AH
+00F1 E405                  377 +2  N_RDY20D:       IN      AL,SST                  ;get status for 2nd HEX char
+00F3 A80E                  378 +1                  TEST    AL,ERR_DET
+00F5 7403                  379 +2                  JZ      NO_ERR20F
+00F7 E98503                380 +1                  JMP     ERROR_ROUTINE
+00FA A801                  381 +2  NO_ERR20F:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+00FC 74F3                  382 +2                  JZ      N_RDY20D
+00FE E400                  383 +1                  IN      AL,SRB
+                           384 +2                   
+0100 F6C6FF                385 +2                  test    dh,0ffh
+0103 7402                  386 +3                  jz      NO_ECHO13
+0105 E600                  387 +2                  out     stb,al
+0107                       388 +3  NO_ECHO13:
+                           389 +2  
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE    9
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0107 3C3A                  390 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0109 7802                  391 +2                  JS      NUMER111
+010B 0409                  392 +1                  ADD     AL,9
+010D 240F                  393 +2  NUMER111:       AND     AL,00001111B
+010F 0AC4                  394 +1                  OR      AL,AH
+0111 32E4                  395 +1                  XOR     AH,AH
+0113 03D8                  396 +1                  ADD     BX,AX                   ;compute the checksum
+                           397 +1  
+0115 8AE0                  398                     MOV     AH,AL           ;put the top 8 bits into
+0117 B000                  399                     MOV     AL,0H           ;into BP
+0119 8BE8                  400                     MOV     BP,AX
+011B B6FF                  401                     mov     dh,0ffh         ;echo back characters
+                           402 +1                   
+                           403 +1               ;   MOV     AL,S_SCM_DATA
+                           404 +1               ;   OUT     SCM,AL
+011D E405                  405 +2  N_RDY114:       IN      AL,SST                  ;get status for 1st HEX char
+011F A80E                  406 +1                  TEST    AL,ERR_DET
+0121 7403                  407 +2                  JZ      NO_ERR116
+0123 E95903                408 +1                  JMP     ERROR_ROUTINE
+0126 A801                  409 +2  NO_ERR116:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0128 74F3                  410 +2                  JZ      N_RDY114
+012A E400                  411 +1                  IN      AL,SRB
+                           412 +2                   
+012C F6C6FF                413 +2                  test    dh,0ffh
+012F 7402                  414 +3                  jz      NO_ECHO1A
+0131 E600                  415 +2                  out     stb,al
+0133                       416 +3  NO_ECHO1A:
+                           417 +2                  
+0133 3C3A                  418 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0135 7802                  419 +2                  JS      NUMER018
+0137 0409                  420 +1                  ADD     AL,9
+0139 C0E004                421 +2  NUMER018:       SHL     AL,4                    ;shift left 4 bits
+013C 8AE0                  422 +1                  MOV     AH,AL                   ;store temporary in AH
+013E E405                  423 +2  N_RDY215:       IN      AL,SST                  ;get status for 2nd HEX char
+0140 A80E                  424 +1                  TEST    AL,ERR_DET
+0142 7403                  425 +2                  JZ      NO_ERR217
+0144 E93803                426 +1                  JMP     ERROR_ROUTINE
+0147 A801                  427 +2  NO_ERR217:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+0149 74F3                  428 +2                  JZ      N_RDY215
+014B E400                  429 +1                  IN      AL,SRB
+                           430 +2                   
+014D F6C6FF                431 +2                  test    dh,0ffh
+0150 7402                  432 +3                  jz      NO_ECHO1B
+0152 E600                  433 +2                  out     stb,al
+0154                       434 +3  NO_ECHO1B:
+                           435 +2  
+0154 3C3A                  436 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0156 7802                  437 +2                  JS      NUMER119
+0158 0409                  438 +1                  ADD     AL,9
+015A 240F                  439 +2  NUMER119:       AND     AL,00001111B
+015C 0AC4                  440 +1                  OR      AL,AH
+015E 32E4                  441 +1                  XOR     AH,AH
+0160 03D8                  442 +1                  ADD     BX,AX                   ;compute the checksum
+                           443 +1  
+0162 B400                  444                     MOV     AH,0H           ;put the bottom 8 bits into
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   10
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0164 0BE8                  445                     OR      BP,AX           ;BP
+                           446     
+                           447     ; Col #4, get the type of record sent.
+0166 B6FF                  448                     mov     dh,0ffh         ;echo back characters
+                           449 +1                   
+                           450 +1               ;   MOV     AL,S_SCM_DATA
+                           451 +1               ;   OUT     SCM,AL
+0168 E405                  452 +2  N_RDY11C:       IN      AL,SST                  ;get status for 1st HEX char
+016A A80E                  453 +1                  TEST    AL,ERR_DET
+016C 7403                  454 +2                  JZ      NO_ERR11E
+016E E90E03                455 +1                  JMP     ERROR_ROUTINE
+0171 A801                  456 +2  NO_ERR11E:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0173 74F3                  457 +2                  JZ      N_RDY11C
+0175 E400                  458 +1                  IN      AL,SRB
+                           459 +2                   
+0177 F6C6FF                460 +2                  test    dh,0ffh
+017A 7402                  461 +3                  jz      NO_ECHO22
+017C E600                  462 +2                  out     stb,al
+017E                       463 +3  NO_ECHO22:
+                           464 +2                  
+017E 3C3A                  465 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0180 7802                  466 +2                  JS      NUMER020
+0182 0409                  467 +1                  ADD     AL,9
+0184 C0E004                468 +2  NUMER020:       SHL     AL,4                    ;shift left 4 bits
+0187 8AE0                  469 +1                  MOV     AH,AL                   ;store temporary in AH
+0189 E405                  470 +2  N_RDY21D:       IN      AL,SST                  ;get status for 2nd HEX char
+018B A80E                  471 +1                  TEST    AL,ERR_DET
+018D 7403                  472 +2                  JZ      NO_ERR21F
+018F E9ED02                473 +1                  JMP     ERROR_ROUTINE
+0192 A801                  474 +2  NO_ERR21F:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+0194 74F3                  475 +2                  JZ      N_RDY21D
+0196 E400                  476 +1                  IN      AL,SRB
+                           477 +2                   
+0198 F6C6FF                478 +2                  test    dh,0ffh
+019B 7402                  479 +3                  jz      NO_ECHO23
+019D E600                  480 +2                  out     stb,al
+019F                       481 +3  NO_ECHO23:
+                           482 +2  
+019F 3C3A                  483 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+01A1 7802                  484 +2                  JS      NUMER121
+01A3 0409                  485 +1                  ADD     AL,9
+01A5 240F                  486 +2  NUMER121:       AND     AL,00001111B
+01A7 0AC4                  487 +1                  OR      AL,AH
+01A9 32E4                  488 +1                  XOR     AH,AH
+01AB 03D8                  489 +1                  ADD     BX,AX                   ;compute the checksum
+                           490 +1  
+                           491     
+                           492     ; type 0 ? (data)
+01AD 3C00                  493                     CMP     AL,00H  
+01AF 7432                  494                     JZ      L_TYPE0
+                           495     ; type 2 ? (segment address)
+01B1 3C02                  496                     CMP     AL,02H
+01B3 7503                  497                     JNZ     CONT0
+01B5 E98700                498                     JMP     L_TYPE2
+01B8                       499     CONT0:
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   11
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           500     ; type 3 ? (start offset and segement address)
+01B8 3C03                  501                     CMP     AL,03H
+01BA 7503                  502                     JNZ     CONT1
+01BC E91D01                503                     JMP     L_TYPE3
+01BF                       504     CONT1:
+                           505     
+                           506     ; Service for type 01, (end of file). 
+                           507     ; Make a jump to start address.
+                           508     ; Send out message to terminal to indicate end of download and then
+                           509     ; do a indirect branch to the start of the downloaded program.
+                           510     
+                           511 +1                  
+                           512 +1  ASSUME  ES:MESSAGE_SEG
+01BF B8----         R      513 +1                  MOV     AX, MESSAGE_SEG
+01C2 8EC0                  514 +1                  MOV     ES,AX
+01C4 BF0000                515 +1                  MOV     DI,00H
+01C7 B92A00                516 +1                  MOV     CX,42
+01CA E405                  517 +2  N_RDY_PUT24:    IN      AL,SST
+01CC A820                  518 +1                  TEST    AL,TRAN_RDY
+01CE 74FA                  519 +2                  JZ      N_RDY_PUT24
+01D0 268A4529              520 +2                  MOV     AL,ES:MESSAGE_END[DI]
+01D4 E600                  521 +1                  OUT     STB,AL
+01D6 47                    522 +1                  INC     DI
+01D7 E2F1                  523 +2                  LOOP    N_RDY_PUT24
+                           524 +1  
+                           525     
+                           526     ASSUME  ES:DATA_SEG
+01D9 B8----         R      527                     MOV     AX,DATA_SEG
+01DC 8EC0                  528                     MOV     ES,AX
+01DE 26FF2E0800            529                     JMP     START_ADDRESS
+                           530     
+                           531     ; Service for type 00, get the data.
+01E3 B600                  532     L_TYPE0:        mov     dh,00h          ;do not echo back characters
+                           533 +1                   
+                           534 +1               ;   MOV     AL,S_SCM_DATA
+                           535 +1               ;   OUT     SCM,AL
+01E5 E405                  536 +2  N_RDY125:       IN      AL,SST                  ;get status for 1st HEX char
+01E7 A80E                  537 +1                  TEST    AL,ERR_DET
+01E9 7403                  538 +2                  JZ      NO_ERR127
+01EB E99102                539 +1                  JMP     ERROR_ROUTINE
+01EE A801                  540 +2  NO_ERR127:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+01F0 74F3                  541 +2                  JZ      N_RDY125
+01F2 E400                  542 +1                  IN      AL,SRB
+                           543 +2                   
+01F4 F6C6FF                544 +2                  test    dh,0ffh
+01F7 7402                  545 +3                  jz      NO_ECHO2B
+01F9 E600                  546 +2                  out     stb,al
+01FB                       547 +3  NO_ECHO2B:
+                           548 +2                  
+01FB 3C3A                  549 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+01FD 7802                  550 +2                  JS      NUMER029
+01FF 0409                  551 +1                  ADD     AL,9
+0201 C0E004                552 +2  NUMER029:       SHL     AL,4                    ;shift left 4 bits
+0204 8AE0                  553 +1                  MOV     AH,AL                   ;store temporary in AH
+0206 E405                  554 +2  N_RDY226:       IN      AL,SST                  ;get status for 2nd HEX char
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   12
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0208 A80E                  555 +1                  TEST    AL,ERR_DET
+020A 7403                  556 +2                  JZ      NO_ERR228
+020C E97002                557 +1                  JMP     ERROR_ROUTINE
+020F A801                  558 +2  NO_ERR228:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+0211 74F3                  559 +2                  JZ      N_RDY226
+0213 E400                  560 +1                  IN      AL,SRB
+                           561 +2                   
+0215 F6C6FF                562 +2                  test    dh,0ffh
+0218 7402                  563 +3                  jz      NO_ECHO2C
+021A E600                  564 +2                  out     stb,al
+021C                       565 +3  NO_ECHO2C:
+                           566 +2  
+021C 3C3A                  567 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+021E 7802                  568 +2                  JS      NUMER12A
+0220 0409                  569 +1                  ADD     AL,9
+0222 240F                  570 +2  NUMER12A:       AND     AL,00001111B
+0224 0AC4                  571 +1                  OR      AL,AH
+0226 32E4                  572 +1                  XOR     AH,AH
+0228 03D8                  573 +1                  ADD     BX,AX                   ;compute the checksum
+                           574 +1  
+022A 3E884600              575                     MOV     DS:[BP],AL
+022E 3E8A6600              576                     MOV     AH,DS:[BP]      ;to verify correct transfer to RAM
+0232 32C4                  577                     XOR     AL,AH
+0234 7403                  578                     JZ      NO_RAM_ERR
+0236 E97D02                579                     JMP     RAM_ERROR
+0239 45                    580     NO_RAM_ERR:     INC     BP
+023A E2A7                  581                     LOOP    L_TYPE0
+023C E9D901                582                     JMP     CHECKSUM
+                           583     
+                           584     ; Service for type 02, get the segment address and put in DS.
+023F B600                  585     L_TYPE2:        mov     dh,00h          ;do not echo back characters    
+                           586 +1                   
+                           587 +1               ;   MOV     AL,S_SCM_DATA
+                           588 +1               ;   OUT     SCM,AL
+0241 E405                  589 +2  N_RDY12D:       IN      AL,SST                  ;get status for 1st HEX char
+0243 A80E                  590 +1                  TEST    AL,ERR_DET
+0245 7403                  591 +2                  JZ      NO_ERR12F
+0247 E93502                592 +1                  JMP     ERROR_ROUTINE
+024A A801                  593 +2  NO_ERR12F:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+024C 74F3                  594 +2                  JZ      N_RDY12D
+024E E400                  595 +1                  IN      AL,SRB
+                           596 +2                   
+0250 F6C6FF                597 +2                  test    dh,0ffh
+0253 7402                  598 +3                  jz      NO_ECHO33
+0255 E600                  599 +2                  out     stb,al
+0257                       600 +3  NO_ECHO33:
+                           601 +2                  
+0257 3C3A                  602 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0259 7802                  603 +2                  JS      NUMER031
+025B 0409                  604 +1                  ADD     AL,9
+025D C0E004                605 +2  NUMER031:       SHL     AL,4                    ;shift left 4 bits
+0260 8AE0                  606 +1                  MOV     AH,AL                   ;store temporary in AH
+0262 E405                  607 +2  N_RDY22E:       IN      AL,SST                  ;get status for 2nd HEX char
+0264 A80E                  608 +1                  TEST    AL,ERR_DET
+0266 7403                  609 +2                  JZ      NO_ERR230
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   13
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0268 E91402                610 +1                  JMP     ERROR_ROUTINE
+026B A801                  611 +2  NO_ERR230:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+026D 74F3                  612 +2                  JZ      N_RDY22E
+026F E400                  613 +1                  IN      AL,SRB
+                           614 +2                   
+0271 F6C6FF                615 +2                  test    dh,0ffh
+0274 7402                  616 +3                  jz      NO_ECHO34
+0276 E600                  617 +2                  out     stb,al
+0278                       618 +3  NO_ECHO34:
+                           619 +2  
+0278 3C3A                  620 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+027A 7802                  621 +2                  JS      NUMER132
+027C 0409                  622 +1                  ADD     AL,9
+027E 240F                  623 +2  NUMER132:       AND     AL,00001111B
+0280 0AC4                  624 +1                  OR      AL,AH
+0282 32E4                  625 +1                  XOR     AH,AH
+0284 03D8                  626 +1                  ADD     BX,AX                   ;compute the checksum
+                           627 +1  
+0286 8AE0                  628                     MOV     AH,AL
+0288 B000                  629                     MOV     AL,00H
+028A 8BF0                  630                     MOV     SI,AX
+028C B600                  631                     mov     dh,00h          ;do not echo back characters    
+                           632 +1                   
+                           633 +1               ;   MOV     AL,S_SCM_DATA
+                           634 +1               ;   OUT     SCM,AL
+028E E405                  635 +2  N_RDY135:       IN      AL,SST                  ;get status for 1st HEX char
+0290 A80E                  636 +1                  TEST    AL,ERR_DET
+0292 7403                  637 +2                  JZ      NO_ERR137
+0294 E9E801                638 +1                  JMP     ERROR_ROUTINE
+0297 A801                  639 +2  NO_ERR137:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0299 74F3                  640 +2                  JZ      N_RDY135
+029B E400                  641 +1                  IN      AL,SRB
+                           642 +2                   
+029D F6C6FF                643 +2                  test    dh,0ffh
+02A0 7402                  644 +3                  jz      NO_ECHO3B
+02A2 E600                  645 +2                  out     stb,al
+02A4                       646 +3  NO_ECHO3B:
+                           647 +2                  
+02A4 3C3A                  648 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+02A6 7802                  649 +2                  JS      NUMER039
+02A8 0409                  650 +1                  ADD     AL,9
+02AA C0E004                651 +2  NUMER039:       SHL     AL,4                    ;shift left 4 bits
+02AD 8AE0                  652 +1                  MOV     AH,AL                   ;store temporary in AH
+02AF E405                  653 +2  N_RDY236:       IN      AL,SST                  ;get status for 2nd HEX char
+02B1 A80E                  654 +1                  TEST    AL,ERR_DET
+02B3 7403                  655 +2                  JZ      NO_ERR238
+02B5 E9C701                656 +1                  JMP     ERROR_ROUTINE
+02B8 A801                  657 +2  NO_ERR238:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+02BA 74F3                  658 +2                  JZ      N_RDY236
+02BC E400                  659 +1                  IN      AL,SRB
+                           660 +2                   
+02BE F6C6FF                661 +2                  test    dh,0ffh
+02C1 7402                  662 +3                  jz      NO_ECHO3C
+02C3 E600                  663 +2                  out     stb,al
+02C5                       664 +3  NO_ECHO3C:
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   14
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           665 +2  
+02C5 3C3A                  666 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+02C7 7802                  667 +2                  JS      NUMER13A
+02C9 0409                  668 +1                  ADD     AL,9
+02CB 240F                  669 +2  NUMER13A:       AND     AL,00001111B
+02CD 0AC4                  670 +1                  OR      AL,AH
+02CF 32E4                  671 +1                  XOR     AH,AH
+02D1 03D8                  672 +1                  ADD     BX,AX                   ;compute the checksum
+                           673 +1  
+02D3 B400                  674                     MOV     AH,00H
+02D5 0BC6                  675                     OR      AX,SI
+02D7 8ED8                  676                     MOV     DS,AX
+02D9 E93C01                677                     JMP     CHECKSUM
+                           678     
+                           679     ; Service for type 03, get start address & put in START_OFFSET/START_SEGMENT
+02DC B8----         R      680     L_TYPE3:        MOV     AX,DATA_SEG
+02DF 8EC0                  681                     MOV     ES,AX
+02E1 B600                  682                     mov     dh,00h          ;do not echo back characters    
+                           683 +1                   
+                           684 +1               ;   MOV     AL,S_SCM_DATA
+                           685 +1               ;   OUT     SCM,AL
+02E3 E405                  686 +2  N_RDY13D:       IN      AL,SST                  ;get status for 1st HEX char
+02E5 A80E                  687 +1                  TEST    AL,ERR_DET
+02E7 7403                  688 +2                  JZ      NO_ERR13F
+02E9 E99301                689 +1                  JMP     ERROR_ROUTINE
+02EC A801                  690 +2  NO_ERR13F:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+02EE 74F3                  691 +2                  JZ      N_RDY13D
+02F0 E400                  692 +1                  IN      AL,SRB
+                           693 +2                   
+02F2 F6C6FF                694 +2                  test    dh,0ffh
+02F5 7402                  695 +3                  jz      NO_ECHO43
+02F7 E600                  696 +2                  out     stb,al
+02F9                       697 +3  NO_ECHO43:
+                           698 +2                  
+02F9 3C3A                  699 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+02FB 7802                  700 +2                  JS      NUMER041
+02FD 0409                  701 +1                  ADD     AL,9
+02FF C0E004                702 +2  NUMER041:       SHL     AL,4                    ;shift left 4 bits
+0302 8AE0                  703 +1                  MOV     AH,AL                   ;store temporary in AH
+0304 E405                  704 +2  N_RDY23E:       IN      AL,SST                  ;get status for 2nd HEX char
+0306 A80E                  705 +1                  TEST    AL,ERR_DET
+0308 7403                  706 +2                  JZ      NO_ERR240
+030A E97201                707 +1                  JMP     ERROR_ROUTINE
+030D A801                  708 +2  NO_ERR240:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+030F 74F3                  709 +2                  JZ      N_RDY23E
+0311 E400                  710 +1                  IN      AL,SRB
+                           711 +2                   
+0313 F6C6FF                712 +2                  test    dh,0ffh
+0316 7402                  713 +3                  jz      NO_ECHO44
+0318 E600                  714 +2                  out     stb,al
+031A                       715 +3  NO_ECHO44:
+                           716 +2  
+031A 3C3A                  717 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+031C 7802                  718 +2                  JS      NUMER142
+031E 0409                  719 +1                  ADD     AL,9
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   15
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0320 240F                  720 +2  NUMER142:       AND     AL,00001111B
+0322 0AC4                  721 +1                  OR      AL,AH
+0324 32E4                  722 +1                  XOR     AH,AH
+0326 03D8                  723 +1                  ADD     BX,AX                   ;compute the checksum
+                           724 +1                 ;Get high byte start segment address.
+0328 BF0B00                725                     MOV     DI,START_SEG_H
+032B 268805                726                     MOV     ES:[DI],AL
+032E B600                  727                     mov     dh,00h          ;do not echo back characters    
+                           728 +1                   
+                           729 +1               ;   MOV     AL,S_SCM_DATA
+                           730 +1               ;   OUT     SCM,AL
+0330 E405                  731 +2  N_RDY145:       IN      AL,SST                  ;get status for 1st HEX char
+0332 A80E                  732 +1                  TEST    AL,ERR_DET
+0334 7403                  733 +2                  JZ      NO_ERR147
+0336 E94601                734 +1                  JMP     ERROR_ROUTINE
+0339 A801                  735 +2  NO_ERR147:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+033B 74F3                  736 +2                  JZ      N_RDY145
+033D E400                  737 +1                  IN      AL,SRB
+                           738 +2                   
+033F F6C6FF                739 +2                  test    dh,0ffh
+0342 7402                  740 +3                  jz      NO_ECHO4B
+0344 E600                  741 +2                  out     stb,al
+0346                       742 +3  NO_ECHO4B:
+                           743 +2                  
+0346 3C3A                  744 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0348 7802                  745 +2                  JS      NUMER049
+034A 0409                  746 +1                  ADD     AL,9
+034C C0E004                747 +2  NUMER049:       SHL     AL,4                    ;shift left 4 bits
+034F 8AE0                  748 +1                  MOV     AH,AL                   ;store temporary in AH
+0351 E405                  749 +2  N_RDY246:       IN      AL,SST                  ;get status for 2nd HEX char
+0353 A80E                  750 +1                  TEST    AL,ERR_DET
+0355 7403                  751 +2                  JZ      NO_ERR248
+0357 E92501                752 +1                  JMP     ERROR_ROUTINE
+035A A801                  753 +2  NO_ERR248:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+035C 74F3                  754 +2                  JZ      N_RDY246
+035E E400                  755 +1                  IN      AL,SRB
+                           756 +2                   
+0360 F6C6FF                757 +2                  test    dh,0ffh
+0363 7402                  758 +3                  jz      NO_ECHO4C
+0365 E600                  759 +2                  out     stb,al
+0367                       760 +3  NO_ECHO4C:
+                           761 +2  
+0367 3C3A                  762 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0369 7802                  763 +2                  JS      NUMER14A
+036B 0409                  764 +1                  ADD     AL,9
+036D 240F                  765 +2  NUMER14A:       AND     AL,00001111B
+036F 0AC4                  766 +1                  OR      AL,AH
+0371 32E4                  767 +1                  XOR     AH,AH
+0373 03D8                  768 +1                  ADD     BX,AX                   ;compute the checksum
+                           769 +1                 ;Get low byte of start segment address
+0375 BF0A00                770                     MOV     DI,START_SEG_L
+0378 268805                771                     MOV     ES:[DI],AL
+037B B600                  772                     mov     dh,00h          ;do not echo back characters    
+                           773 +1                   
+                           774 +1               ;   MOV     AL,S_SCM_DATA
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   16
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                           775 +1               ;   OUT     SCM,AL
+037D E405                  776 +2  N_RDY14D:       IN      AL,SST                  ;get status for 1st HEX char
+037F A80E                  777 +1                  TEST    AL,ERR_DET
+0381 7403                  778 +2                  JZ      NO_ERR14F
+0383 E9F900                779 +1                  JMP     ERROR_ROUTINE
+0386 A801                  780 +2  NO_ERR14F:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0388 74F3                  781 +2                  JZ      N_RDY14D
+038A E400                  782 +1                  IN      AL,SRB
+                           783 +2                   
+038C F6C6FF                784 +2                  test    dh,0ffh
+038F 7402                  785 +3                  jz      NO_ECHO53
+0391 E600                  786 +2                  out     stb,al
+0393                       787 +3  NO_ECHO53:
+                           788 +2                  
+0393 3C3A                  789 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0395 7802                  790 +2                  JS      NUMER051
+0397 0409                  791 +1                  ADD     AL,9
+0399 C0E004                792 +2  NUMER051:       SHL     AL,4                    ;shift left 4 bits
+039C 8AE0                  793 +1                  MOV     AH,AL                   ;store temporary in AH
+039E E405                  794 +2  N_RDY24E:       IN      AL,SST                  ;get status for 2nd HEX char
+03A0 A80E                  795 +1                  TEST    AL,ERR_DET
+03A2 7403                  796 +2                  JZ      NO_ERR250
+03A4 E9D800                797 +1                  JMP     ERROR_ROUTINE
+03A7 A801                  798 +2  NO_ERR250:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+03A9 74F3                  799 +2                  JZ      N_RDY24E
+03AB E400                  800 +1                  IN      AL,SRB
+                           801 +2                   
+03AD F6C6FF                802 +2                  test    dh,0ffh
+03B0 7402                  803 +3                  jz      NO_ECHO54
+03B2 E600                  804 +2                  out     stb,al
+03B4                       805 +3  NO_ECHO54:
+                           806 +2  
+03B4 3C3A                  807 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+03B6 7802                  808 +2                  JS      NUMER152
+03B8 0409                  809 +1                  ADD     AL,9
+03BA 240F                  810 +2  NUMER152:       AND     AL,00001111B
+03BC 0AC4                  811 +1                  OR      AL,AH
+03BE 32E4                  812 +1                  XOR     AH,AH
+03C0 03D8                  813 +1                  ADD     BX,AX                   ;compute the checksum
+                           814 +1                 ;Get high byte start offset address.
+03C2 BF0900                815                     MOV     DI,START_OFF_H
+03C5 268805                816                     MOV     ES:[DI],AL
+03C8 B600                  817                     mov     dh,00h          ;do not echo back characters    
+                           818 +1                   
+                           819 +1               ;   MOV     AL,S_SCM_DATA
+                           820 +1               ;   OUT     SCM,AL
+03CA E405                  821 +2  N_RDY155:       IN      AL,SST                  ;get status for 1st HEX char
+03CC A80E                  822 +1                  TEST    AL,ERR_DET
+03CE 7403                  823 +2                  JZ      NO_ERR157
+03D0 E9AC00                824 +1                  JMP     ERROR_ROUTINE
+03D3 A801                  825 +2  NO_ERR157:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+03D5 74F3                  826 +2                  JZ      N_RDY155
+03D7 E400                  827 +1                  IN      AL,SRB
+                           828 +2                   
+03D9 F6C6FF                829 +2                  test    dh,0ffh
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   17
+
+
+LOC  OBJ                  LINE     SOURCE
+
+03DC 7402                  830 +3                  jz      NO_ECHO5B
+03DE E600                  831 +2                  out     stb,al
+03E0                       832 +3  NO_ECHO5B:
+                           833 +2                  
+03E0 3C3A                  834 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+03E2 7802                  835 +2                  JS      NUMER059
+03E4 0409                  836 +1                  ADD     AL,9
+03E6 C0E004                837 +2  NUMER059:       SHL     AL,4                    ;shift left 4 bits
+03E9 8AE0                  838 +1                  MOV     AH,AL                   ;store temporary in AH
+03EB E405                  839 +2  N_RDY256:       IN      AL,SST                  ;get status for 2nd HEX char
+03ED A80E                  840 +1                  TEST    AL,ERR_DET
+03EF 7403                  841 +2                  JZ      NO_ERR258
+03F1 E98B00                842 +1                  JMP     ERROR_ROUTINE
+03F4 A801                  843 +2  NO_ERR258:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+03F6 74F3                  844 +2                  JZ      N_RDY256
+03F8 E400                  845 +1                  IN      AL,SRB
+                           846 +2                   
+03FA F6C6FF                847 +2                  test    dh,0ffh
+03FD 7402                  848 +3                  jz      NO_ECHO5C
+03FF E600                  849 +2                  out     stb,al
+0401                       850 +3  NO_ECHO5C:
+                           851 +2  
+0401 3C3A                  852 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0403 7802                  853 +2                  JS      NUMER15A
+0405 0409                  854 +1                  ADD     AL,9
+0407 240F                  855 +2  NUMER15A:       AND     AL,00001111B
+0409 0AC4                  856 +1                  OR      AL,AH
+040B 32E4                  857 +1                  XOR     AH,AH
+040D 03D8                  858 +1                  ADD     BX,AX                   ;compute the checksum
+                           859 +1                 ;Get low byte start offset address.
+040F BF0800                860                     MOV     DI,START_OFF_L
+0412 268805                861                     MOV     ES:[DI],AL
+0415 EB0190                862                     JMP     CHECKSUM
+                           863     
+0418 B6FF                  864     CHECKSUM:       mov     dh,0ffh         ;echo back characters   
+                           865 +1                   
+                           866 +1               ;   MOV     AL,S_SCM_DATA
+                           867 +1               ;   OUT     SCM,AL
+041A E405                  868 +2  N_RDY15D:       IN      AL,SST                  ;get status for 1st HEX char
+041C A80E                  869 +1                  TEST    AL,ERR_DET
+041E 7403                  870 +2                  JZ      NO_ERR15F
+0420 EB5D90                871 +1                  JMP     ERROR_ROUTINE
+0423 A801                  872 +2  NO_ERR15F:      TEST    AL,REC_RDY              ;test for 1st HEX char received
+0425 74F3                  873 +2                  JZ      N_RDY15D
+0427 E400                  874 +1                  IN      AL,SRB
+                           875 +2                   
+0429 F6C6FF                876 +2                  test    dh,0ffh
+042C 7402                  877 +3                  jz      NO_ECHO63
+042E E600                  878 +2                  out     stb,al
+0430                       879 +3  NO_ECHO63:
+                           880 +2                  
+0430 3C3A                  881 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0432 7802                  882 +2                  JS      NUMER061
+0434 0409                  883 +1                  ADD     AL,9
+0436 C0E004                884 +2  NUMER061:       SHL     AL,4                    ;shift left 4 bits
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   18
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0439 8AE0                  885 +1                  MOV     AH,AL                   ;store temporary in AH
+043B E405                  886 +2  N_RDY25E:       IN      AL,SST                  ;get status for 2nd HEX char
+043D A80E                  887 +1                  TEST    AL,ERR_DET
+043F 7403                  888 +2                  JZ      NO_ERR260
+0441 EB3C90                889 +1                  JMP     ERROR_ROUTINE
+0444 A801                  890 +2  NO_ERR260:      TEST    AL,REC_RDY              ;test for 2nd HEX char received
+0446 74F3                  891 +2                  JZ      N_RDY25E
+0448 E400                  892 +1                  IN      AL,SRB
+                           893 +2                   
+044A F6C6FF                894 +2                  test    dh,0ffh
+044D 7402                  895 +3                  jz      NO_ECHO64
+044F E600                  896 +2                  out     stb,al
+0451                       897 +3  NO_ECHO64:
+                           898 +2  
+0451 3C3A                  899 +1                  CMP     AL,3AH                  ;numerial:30h-39h;alpha:41h-46h
+0453 7802                  900 +2                  JS      NUMER162
+0455 0409                  901 +1                  ADD     AL,9
+0457 240F                  902 +2  NUMER162:       AND     AL,00001111B
+0459 0AC4                  903 +1                  OR      AL,AH
+045B 32E4                  904 +1                  XOR     AH,AH
+045D 03D8                  905 +1                  ADD     BX,AX                   ;compute the checksum
+                           906 +1                 ;This is the checksum byte
+045F 80F300                907                     XOR     BL,00H
+0462 7536                  908                     JNZ     CHECKSUM_ERR
+0464 B6FF                  909                     mov     dh,0ffh         ;echo back characters
+                           910 +1                   
+                           911 +1                ;  MOV     AL,S_SCM_DATA
+                           912 +1                ;  OUT     SCM,AL
+0466 E405                  913 +2  N_RDY065:       IN      AL,SST
+0468 A80E                  914 +1                  TEST    AL,ERR_DET
+046A 7403                  915 +2                  JZ      NO_ERR066
+046C EB1190                916 +1                  JMP     ERROR_ROUTINE
+046F A801                  917 +2  NO_ERR066:      TEST    AL,REC_RDY              ;test for byte received
+0471 74F3                  918 +2                  JZ      N_RDY065
+0473 E400                  919 +1                  IN      AL,SRB
+                           920 +2                   
+0475 F6C6FF                921 +2                  test    dh,0ffh
+0478 7402                  922 +3                  jz      NO_ECHO67
+047A E600                  923 +2                  out     stb,al
+047C                       924 +3  NO_ECHO67:
+                           925 +2  
+                           926 +1                 ;to get /n
+047C E9E6FB                927                     JMP     GET_REC
+                           928     
+                           929     ; To send transmission error message to PC and abort download
+047F                       930     ERROR_ROUTINE:  
+                           931 +1                  
+                           932 +1  ASSUME  ES:MESSAGE_SEG
+047F B8----         R      933 +1                  MOV     AX, MESSAGE_SEG
+0482 8EC0                  934 +1                  MOV     ES,AX
+0484 BF0000                935 +1                  MOV     DI,00H
+0487 B92A00                936 +1                  MOV     CX,42
+048A E405                  937 +2  N_RDY_PUT68:    IN      AL,SST
+048C A820                  938 +1                  TEST    AL,TRAN_RDY
+048E 74FA                  939 +2                  JZ      N_RDY_PUT68
+8086/87/88/186 MACRO ASSEMBLER    EG0_COMP                                                 14:15:01  09/05/;2  PAGE   19
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0490 268A4552              940 +2                  MOV     AL,ES:MESSAGE_TX_ERR[DI]
+0494 E600                  941 +1                  OUT     STB,AL
+0496 47                    942 +1                  INC     DI
+0497 E2F1                  943 +2                  LOOP    N_RDY_PUT68
+                           944 +1  
+0499 F4                    945                     HLT
+                           946     ;
+049A                       947 +1  CHECKSUM_ERR:   
+                           948 +1  ASSUME  ES:MESSAGE_SEG
+049A B8----         R      949 +1                  MOV     AX, MESSAGE_SEG
+049D 8EC0                  950 +1                  MOV     ES,AX
+049F BF0000                951 +1                  MOV     DI,00H
+04A2 B92A00                952 +1                  MOV     CX,42
+04A5 E405                  953 +2  N_RDY_PUT69:    IN      AL,SST
+04A7 A820                  954 +1                  TEST    AL,TRAN_RDY
+04A9 74FA                  955 +2                  JZ      N_RDY_PUT69
+04AB 268A85A400            956 +2                  MOV     AL,ES:MESSAGE_CS[DI]
+04B0 E600                  957 +1                  OUT     STB,AL
+04B2 47                    958 +1                  INC     DI
+04B3 E2F0                  959 +2                  LOOP    N_RDY_PUT69
+                           960 +1  
+04B5 F4                    961                     HLT
+                           962     ;
+                           963     ; To send RAM verify error message to PC and abort download
+04B6                       964 +1  RAM_ERROR:      
+                           965 +1  ASSUME  ES:MESSAGE_SEG
+04B6 B8----         R      966 +1                  MOV     AX, MESSAGE_SEG
+04B9 8EC0                  967 +1                  MOV     ES,AX
+04BB BF0000                968 +1                  MOV     DI,00H
+04BE B92A00                969 +1                  MOV     CX,42
+04C1 E405                  970 +2  N_RDY_PUT6A:    IN      AL,SST
+04C3 A820                  971 +1                  TEST    AL,TRAN_RDY
+04C5 74FA                  972 +2                  JZ      N_RDY_PUT6A
+04C7 268A457B              973 +2                  MOV     AL,ES:MESSAGE_RAM_ERR[DI]
+04CB E600                  974 +1                  OUT     STB,AL
+04CD 47                    975 +1                  INC     DI
+04CE E2F1                  976 +2                  LOOP    N_RDY_PUT6A
+                           977 +1  
+04D0 F4                    978                     HLT
+                           979     ;
+                           980     
+----                       981     CODE_SEG        ENDS
+                           982     END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

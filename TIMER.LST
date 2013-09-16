@@ -1,0 +1,167 @@
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    14:39:56  10/11/;2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE TIMER
+OBJECT MODULE PLACED IN TIMER.OBJ
+ASSEMBLER INVOKED BY:  D:\EE3208\BOOTZI~1\ASM86.EXE TIMER.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1 +1  $MOD186
+                             2     NAME TIMER
+                             3     ; Main program for uPD70208 microcomputer system
+                             4     ;
+                             5     ; Author:       Dr Tay Teng Tiow
+                             6     ; Address:      Department of Electrical Engineering 
+                             7     ;               National University of Singapore
+                             8     ;               10, Kent Ridge Crescent
+                             9     ;               Singapore 0511. 
+                            10     ; Date:         6th September 1991
+                            11     ;
+                            12     ; This file contains proprietory information and cannot be copied 
+                            13     ; or distributed without prior permission from the author.
+                            14     ; =========================================================================
+                            15     
+                            16     public  serial_rec_action, timer2_action
+                            17     extrn   print_char:far, print_2hex:far, iodefine:far
+                            18     extrn   set_timer2:far
+                            19     
+----                        20     STACK_SEG       SEGMENT
+0000 (256                   21                     DB      256 DUP(?)
+     ??
+     )
+0100                        22             TOS     LABEL   WORD
+----                        23     STACK_SEG       ENDS
+                            24     
+                            25     
+----                        26     DATA_SEG        SEGMENT
+0000 0A                     27             TIMER0_MESS     DB      10,13,'TIMER2 INTERRUPT    '
+0001 0D
+0002 54494D45523220
+     494E5445525255
+     505420202020
+0016 2F                     28             T_COUNT         DB      2FH
+0017 2F                     29             T_COUNT_SET     DB      2FH
+0018 0A                     30             REC_MESS        DB      10,13,'Period of timer0 =     '
+0019 0D
+001A 506572696F6420
+     6F662074696D65
+     7230203D202020
+     2020
+----                        31     DATA_SEG        ENDS
+                            32     
+                            33     
+----                        34     CODE_SEG        SEGMENT
+                            35     
+                            36             PUBLIC          START
+                            37     
+                            38     ASSUME  CS:CODE_SEG, SS:STACK_SEG
+                            39     
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    14:39:56  10/11/;2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0000                        40     START:
+                            41     ;initialize stack area
+0000 B8----         R       42                     MOV     AX,STACK_SEG            
+0003 8ED0                   43                     MOV     SS,AX
+0005 368B260001             44                     MOV     SP,TOS
+                            45     
+                            46     ; Initialize the on-chip pheripherals
+000A 9A0000----     E       47                     CALL    FAR PTR IODEFINE
+                            48                     
+                            49     
+                            50     
+                            51     ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
+000F 9A0000----     E       52         call set_timer2
+0014 FB                     53                      STI
+                            54     
+0015 EBFE                   55     NEXT:     JMP NEXT
+                            56     
+                            57     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
+                            58     
+                            59     
+0017                        60     SERIAL_REC_ACTION       PROC    FAR
+0017 51                     61                     PUSH    CX
+0018 53                     62                     PUSH    BX
+0019 1E                     63                     PUSH    DS
+                            64     
+001A BB----         R       65                     MOV     BX,DATA_SEG             ;initialize data segment register
+001D 8EDB                   66                     MOV     DS,BX
+                            67     
+001F 3C3C                   68                     CMP     AL,'<'
+0021 750B                   69                     JNE     S_FAST
+                            70     
+0023 FE061700               71                     INC     DS:T_COUNT_SET
+0027 FE061700               72                     INC     DS:T_COUNT_SET
+                            73     
+002B EB0D90                 74                     JMP     S_NEXT0
+002E                        75     S_FAST:
+002E 3C3E                   76                     CMP     AL,'>'
+0030 7521                   77                     JNE     S_RET
+                            78     
+0032 FE0E1700               79                     DEC     DS:T_COUNT_SET
+0036 FE0E1700               80                     DEC     DS:T_COUNT_SET
+                            81     
+003A                        82     S_NEXT0:
+003A B91600                 83                     MOV     CX,22                   ;initialize counter for message
+003D BB0000                 84                     MOV     BX,0
+                            85     
+0040 8A4718                 86     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
+0043 9A0000----     E       87                     call    FAR ptr print_char
+0048 43                     88                     INC     BX
+0049 E2F5                   89                     LOOP    S_NEXT1
+                            90     
+004B A01700                 91                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
+004E 9A0000----     E       92                     CALL    FAR PTR PRINT_2HEX
+0053                        93     S_RET:
+0053 1F                     94                     POP     DS
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    14:39:56  10/11/;2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0054 5B                     95                     POP     BX
+0055 59                     96                     POP     CX
+0056 CB                     97                     RET
+                            98     SERIAL_REC_ACTION       ENDP
+                            99     
+                           100     
+                           101     
+0057                       102     TIMER2_ACTION   PROC    FAR
+0057 50                    103                     PUSH    AX
+0058 1E                    104                     PUSH    DS
+0059 53                    105                     PUSH    BX
+005A 51                    106                     PUSH    CX
+                           107     
+005B B8----         R      108                     MOV     AX,DATA_SEG
+005E 8ED8                  109                     MOV     DS,AX
+                           110             
+0060 FE0E1600              111                     DEC     DS:T_COUNT
+0064 7516                  112                     JNZ     T_NEXT1
+0066 A01700                113                     MOV     AL,DS:T_COUNT_SET
+0069 A21600                114                     MOV     DS:T_COUNT,AL
+                           115     
+006C B91400                116                     MOV     CX,20
+006F BB0000                117                     MOV     BX,0H
+0072                       118     T_NEXT0:
+0072 8A07                  119                     MOV     AL,DS:TIMER0_MESS[BX]
+0074 43                    120                     INC     BX
+0075 9A0000----     E      121                     CALL    FAR PTR PRINT_CHAR
+007A E2F6                  122                     LOOP    T_NEXT0
+                           123     
+007C                       124     T_NEXT1:        
+007C 59                    125                     POP     CX
+007D 5B                    126                     POP     BX
+007E 1F                    127                     POP     DS
+007F 58                    128                     POP     AX
+0080 CB                    129                     RET
+                           130     TIMER2_ACTION   ENDP
+                           131     
+                           132     
+----                       133     CODE_SEG        ENDS
+                           134     END
+
+ASSEMBLY COMPLETE, NO ERRORS FOUND

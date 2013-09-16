@@ -1,0 +1,177 @@
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    18:01:29  02/27/;2  PAGE    1
+
+
+DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE TIMER
+OBJECT MODULE PLACED IN FUPC.OBJ
+ASSEMBLER INVOKED BY:  D:\EE3208\BOOTZI~1\ASM86.EXE FUPC.ASM
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                             1 +1  $MOD186
+                             2     NAME TIMER
+                             3     ; Main program for uPD70208 microcomputer system
+                             4     ;
+                             5     ; Author:       Dr Tay Teng Tiow
+                             6     ; Address:      Department of Electrical Engineering 
+                             7     ;               National University of Singapore
+                             8     ;               10, Kent Ridge Crescent
+                             9     ;               Singapore 0511. 
+                            10     ; Date:         6th September 1991
+                            11     ;
+                            12     ; This file contains proprietory information and cannot be copied 
+                            13     ; or distributed without prior permission from the author.
+                            14     ; =========================================================================
+                            15     
+                            16     public  serial_rec_action, timer2_action
+                            17     extrn   print_char:far, print_2hex:far, iodefine:far
+                            18     extrn   set_timer2:far
+                            19     
+----                        20     STACK_SEG       SEGMENT
+0000 (256                   21                     DB      256 DUP(?)
+     ??
+     )
+0100                        22             TOS     LABEL   WORD
+----                        23     STACK_SEG       ENDS
+                            24     
+                            25     
+----                        26     DATA_SEG        SEGMENT
+0000 0A                     27             TIMER0_MESS     DB      10,13,'TIMER2 INTERRUPT    '
+0001 0D
+0002 54494D45523220
+     494E5445525255
+     505420202020
+0016 2F                     28             T_COUNT         DB      2FH
+0017 2F                     29             T_COUNT_SET     DB      2FH
+0018 0A                     30             REC_MESS        DB      10,13,'Period of timer0 =     '
+0019 0D
+001A 506572696F6420
+     6F662074696D65
+     7230203D202020
+     2020
+----                        31     DATA_SEG        ENDS
+                            32     
+                            33     
+----                        34     CODE_SEG        SEGMENT
+                            35     
+                            36             PUBLIC          START
+                            37     
+                            38     ASSUME  CS:CODE_SEG, SS:STACK_SEG
+                            39     
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    18:01:29  02/27/;2  PAGE    2
+
+
+LOC  OBJ                  LINE     SOURCE
+
+0000                        40     START:
+                            41     ;initialize stack area
+0000 B8----         R       42                     MOV     AX,STACK_SEG            
+0003 8ED0                   43                     MOV     SS,AX
+0005 368B260001             44                     MOV     SP,TOS
+                            45     
+                            46     ; Initialize the on-chip pheripherals
+000A 9A0000----     E       47                     CALL    FAR PTR IODEFINE
+                            48     
+000F BA0001                 49     mov dx,100h
+0012 B00090                 50     mov al,f0h
+*** ERROR #38 IN 50, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+0015 EE                     51     out dx,al
+                            52     
+0016 BA8001                 53     mov dx,180h
+0019 B00090                 54     mov al,f0h
+*** ERROR #38 IN 54, (PASS 2) UNDEFINED SYMBOL, ZERO USED
+001C EE                     55     out dx,al
+                            56                     
+                            57     
+                            58     
+                            59     ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
+001D 9A0000----     E       60         call set_timer2
+0022 FB                     61                      STI
+                            62     
+0023 EBFE                   63     NEXT:     JMP NEXT
+                            64     
+                            65     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
+                            66     
+                            67     
+0025                        68     SERIAL_REC_ACTION       PROC    FAR
+0025 51                     69                     PUSH    CX
+0026 53                     70                     PUSH    BX
+0027 1E                     71                     PUSH    DS
+                            72     
+0028 BB----         R       73                     MOV     BX,DATA_SEG             ;initialize data segment register
+002B 8EDB                   74                     MOV     DS,BX
+                            75     
+002D 3C3C                   76                     CMP     AL,'<'
+002F 750B                   77                     JNE     S_FAST
+                            78     
+0031 FE061700               79                     INC     DS:T_COUNT_SET
+0035 FE061700               80                     INC     DS:T_COUNT_SET
+                            81     
+0039 EB0D90                 82                     JMP     S_NEXT0
+003C                        83     S_FAST:
+003C 3C3E                   84                     CMP     AL,'>'
+003E 7521                   85                     JNE     S_RET
+                            86     
+0040 FE0E1700               87                     DEC     DS:T_COUNT_SET
+0044 FE0E1700               88                     DEC     DS:T_COUNT_SET
+                            89     
+0048                        90     S_NEXT0:
+0048 B91600                 91                     MOV     CX,22                   ;initialize counter for message
+004B BB0000                 92                     MOV     BX,0
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    18:01:29  02/27/;2  PAGE    3
+
+
+LOC  OBJ                  LINE     SOURCE
+
+                            93     
+004E 8A4718                 94     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
+0051 9A0000----     E       95                     call    FAR ptr print_char
+0056 43                     96                     INC     BX
+0057 E2F5                   97                     LOOP    S_NEXT1
+                            98     
+0059 A01700                 99                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
+005C 9A0000----     E      100                     CALL    FAR PTR PRINT_2HEX
+0061                       101     S_RET:
+0061 1F                    102                     POP     DS
+0062 5B                    103                     POP     BX
+0063 59                    104                     POP     CX
+0064 CB                    105                     RET
+                           106     SERIAL_REC_ACTION       ENDP
+                           107     
+                           108     
+                           109     
+0065                       110     TIMER2_ACTION   PROC    FAR
+0065 50                    111                     PUSH    AX
+0066 1E                    112                     PUSH    DS
+0067 53                    113                     PUSH    BX
+0068 51                    114                     PUSH    CX
+                           115     
+0069 B8----         R      116                     MOV     AX,DATA_SEG
+006C 8ED8                  117                     MOV     DS,AX
+                           118             
+006E FE0E1600              119                     DEC     DS:T_COUNT
+0072 7516                  120                     JNZ     T_NEXT1
+0074 A01700                121                     MOV     AL,DS:T_COUNT_SET
+0077 A21600                122                     MOV     DS:T_COUNT,AL
+                           123     
+007A B91400                124                     MOV     CX,20
+007D BB0000                125                     MOV     BX,0H
+0080                       126     T_NEXT0:
+0080 8A07                  127                     MOV     AL,DS:TIMER0_MESS[BX]
+0082 43                    128                     INC     BX
+0083 9A0000----     E      129                     CALL    FAR PTR PRINT_CHAR
+0088 E2F6                  130                     LOOP    T_NEXT0
+                           131     
+008A                       132     T_NEXT1:        
+008A 59                    133                     POP     CX
+008B 5B                    134                     POP     BX
+008C 1F                    135                     POP     DS
+008D 58                    136                     POP     AX
+008E CB                    137                     RET
+                           138     TIMER2_ACTION   ENDP
+                           139     
+                           140     
+----                       141     CODE_SEG        ENDS
+                           142     END
+
+ASSEMBLY COMPLETE, 2 ERRORS FOUND

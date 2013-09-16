@@ -1,0 +1,21 @@
+
+DOS 5.0 (038-N) 8086 LINKER, V2.7
+
+INPUT FILES: BOOT86.OBJ
+OUTPUT FILE: BOOT86.LNK
+CONTROLS SPECIFIED IN INVOCATION COMMAND:
+DATE:  09/05/;2  TIME:  14:15:01
+
+
+LINK MAP OF MODULE EG0_COMP
+
+LOGICAL SEGMENTS INCLUDED:
+LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
+ 0000H ------    G    ??SEG                                         
+ 000CH ------    G    DATA_SEG                                      
+ 000DH ------    G    RESET_SEG                                     
+ 00CDH ------    G    MESSAGE_SEG                                   
+ 04D1H ------    G    CODE_SEG                                      
+
+INPUT MODULES INCLUDED:
+BOOT86.OBJ(EG0_COMP)
