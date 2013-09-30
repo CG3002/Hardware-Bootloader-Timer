@@ -102,17 +102,20 @@ START:
 		DEC CX	   ; 3 clocks
 	JNZ loop45ms ; 16 clocks
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0030h
+	XOR AX, AX
+	MOV AL, 00110000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 
 ;Function set 2;
@@ -123,17 +126,20 @@ START:
 		DEC CX	   ; 3 clocks
 	JNZ loop4point5ms ; 16 clocks
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0030h
+	XOR AX, AX
+	MOV AL, 00110000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	
 ;Function set 3;
@@ -144,263 +150,139 @@ START:
 		DEC CX	   ; 3 clocks
 	JNZ loop4point100us ; 16 clocks
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0030h
+	XOR AX, AX
+	MOV AL, 00110000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Function set: Font and Number of display lines;
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 003Ch
+	XOR AX, AX
+	MOV AL, 00111100b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Display Off;
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0008h
+	XOR AX, AX
+	MOV AL, 00001000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Display Clear;
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0001h
+	XOR AX, AX
+	MOV AL, 00000001b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Entry Mode Set;
 	
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0006h
+	XOR AX, AX
+	MOV AL, 00000110b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
-	
-	
-	
+	OUT DX, AL
 	
 	;Letter Begin;
 	
 	;Setting Addres of DDRAM;
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0080h
+	XOR AX, AX
+	MOV AL, 10000000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Writing Data to DDRAM;
-	MOV AX, 00A0h
+	XOR AX, AX
+	MOV AL, 10100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0084h
+	MOV AL, 01001000b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	MOV AL, 10000000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
 	;Letter End;	
 	
+	;Display On;
 	
-	;Letter Begin;
-	
-	;Setting Addres of DDRAM;
-	MOV AX, 0020h
+	XOR AX, AX
+	MOV AL, 00100000b
 	MOV DX, B_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0081h
+	XOR AX, AX
+	MOV AL, 00001100b
 	MOV DX, C_8255
-	OUT DX, AX
+	OUT DX, AL
 	
-	MOV AX, 0000h
+	XOR AX, AX
+	MOV AL, 00000000b
 	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Writing Data to DDRAM;
-	MOV AX, 00A0h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0014h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Letter End;	
-	
-	
-	;Letter Begin;
-	
-	;Setting Addres of DDRAM;
-	MOV AX, 0020h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0082h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Writing Data to DDRAM;
-	MOV AX, 00A0h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0034h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Letter End;	
-	
-	
-	;Letter Begin;
-	
-	;Setting Addres of DDRAM;
-	MOV AX, 0020h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0083h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Writing Data to DDRAM;
-	MOV AX, 00A0h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 00B4h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Letter End;	
-	
-	
-	;Letter Begin;
-	
-	;Setting Addres of DDRAM;
-	MOV AX, 0020h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0084h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Writing Data to DDRAM;
-	MOV AX, 00A0h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0054h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Letter End;	
-	
-	
-	;Letter Begin;
-	
-	;Setting Addres of DDRAM;
-	MOV AX, 0020h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0085h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Writing Data to DDRAM;
-	MOV AX, 00A0h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	MOV AX, 0025h
-	MOV DX, C_8255
-	OUT DX, AX
-	
-	MOV AX, 0000h
-	MOV DX, B_8255
-	OUT DX, AX
-	
-	;Letter End;	
-	
-
+	OUT DX, AL
 	
 NEXT:     JMP NEXT
 
