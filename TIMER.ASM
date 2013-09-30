@@ -1,4 +1,5 @@
 $MOD186
+$EP
 NAME TIMER
 ; Main program for uPD70208 microcomputer system
 ;
@@ -16,6 +17,19 @@ NAME TIMER
 public	serial_rec_action, timer2_action
 extrn	print_char:far, print_2hex:far, iodefine:far
 extrn   set_timer2:far
+
+;IO Setup for 80C188 
+	UMCR    EQU    0FFA0H ; Upper Memory Control Register
+	LMCR    EQU    0FFA2H ; Lower Memory control Register         
+	PCSBA   EQU    0FFA4H ; Peripheral Chip Select Base Address
+	MPCS    EQU    0FFA8H ; MMCS and PCS Alter Control Register
+	A_8255  EQU    0080H
+	B_8255  EQU    0081H
+	C_8255  EQU    0082H
+	CWR_8255  EQU    0083H
+	INT0CON  EQU   0FF38H
+	EOI EQU 0FF22H
+	IMASK EQU 0FF28H
 
 STACK_SEG	SEGMENT
 		DB	256 DUP(?)
@@ -49,14 +63,348 @@ START:
 
 
 ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
-    call set_timer2
-                 STI
+   
+; Initialize MPCS to MAP peripheral to IO address
+	
+	MOV DX, MPCS
+	MOV AX, 0083H
+	OUT DX, AX
 
+; PCSBA initial, set the parallel port start from 00H
+	MOV DX, PCSBA
+	MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
+	OUT DX, AX
+
+; Initialize LMCS 
+    MOV DX, LMCR
+    MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 waits      
+    OUT DX, AX
+
+	MOV AX, DATA_SEG
+	MOV DS, AX
+			 
+	MOV DX, CWR_8255
+	MOV AX, 0080h
+	OUT DX, AX
+	
+	MOV DX, A_8255
+	MOV AL, 23h
+	NOT AL
+	OUT DX, AL
+
+; LCD Initialization ;
+
+;Function set 1;
+; 45 ms delay ;
+	MOV CX, 7FD8h ; 32728 dec
+	loop45ms:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop45ms ; 16 clocks
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0030h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+
+;Function set 2;
+; 4.5 ms delay;
+	MOV CX, 0CC9h ; 3273 dec
+	loop4point5ms:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop4point5ms ; 16 clocks
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0030h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	
+;Function set 3;
+; 100 us delay;
+	MOV CX, 0049h ; 73 dec
+	loop4point100us:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop4point100us ; 16 clocks
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0030h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Function set: Font and Number of display lines;
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 003Ch
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Display Off;
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0008h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Display Clear;
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0001h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Entry Mode Set;
+	
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0006h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0080h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0084h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0081h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0014h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0082h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0034h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0083h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 00B4h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0084h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0054h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+	
+	;Letter Begin;
+	
+	;Setting Addres of DDRAM;
+	MOV AX, 0020h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0085h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Writing Data to DDRAM;
+	MOV AX, 00A0h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	MOV AX, 0025h
+	MOV DX, C_8255
+	OUT DX, AX
+	
+	MOV AX, 0000h
+	MOV DX, B_8255
+	OUT DX, AX
+	
+	;Letter End;	
+	
+
+	
 NEXT:     JMP NEXT
 
 ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-
 SERIAL_REC_ACTION	PROC	FAR
 		PUSH	CX
 		PUSH 	BX
