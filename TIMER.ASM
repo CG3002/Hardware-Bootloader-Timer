@@ -95,12 +95,12 @@ START:
 ; LCD Initialization ;
 
 ;Function set 1;
-; 45 ms delay ;
-	MOV CX, 7FD8h ; 32728 dec
-	loop45ms:	
+; 60 ms delay ;
+	MOV CX, 0AA75h ; 43637 dec
+	loop60ms:	
 		NOP	   ; 3 clocks
 		DEC CX	   ; 3 clocks
-	JNZ loop45ms ; 16 clocks
+	JNZ loop60ms ; 16 clocks
 	
 	XOR AX, AX
 	MOV AL, 00100000b
@@ -108,7 +108,7 @@ START:
 	OUT DX, AL
 	
 	XOR AX, AX
-	MOV AL, 00110000b
+	MOV AL, 00111100b
 	MOV DX, C_8255
 	OUT DX, AL
 	
@@ -119,12 +119,12 @@ START:
 	
 
 ;Function set 2;
-; 4.5 ms delay;
-	MOV CX, 0CC9h ; 3273 dec
-	loop4point5ms:	
+; 5 ms delay;
+	MOV CX, 0E35h ; 3637 dec
+	loop5ms:	
 		NOP	   ; 3 clocks
 		DEC CX	   ; 3 clocks
-	JNZ loop4point5ms ; 16 clocks
+	JNZ loop5ms ; 16 clocks
 	
 	XOR AX, AX
 	MOV AL, 00100000b
@@ -132,7 +132,7 @@ START:
 	OUT DX, AL
 	
 	XOR AX, AX
-	MOV AL, 00110000b
+	MOV AL, 00111100b
 	MOV DX, C_8255
 	OUT DX, AL
 	
@@ -156,23 +156,6 @@ START:
 	OUT DX, AL
 	
 	XOR AX, AX
-	MOV AL, 00110000b
-	MOV DX, C_8255
-	OUT DX, AL
-	
-	XOR AX, AX
-	MOV AL, 00000000b
-	MOV DX, B_8255
-	OUT DX, AL
-	
-	;Function set: Font and Number of display lines;
-	
-	XOR AX, AX
-	MOV AL, 00100000b
-	MOV DX, B_8255
-	OUT DX, AL
-	
-	XOR AX, AX
 	MOV AL, 00111100b
 	MOV DX, C_8255
 	OUT DX, AL
@@ -182,22 +165,29 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
-	;Display Off;
+	; ;Display Off;
 	
-	XOR AX, AX
-	MOV AL, 00100000b
-	MOV DX, B_8255
-	OUT DX, AL
+	; XOR AX, AX
+	; MOV AL, 00100000b
+	; MOV DX, B_8255
+	; OUT DX, AL
 	
-	XOR AX, AX
-	MOV AL, 00001000b
-	MOV DX, C_8255
-	OUT DX, AL
+	; XOR AX, AX
+	; MOV AL, 00001000b
+	; MOV DX, C_8255
+	; OUT DX, AL
 	
-	XOR AX, AX
-	MOV AL, 00000000b
-	MOV DX, B_8255
-	OUT DX, AL
+	; XOR AX, AX
+	; MOV AL, 00000000b
+	; MOV DX, B_8255
+	; OUT DX, AL
+	
+; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us ; 16 clocks
 	
 	;Display Clear;
 	
@@ -216,6 +206,14 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
+	; 1.6ms delay;
+	MOV CX, 048Ch ; 30 dec
+	loop1point6ms:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop1point6ms ; 16 clocks
+	
+	
 	;Entry Mode Set;
 	
 	XOR AX, AX
@@ -233,9 +231,16 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
-	;Letter Begin;
+	; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us2:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us2 ; 16 clocks
+	
 	
 	;Setting Addres of DDRAM;
+	
 	XOR AX, AX
 	MOV AL, 00100000b
 	MOV DX, B_8255
@@ -251,21 +256,13 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
-	;Writing Data to DDRAM;
-	XOR AX, AX
-	MOV AL, 10100000b
-	MOV DX, B_8255
-	OUT DX, AL
+	; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us3:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us3 ; 16 clocks
 	
-	MOV AL, 01001000b
-	MOV DX, C_8255
-	OUT DX, AL
-	
-	MOV AL, 10000000b
-	MOV DX, B_8255
-	OUT DX, AL
-	
-	;Letter End;	
 	
 	;Display On;
 	
@@ -283,6 +280,35 @@ START:
 	MOV AL, 00000000b
 	MOV DX, B_8255
 	OUT DX, AL
+	
+	; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us4:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us4 ; 16 clocks
+	
+	
+	;Letter Begin;
+	
+	;Writing Data to DDRAM;
+	XOR AX, AX
+	MOV AL, 10100000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 01001000b
+	MOV DX, C_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 10000000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	;Letter End;	
+	
 	
 NEXT:     JMP NEXT
 

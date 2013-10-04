@@ -93,10 +93,10 @@ START:
 	MOV AX, 0080h
 	OUT DX, AX
 	
-	MOV DX, A_8255
-	MOV AL, 23h
-	NOT AL
-	OUT DX, AL
+	; MOV DX, A_8255
+	; MOV AL, 23h
+	; NOT AL
+	; OUT DX, AL
 
 NEXT:     JMP NEXT
 

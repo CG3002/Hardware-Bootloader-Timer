@@ -5,18 +5,18 @@ OUTPUT FILE: TIMER.ABS
 CONTROLS SPECIFIED IN INVOCATION COMMAND:
    TO TIMER.ABS ST(START) AD(SEGMENTS(CODE_SEG(100H))) 
   
-DATE:  09/28/;3  TIME:  03:10:51
+DATE:  10/04/;3  TIME:  10:45:01
 
 
 SYMBOL TABLE OF MODULE TIMER
 
 BASE    OFFSET TYPE SYMBOL               BASE    OFFSET TYPE SYMBOL       
 
-0010H   01DEH  PUB  SERIAL_REC_ACTIO     0010H   0000H  PUB  START
+0010H   0132H  PUB  SERIAL_REC_ACTIO     0010H   0000H  PUB  START
                    -N                                         
-0010H   021EH  PUB  TIMER2_ACTION        0055H   0000H  PUB  IODEFINE
-0055H   001FH  PUB  PRINT_2HEX           0055H   0033H  PUB  PRINT_CHAR
-0055H   008EH  PUB  SET_TIMER2
+0010H   0172H  PUB  TIMER2_ACTION        004AH   0000H  PUB  IODEFINE
+004AH   001FH  PUB  PRINT_2HEX           004AH   0033H  PUB  PRINT_CHAR
+004AH   008EH  PUB  SET_TIMER2
 
 
 MEMORY MAP OF MODULE TIMER
@@ -27,9 +27,9 @@ SEGMENT MAP
 START     STOP     LENGTH ALIGN NAME            CLASS           OVERLAY
 
 00000H   0009FH     00A0H   A   INT_VEC_SEG                     
-00100H   00347H     0248H   G   CODE_SEG                        
-00350H   0037BH     002CH   G   ??SEG                           
-00380H   0047FH     0100H   G   STACK_SEG                       
-00480H   004B0H     0031H   G   DATA_SEG                        
-004C0H   00543H     0084H   G   INT_RAM_AREA                    
-00550H   00687H     0138H   G   MISC_ROUTINE                    
+00100H   0029BH     019CH   G   CODE_SEG                        
+002A0H   002CBH     002CH   G   ??SEG                           
+002D0H   003CFH     0100H   G   STACK_SEG                       
+003D0H   00400H     0031H   G   DATA_SEG                        
+00410H   00493H     0084H   G   INT_RAM_AREA                    
+004A0H   005D7H     0138H   G   MISC_ROUTINE                    
