@@ -42,6 +42,22 @@ DATA_SEG	SEGMENT
 	T_COUNT		DB	2FH
 	T_COUNT_SET	DB	2FH
 	REC_MESS	DB	10,13,'Period of timer0 =     '
+	MESSAGE     DB  32 dup(?)
+	M_SIZE		DB  ?
+	MESSAGE_1   DB  '(Edwin!)'
+	M_SIZE1     DB  8
+	MESSAGE_2   DB 'Aravindhan '
+	M_SIZE2     DB  11
+	MESSAGE_3   DB '[Chandrasekhar @#]'
+	M_SIZE3     DB  18
+	MESSAGE_4   DB 'Hari Krishna'
+	M_SIZE4     DB  12
+	MESSAGE_5   DB 'Karthik Raj $'
+	M_SIZE5     DB  13
+	MESSAGE_6   DB 'Rajalakshmi & *'
+	M_SIZE6     DB  15
+	
+	CHAR		DB  ?
 DATA_SEG	ENDS
 
 
@@ -164,25 +180,8 @@ START:
 	MOV AL, 00000000b
 	MOV DX, B_8255
 	OUT DX, AL
-	
-	; ;Display Off;
-	
-	; XOR AX, AX
-	; MOV AL, 00100000b
-	; MOV DX, B_8255
-	; OUT DX, AL
-	
-	; XOR AX, AX
-	; MOV AL, 00001000b
-	; MOV DX, C_8255
-	; OUT DX, AL
-	
-	; XOR AX, AX
-	; MOV AL, 00000000b
-	; MOV DX, B_8255
-	; OUT DX, AL
-	
-; 40 us delay;
+		
+	; 40 us delay;
 	MOV CX, 001Eh ; 30 dec
 	loop40us:	
 		NOP	   ; 3 clocks
@@ -289,6 +288,179 @@ START:
 	JNZ loop40us4 ; 16 clocks
 	
 	
+
+NEXT:
+	; Begin	
+	
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE1
+	MOV DS:M_SIZE, AL
+	
+	displayloop:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE1
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_1[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE2
+	MOV DS:M_SIZE, AL
+	
+	displayloop2:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE2
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_2[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop2
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE3
+	MOV DS:M_SIZE, AL
+	
+	displayloop3:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE3
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_3[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop3
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE4
+	MOV DS:M_SIZE, AL
+	
+	displayloop4:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE4
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_4[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop4
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE5
+	MOV DS:M_SIZE, AL
+	
+	displayloop5:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE5
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_5[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop5
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	XOR AX, AX
+	MOV AL, DS:M_SIZE6
+	MOV DS:M_SIZE, AL
+	
+	displayloop6:
+	XOR BX, BX
+	MOV BL, DS:M_SIZE6
+	SUB BL, AL
+
+	MOV DL, DS:MESSAGE_6[BX]
+	MOV DS:MESSAGE[BX], DL
+	
+	DEC AL
+	JNZ displayloop6
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+JMP NEXT
+
+MESSAGE_LCD	PROC FAR
+
+	;Display Clear;
+	
+	XOR AX, AX
+	MOV AL, 00100000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 00000001b
+	MOV DX, C_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 00000000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	; 1.6ms delay;
+	MOV CX, 048Ch ; 30 dec
+	loop1point6ms2:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop1point6ms2 ; 16 clocks
+	
+	XOR BX, BX
+	MOV BL, DS:M_SIZE
+	
+	display:
+	XOR DX, DX
+	MOV DL, DS:M_SIZE
+	SUB DL, BL
+	CMP DL, 10h
+	JE address
+	JMP continue
+	
+	address:
+	;Setting Addres of DDRAM;	
+	XOR AX, AX
+	MOV AL, 00100000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 11000000b
+	MOV DX, C_8255
+	OUT DX, AL
+	
+	XOR AX, AX
+	MOV AL, 00000000b
+	MOV DX, B_8255
+	OUT DX, AL
+	
+	; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us30:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us30 ; 16 clocks
+	
+	continue:
 	;Letter Begin;
 	
 	;Writing Data to DDRAM;
@@ -297,8 +469,12 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
+	MOV DX, BX
+	MOV BL, DS:M_SIZE
+	SUB BL, DL
 	XOR AX, AX
-	MOV AL, 01001000b
+	MOV AL, DS:MESSAGE[BX]
+	MOV BX, DX
 	MOV DX, C_8255
 	OUT DX, AL
 	
@@ -307,10 +483,118 @@ START:
 	MOV DX, B_8255
 	OUT DX, AL
 	
-	;Letter End;	
+	;Letter End;
+
+; 40 us delay;
+	MOV CX, 001Eh ; 30 dec
+	loop40us5:	
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ loop40us5 ; 16 clocks
+
+	DEC BX
+	JNZ display
 	
 	
-NEXT:     JMP NEXT
+	; 40 us delay;
+	MOV CX, 0FFFFh ; 30 dec
+	looplong:	
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		NOP	   ; 3 clocks
+		DEC CX	   ; 3 clocks
+	JNZ looplong ; 16 clocks
+	
+	
+
+MESSAGE_LCD	ENDP
 
 ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
 SERIAL_REC_ACTION	PROC	FAR
@@ -347,6 +631,7 @@ S_NEXT1:	MOV	AL,DS:REC_MESS[BX]	;print message
 		MOV	AL,DS:T_COUNT_SET	;print current period of timer0
 		CALL	FAR PTR PRINT_2HEX
 S_RET:
+
 		POP	DS
 		POP	BX
 		POP	CX
