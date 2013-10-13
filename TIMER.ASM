@@ -99,7 +99,36 @@ call set_timer2
 	NOT AL
 	OUT DX, AL
 
-; LCD Initialization ;
+	
+	CALL FAR PTR LCD_INIT
+	
+NEXT:
+	; Begin	
+	
+	
+	; XOR AX, AX
+	; MOV AL, DS:M_SIZE1
+	; MOV DS:M_SIZE, AL
+	
+	; displayloop:
+	; XOR BX, BX
+	; MOV BL, DS:M_SIZE1
+	; SUB BL, AL
+
+	; MOV DL, DS:MESSAGE_1[BX]
+	; MOV DS:MESSAGE[BX], DL
+	
+	; DEC AL
+	; JNZ displayloop
+	
+	CALL FAR PTR MESSAGE_LCD
+	
+	
+JMP NEXT
+
+LCD_INIT PROC FAR
+
+	; LCD Initialization ;
 
 ;Function set 1;
 ; 60 ms delay ;
@@ -278,31 +307,9 @@ call set_timer2
 		DEC CX	   ; 3 clocks
 	JNZ loop40us4 ; 16 clocks
 	
-	
 
-NEXT:
-	; Begin	
-	
-	
-	; XOR AX, AX
-	; MOV AL, DS:M_SIZE1
-	; MOV DS:M_SIZE, AL
-	
-	; displayloop:
-	; XOR BX, BX
-	; MOV BL, DS:M_SIZE1
-	; SUB BL, AL
-
-	; MOV DL, DS:MESSAGE_1[BX]
-	; MOV DS:MESSAGE[BX], DL
-	
-	; DEC AL
-	; JNZ displayloop
-	
-	CALL FAR PTR MESSAGE_LCD
-	
-	
-JMP NEXT
+RET
+LCD_INIT ENDP
 
 MESSAGE_LCD	PROC FAR
 	PUSH AX
