@@ -1,4 +1,5 @@
 $mod186
+$EP
 NAME MISC
 ; Interrupt and misc routines for uPD70208 microcomputer system
 ;
@@ -17,6 +18,7 @@ NAME MISC
 
 public	print_char, print_2hex, iodefine, set_timer2
 extrn 	serial_rec_action:far, timer2_action:far
+
 
 INT_VEC_SEG	SEGMENT		AT 	0H
 ; Define the interrupt vector locations
@@ -190,7 +192,7 @@ DONE:
 		RET
 CHAR2HEX	ENDP
 
-Set_timer2      proc Far
+set_timer2      proc Far
 	push ax
 	push dx
 	;Initialize Timer2	
@@ -213,7 +215,7 @@ Set_timer2      proc Far
 	pop ax
 
 ret
-Set_timer2 endp
+set_timer2 endp
 ; ************************************************************************
 ;			INTERRUPT ROUTINES				 *
 ; ************************************************************************
@@ -255,7 +257,7 @@ SERIAL_INTR:
 
 RECEIVE_INTR:	
               
-		IN	AL,SRB			
+		IN	AL,SRB	
 ; Information received will be used by user routine
 ; Action to be taken will be contained in SERIAL_REC_ACTION
 		CALL	FAR PTR SERIAL_REC_ACTION
