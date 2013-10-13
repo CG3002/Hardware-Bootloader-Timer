@@ -436,23 +436,6 @@ MESSAGE_LCD	PROC FAR
 		NOP	   ; 3 clocks
 		NOP	   ; 3 clocks
 		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
-		NOP	   ; 3 clocks
 		NOP	   ; 3 clock
 		DEC CX	   ; 3 clocks
 	JNZ looplong ; 16 clocks

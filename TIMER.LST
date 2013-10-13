@@ -1,4 +1,4 @@
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    1
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    1
 
 
 DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE TIMER
@@ -58,7 +58,7 @@ LOC  OBJ                  LINE     SOURCE
 0016 2F                     42             T_COUNT         DB      2FH
 0017 2F                     43             T_COUNT_SET     DB      2FH
 0018 0A                     44             REC_MESS        DB      10,13,'Period of timer0 =     '
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    2
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    2
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -118,7 +118,7 @@ LOC  OBJ                  LINE     SOURCE
                                    ts      
 0029 EF                     88         OUT DX, AX
                             89     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    3
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    3
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -178,7 +178,7 @@ LOC  OBJ                  LINE     SOURCE
 006E B03C                  142             MOV AL, 00111100b
 0070 BA8200                143             MOV DX, C_8255
 0073 EE                    144             OUT DX, AL
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    4
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    4
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -238,7 +238,7 @@ LOC  OBJ                  LINE     SOURCE
 00B9 EE                    197             OUT DX, AL
                            198             
                            199             ; 1.6ms delay;
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    5
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    5
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -298,7 +298,7 @@ LOC  OBJ                  LINE     SOURCE
 00FB 90                    252                     NOP        ; 3 clocks
 00FC 49                    253                     DEC CX     ; 3 clocks
 00FD 75FC                  254             JNZ loop40us3 ; 16 clocks
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    6
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    6
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -358,7 +358,7 @@ LOC  OBJ                  LINE     SOURCE
 0125                       307     MESSAGE_LCD     PROC FAR
 0125 50                    308             PUSH AX
 0126 53                    309             PUSH BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    7
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    7
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -394,7 +394,7 @@ LOC  OBJ                  LINE     SOURCE
 014A 8A1E7200              338             MOV BL, DS:INPUT_SIZE
 014E 80FB00                339             CMP BL, 0
 0151 7503                  340             JNE display
-0153 E9AD00                341             JMP overfunc
+0153 E99C00                341             JMP overfunc
                            342             
 0156                       343             display:
 0156 33D2                  344             XOR DX, DX
@@ -418,7 +418,7 @@ LOC  OBJ                  LINE     SOURCE
                            362             
 0176 33C0                  363             XOR AX, AX
 0178 B000                  364             MOV AL, 00000000b
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    8
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    8
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -478,7 +478,7 @@ LOC  OBJ                  LINE     SOURCE
 01B9 90                    417                     NOP        ; 3 clocks
 01BA 90                    418                     NOP        ; 3 clocks
 01BB 90                    419                     NOP        ; 3 clocks
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE    9
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE    9
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -502,231 +502,209 @@ LOC  OBJ                  LINE     SOURCE
 01CC 90                    436                     NOP        ; 3 clocks
 01CD 90                    437                     NOP        ; 3 clocks
 01CE 90                    438                     NOP        ; 3 clocks
-01CF 90                    439                     NOP        ; 3 clocks
-01D0 90                    440                     NOP        ; 3 clocks
-01D1 90                    441                     NOP        ; 3 clocks
-01D2 90                    442                     NOP        ; 3 clocks
-01D3 90                    443                     NOP        ; 3 clocks
-01D4 90                    444                     NOP        ; 3 clocks
-01D5 90                    445                     NOP        ; 3 clocks
-01D6 90                    446                     NOP        ; 3 clocks
-01D7 90                    447                     NOP        ; 3 clocks
-01D8 90                    448                     NOP        ; 3 clocks
-01D9 90                    449                     NOP        ; 3 clocks
-01DA 90                    450                     NOP        ; 3 clocks
-01DB 90                    451                     NOP        ; 3 clocks
-01DC 90                    452                     NOP        ; 3 clocks
-01DD 90                    453                     NOP        ; 3 clocks
-01DE 90                    454                     NOP        ; 3 clocks
-01DF 90                    455                     NOP        ; 3 clocks
-01E0 90                    456                     NOP        ; 3 clock
-01E1 49                    457                     DEC CX     ; 3 clocks
-01E2 75D1                  458             JNZ looplong ; 16 clocks
+01CF 90                    439                     NOP        ; 3 clock
+01D0 49                    440                     DEC CX     ; 3 clocks
+01D1 75E2                  441             JNZ looplong ; 16 clocks
+                           442             
+                           443             ;Display Clear;
+                           444             
+01D3 33C0                  445             XOR AX, AX
+01D5 B020                  446             MOV AL, 00100000b
+01D7 BA8100                447             MOV DX, B_8255
+01DA EE                    448             OUT DX, AL
+                           449             
+01DB 33C0                  450             XOR AX, AX
+01DD B001                  451             MOV AL, 00000001b
+01DF BA8200                452             MOV DX, C_8255
+01E2 EE                    453             OUT DX, AL
+                           454             
+01E3 33C0                  455             XOR AX, AX
+01E5 B000                  456             MOV AL, 00000000b
+01E7 BA8100                457             MOV DX, B_8255
+01EA EE                    458             OUT DX, AL
                            459             
-                           460             ;Display Clear;
-                           461             
-01E4 33C0                  462             XOR AX, AX
-01E6 B020                  463             MOV AL, 00100000b
-01E8 BA8100                464             MOV DX, B_8255
-01EB EE                    465             OUT DX, AL
-                           466             
-01EC 33C0                  467             XOR AX, AX
-01EE B001                  468             MOV AL, 00000001b
-01F0 BA8200                469             MOV DX, C_8255
-01F3 EE                    470             OUT DX, AL
-                           471             
-01F4 33C0                  472             XOR AX, AX
-01F6 B000                  473             MOV AL, 00000000b
-01F8 BA8100                474             MOV DX, B_8255
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE   10
+                           460             ; 1.6ms delay;
+01EB B98C04                461             MOV CX, 048Ch ; 30 dec
+01EE                       462             loop1point6ms3: 
+01EE 90                    463                     NOP        ; 3 clocks
+01EF 49                    464                     DEC CX     ; 3 clocks
+01F0 75FC                  465             JNZ loop1point6ms3 ; 16 clocks
+01F2                       466     overfunc:
+01F2 5A                    467             POP DX
+01F3 59                    468             POP CX
+01F4 5B                    469             POP BX
+01F5 58                    470             POP AX
+01F6 CB                    471             RET
+                           472     MESSAGE_LCD     ENDP
+                           473     
+01F7                       474     CLEAR_LCD PROC FAR
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE   10
 
 
 LOC  OBJ                  LINE     SOURCE
 
-01FB EE                    475             OUT DX, AL
-                           476             
-                           477             ; 1.6ms delay;
-01FC B98C04                478             MOV CX, 048Ch ; 30 dec
-01FF                       479             loop1point6ms3: 
-01FF 90                    480                     NOP        ; 3 clocks
-0200 49                    481                     DEC CX     ; 3 clocks
-0201 75FC                  482             JNZ loop1point6ms3 ; 16 clocks
-0203                       483     overfunc:
-0203 5A                    484             POP DX
-0204 59                    485             POP CX
-0205 5B                    486             POP BX
-0206 58                    487             POP AX
-0207 CB                    488             RET
-                           489     MESSAGE_LCD     ENDP
-                           490     
-0208                       491     CLEAR_LCD PROC FAR
-0208 50                    492             PUSH AX
-0209 53                    493             PUSH BX
-020A 51                    494             PUSH CX
-020B 52                    495             PUSH DX
-                           496             ;Display Clear;
-                           497             
-020C 33C0                  498             XOR AX, AX
-020E B020                  499             MOV AL, 00100000b
-0210 BA8100                500             MOV DX, B_8255
-0213 EE                    501             OUT DX, AL
+01F7 50                    475             PUSH AX
+01F8 53                    476             PUSH BX
+01F9 51                    477             PUSH CX
+01FA 52                    478             PUSH DX
+                           479             ;Display Clear;
+                           480             
+01FB 33C0                  481             XOR AX, AX
+01FD B020                  482             MOV AL, 00100000b
+01FF BA8100                483             MOV DX, B_8255
+0202 EE                    484             OUT DX, AL
+                           485             
+0203 33C0                  486             XOR AX, AX
+0205 B001                  487             MOV AL, 00000001b
+0207 BA8200                488             MOV DX, C_8255
+020A EE                    489             OUT DX, AL
+                           490             
+020B 33C0                  491             XOR AX, AX
+020D B000                  492             MOV AL, 00000000b
+020F BA8100                493             MOV DX, B_8255
+0212 EE                    494             OUT DX, AL
+                           495             
+                           496             ; 1.6ms delay;
+0213 B98C04                497             MOV CX, 048Ch ; 30 dec
+0216                       498             loop1point6ms2_1:       
+0216 90                    499                     NOP        ; 3 clocks
+0217 49                    500                     DEC CX     ; 3 clocks
+0218 75FC                  501             JNZ loop1point6ms2_1 ; 16 clocks
                            502             
-0214 33C0                  503             XOR AX, AX
-0216 B001                  504             MOV AL, 00000001b
-0218 BA8200                505             MOV DX, C_8255
-021B EE                    506             OUT DX, AL
-                           507             
-021C 33C0                  508             XOR AX, AX
-021E B000                  509             MOV AL, 00000000b
-0220 BA8100                510             MOV DX, B_8255
-0223 EE                    511             OUT DX, AL
-                           512             
-                           513             ; 1.6ms delay;
-0224 B98C04                514             MOV CX, 048Ch ; 30 dec
-0227                       515             loop1point6ms2_1:       
-0227 90                    516                     NOP        ; 3 clocks
-0228 49                    517                     DEC CX     ; 3 clocks
-0229 75FC                  518             JNZ loop1point6ms2_1 ; 16 clocks
+                           503             ;Setting Address of DDRAM;
+                           504             
+021A 33C0                  505             XOR AX, AX
+021C B020                  506             MOV AL, 00100000b
+021E BA8100                507             MOV DX, B_8255
+0221 EE                    508             OUT DX, AL
+                           509             
+0222 33C0                  510             XOR AX, AX
+0224 B080                  511             MOV AL, 10000000b
+0226 BA8200                512             MOV DX, C_8255
+0229 EE                    513             OUT DX, AL
+                           514             
+022A 33C0                  515             XOR AX, AX
+022C B000                  516             MOV AL, 00000000b
+022E BA8100                517             MOV DX, B_8255
+0231 EE                    518             OUT DX, AL
                            519             
-                           520             ;Setting Address of DDRAM;
-                           521             
-022B 33C0                  522             XOR AX, AX
-022D B020                  523             MOV AL, 00100000b
-022F BA8100                524             MOV DX, B_8255
-0232 EE                    525             OUT DX, AL
+                           520             ; 40 us delay;
+0232 B91E00                521             MOV CX, 001Eh ; 30 dec
+0235                       522             loop40us3_1:    
+0235 90                    523                     NOP        ; 3 clocks
+0236 49                    524                     DEC CX     ; 3 clocks
+0237 75FC                  525             JNZ loop40us3_1 ; 16 clocks
                            526             
-0233 33C0                  527             XOR AX, AX
-0235 B080                  528             MOV AL, 10000000b
-0237 BA8200                529             MOV DX, C_8255
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE   11
+0239 B300                  527             MOV BL, 0
+023B 881E7200              528             MOV DS:INPUT_SIZE, BL
+                           529             
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE   11
 
 
 LOC  OBJ                  LINE     SOURCE
 
-023A EE                    530             OUT DX, AL
-                           531             
-023B 33C0                  532             XOR AX, AX
-023D B000                  533             MOV AL, 00000000b
-023F BA8100                534             MOV DX, B_8255
-0242 EE                    535             OUT DX, AL
-                           536             
-                           537             ; 40 us delay;
-0243 B91E00                538             MOV CX, 001Eh ; 30 dec
-0246                       539             loop40us3_1:    
-0246 90                    540                     NOP        ; 3 clocks
-0247 49                    541                     DEC CX     ; 3 clocks
-0248 75FC                  542             JNZ loop40us3_1 ; 16 clocks
-                           543             
-024A B300                  544             MOV BL, 0
-024C 881E7200              545             MOV DS:INPUT_SIZE, BL
-                           546             
-0250 5A                    547             POP DX
-0251 59                    548             POP CX
-0252 5B                    549             POP BX
-0253 58                    550             POP AX
-0254 CB                    551     RET
-                           552     CLEAR_LCD ENDP
-                           553     
-                           554     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
-0255                       555     SERIAL_REC_ACTION       PROC    FAR
-0255 51                    556                     PUSH    CX
-0256 53                    557                     PUSH    BX
-0257 1E                    558                     PUSH    DS
-                           559                     
-0258 BB----         R      560                     MOV     BX,DATA_SEG             ;initialize data segment register
-025B 8EDB                  561                     MOV     DS,BX
-                           562                     
-025D 3C7E                  563                     CMP AL, '~'
-025F 7508                  564                     JNE resume
-                           565                     
-0261 9A0802----     R      566                     CALL FAR PTR CLEAR_LCD
-0266 EB4490                567                     JMP S_RET
-                           568                     
-0269                       569                     resume:
-0269 33DB                  570                     XOR BX, BX
-026B 8A1E7200              571                     MOV BL, DS:INPUT_SIZE
-026F 884752                572                     MOV DS:INPUT[BX], AL
-0272 FEC3                  573                     INC BL
-0274 881E7200              574                     MOV DS:INPUT_SIZE, BL
-                           575                     
-0278                       576                     continue3:
-                           577                     
-0278 3C3C                  578                     CMP     AL,'<'
-027A 750B                  579                     JNE     S_FAST
-                           580     
-027C FE061700              581                     INC     DS:T_COUNT_SET
-0280 FE061700              582                     INC     DS:T_COUNT_SET
+023F 5A                    530             POP DX
+0240 59                    531             POP CX
+0241 5B                    532             POP BX
+0242 58                    533             POP AX
+0243 CB                    534     RET
+                           535     CLEAR_LCD ENDP
+                           536     
+                           537     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
+0244                       538     SERIAL_REC_ACTION       PROC    FAR
+0244 51                    539                     PUSH    CX
+0245 53                    540                     PUSH    BX
+0246 1E                    541                     PUSH    DS
+                           542                     
+0247 BB----         R      543                     MOV     BX,DATA_SEG             ;initialize data segment register
+024A 8EDB                  544                     MOV     DS,BX
+                           545                     
+024C 3C7E                  546                     CMP AL, '~'
+024E 7508                  547                     JNE resume
+                           548                     
+0250 9AF701----     R      549                     CALL FAR PTR CLEAR_LCD
+0255 EB4490                550                     JMP S_RET
+                           551                     
+0258                       552                     resume:
+0258 33DB                  553                     XOR BX, BX
+025A 8A1E7200              554                     MOV BL, DS:INPUT_SIZE
+025E 884752                555                     MOV DS:INPUT[BX], AL
+0261 FEC3                  556                     INC BL
+0263 881E7200              557                     MOV DS:INPUT_SIZE, BL
+                           558                     
+0267                       559                     continue3:
+                           560                     
+0267 3C3C                  561                     CMP     AL,'<'
+0269 750B                  562                     JNE     S_FAST
+                           563     
+026B FE061700              564                     INC     DS:T_COUNT_SET
+026F FE061700              565                     INC     DS:T_COUNT_SET
+                           566     
+0273 EB0D90                567                     JMP     S_NEXT0
+0276                       568     S_FAST:
+0276 3C3E                  569                     CMP     AL,'>'
+0278 7521                  570                     JNE     S_RET
+                           571     
+027A FE0E1700              572                     DEC     DS:T_COUNT_SET
+027E FE0E1700              573                     DEC     DS:T_COUNT_SET
+                           574     
+0282                       575     S_NEXT0:
+0282 B91600                576                     MOV     CX,22                   ;initialize counter for message
+0285 BB0000                577                     MOV     BX,0
+                           578     
+0288 8A4718                579     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
+028B 9A0000----     E      580                     call    FAR ptr print_char
+0290 43                    581                     INC     BX
+0291 E2F5                  582                     LOOP    S_NEXT1
                            583     
-0284 EB0D90                584                     JMP     S_NEXT0
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE   12
+0293 A01700                584                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    17:06:23  10/13/;3  PAGE   12
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0287                       585     S_FAST:
-0287 3C3E                  586                     CMP     AL,'>'
-0289 7521                  587                     JNE     S_RET
-                           588     
-028B FE0E1700              589                     DEC     DS:T_COUNT_SET
-028F FE0E1700              590                     DEC     DS:T_COUNT_SET
-                           591     
-0293                       592     S_NEXT0:
-0293 B91600                593                     MOV     CX,22                   ;initialize counter for message
-0296 BB0000                594                     MOV     BX,0
-                           595     
-0299 8A4718                596     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
-029C 9A0000----     E      597                     call    FAR ptr print_char
-02A1 43                    598                     INC     BX
-02A2 E2F5                  599                     LOOP    S_NEXT1
+0296 9A0000----     E      585                     CALL    FAR PTR PRINT_2HEX
+029B                       586     S_RET:
+029B 1F                    587                     POP     DS
+029C 5B                    588                     POP     BX
+029D 59                    589                     POP     CX
+029E CB                    590                     RET
+                           591     SERIAL_REC_ACTION       ENDP
+                           592     
+                           593     
+                           594     
+029F                       595     TIMER2_ACTION   PROC    FAR
+029F 50                    596                     PUSH    AX
+02A0 1E                    597                     PUSH    DS
+02A1 53                    598                     PUSH    BX
+02A2 51                    599                     PUSH    CX
                            600     
-02A4 A01700                601                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
-02A7 9A0000----     E      602                     CALL    FAR PTR PRINT_2HEX
-02AC                       603     S_RET:
-02AC 1F                    604                     POP     DS
-02AD 5B                    605                     POP     BX
-02AE 59                    606                     POP     CX
-02AF CB                    607                     RET
-                           608     SERIAL_REC_ACTION       ENDP
-                           609     
-                           610     
-                           611     
-02B0                       612     TIMER2_ACTION   PROC    FAR
-02B0 50                    613                     PUSH    AX
-02B1 1E                    614                     PUSH    DS
-02B2 53                    615                     PUSH    BX
-02B3 51                    616                     PUSH    CX
-                           617     
-02B4 B8----         R      618                     MOV     AX,DATA_SEG
-02B7 8ED8                  619                     MOV     DS,AX
-                           620             
-02B9 FE0E1600              621                     DEC     DS:T_COUNT
-02BD 7516                  622                     JNZ     T_NEXT1
-02BF A01700                623                     MOV     AL,DS:T_COUNT_SET
-02C2 A21600                624                     MOV     DS:T_COUNT,AL
+02A3 B8----         R      601                     MOV     AX,DATA_SEG
+02A6 8ED8                  602                     MOV     DS,AX
+                           603             
+02A8 FE0E1600              604                     DEC     DS:T_COUNT
+02AC 7516                  605                     JNZ     T_NEXT1
+02AE A01700                606                     MOV     AL,DS:T_COUNT_SET
+02B1 A21600                607                     MOV     DS:T_COUNT,AL
+                           608     
+02B4 B91400                609                     MOV     CX,20
+02B7 BB0000                610                     MOV     BX,0H
+02BA                       611     T_NEXT0:
+02BA 8A07                  612                     MOV     AL,DS:TIMER0_MESS[BX]
+02BC 43                    613                     INC     BX
+02BD 9A0000----     E      614                     CALL    FAR PTR PRINT_CHAR
+02C2 E2F6                  615                     LOOP    T_NEXT0
+                           616     
+02C4                       617     T_NEXT1:        
+02C4 59                    618                     POP     CX
+02C5 5B                    619                     POP     BX
+02C6 1F                    620                     POP     DS
+02C7 58                    621                     POP     AX
+02C8 CB                    622                     RET
+                           623     TIMER2_ACTION   ENDP
+                           624     
                            625     
-02C5 B91400                626                     MOV     CX,20
-02C8 BB0000                627                     MOV     BX,0H
-02CB                       628     T_NEXT0:
-02CB 8A07                  629                     MOV     AL,DS:TIMER0_MESS[BX]
-02CD 43                    630                     INC     BX
-02CE 9A0000----     E      631                     CALL    FAR PTR PRINT_CHAR
-02D3 E2F6                  632                     LOOP    T_NEXT0
-                           633     
-02D5                       634     T_NEXT1:        
-02D5 59                    635                     POP     CX
-02D6 5B                    636                     POP     BX
-02D7 1F                    637                     POP     DS
-02D8 58                    638                     POP     AX
-02D9 CB                    639                     RET
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    16:33:28  10/13/;3  PAGE   13
-
-
-LOC  OBJ                  LINE     SOURCE
-
-                           640     TIMER2_ACTION   ENDP
-                           641     
-                           642     
-----                       643     CODE_SEG        ENDS
-                           644     END
+----                       626     CODE_SEG        ENDS
+                           627     END
 
 ASSEMBLY COMPLETE, NO ERRORS FOUND
