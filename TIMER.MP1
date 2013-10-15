@@ -4,7 +4,7 @@ DOS 5.0 (038-N) 8086 LINKER, V2.7
 INPUT FILES: TIMER.OBJ, LCD.OBJ, MISC.OBJ
 OUTPUT FILE: TIMER.LNK
 CONTROLS SPECIFIED IN INVOCATION COMMAND:
-DATE:  10/14/;3  TIME:  11:55:04
+DATE:  10/15/;3  TIME:  21:34:01
 
 
 LINK MAP OF MODULE TIMER
@@ -14,7 +14,7 @@ LENGTH ADDRESS ALIGN  SEGMENT         CLASS           OVERLAY
  002CH ------    G    ??SEG                                         
  0100H ------    G    STACK_SEG                                     
  0054H ------    G    DATA_SEG                                      
- 00C0H ------    G    CODE_SEG                                      
+ 0110H ------    G    CODE_SEG                                      
  0100H ------    G    STACK_SEG_LCD                                 
  0021H ------    G    DATA_SEG_LCD                                  
  021DH ------    G    CODE_SEG_LCD                                  

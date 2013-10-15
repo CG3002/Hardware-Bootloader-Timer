@@ -90,24 +90,83 @@ START:
 	MOV DS, AX
 			 
 	MOV DX, CWR_8255
-	MOV AX, 0080h
+	MOV AX, 0082h
 	OUT DX, AX
 	
-	MOV DX, A_8255
-	MOV AL, 23h
-	NOT AL
-	OUT DX, AL
-
 	
-	CALL FAR PTR LCD_INIT
+;	CALL FAR PTR LCD_INIT
 	
 NEXT:
-	; Begin	
-	
-	CALL FAR PTR MESSAGE_LCD
-	
+		; Begin	
+		
+		;CALL FAR PTR MESSAGE_LCD
+		
+		   MOV BL,03H
+	WAIT_1:MOV AX, 0000H
+		   MOV DX,C_8255
+		   OUT DX,AL
+		   MOV DX,B_8255
+		   IN AL,DX
+		   AND AL,0FCH
+		   CMP AL,0FCH
+		   JE WAIT_1
+		   CALL  FAR PTR DEBOUNCE
+		   
+		   MOV AL, 0FEH
+		   MOV BH, 04H
+		   
+	NXTROW: ROL AL,07H
+			MOV CH,AL
+			MOV DX,C_8255
+			OUT DX,AL
+			
+			MOV DX,B_8255
+			IN AL,DX
+			AND AL,0FCH
+			MOV CL,06H
+			RCR AL,02H
+	NXTCOL: RCR AL,01H
+			JNC CODEKY
+			DEC BL
+			DEC CL
+			CMP CL,03H
+			JE KEYPAD_2
+			
+			CMP CL, 0H
+			JE SUBTRACT
+			JMP NXTCOL
+			
+			MOV AL,CH
+			DEC BH
+			JNZ NXTROW
+			JMP WAIT_1
+	CODEKY: MOV AL,BL
+			NOT AL
+			MOV DX,A_8255
+			OUT DX,AL
+			NEXT2: JMP NEXT2
+			JMP WAIT_1
+	KEYPAD_2: ADD BL,0FH
+			  JMP NXTCOL
+	ZERO_PRINT: MOV BL,00H
+				JMP NXTCOL
+	SUBTRACT: SUB BL,06H
+			  MOV AL,CH
+			  DEC BH
+			  JMP NXTROW
 	
 JMP NEXT
+
+	  
+DEBOUNCE PROC FAR
+		  PUSH CX
+		  
+		  MOV CX,094CH
+BACK: 	  NOP
+		  LOOP BACK
+		  POP CX
+		  RET
+DEBOUNCE  ENDP
 
 
 ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -119,14 +178,14 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV	BX,DATA_SEG		;initialize data segment register
 		MOV	DS,BX
 		
-		CMP AL, '~'
-		JNE resume
+		; CMP AL, '~'
+		; JNE resume
 		
-		CALL FAR PTR CLEAR_LCD
-		JMP S_RET
+		; CALL FAR PTR CLEAR_LCD
+		; JMP S_RET
 		
-		resume:
-		CALL FAR PTR UPDATE_LCD_INPUT
+		; resume:
+		; CALL FAR PTR UPDATE_LCD_INPUT
 		
 		continue3:
 		

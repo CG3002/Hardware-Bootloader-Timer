@@ -5,20 +5,20 @@ OUTPUT FILE: TIMER.ABS
 CONTROLS SPECIFIED IN INVOCATION COMMAND:
    TO TIMER.ABS ST(START) AD(SEGMENTS(CODE_SEG(100H))) 
   
-DATE:  10/14/;3  TIME:  11:55:05
+DATE:  10/15/;3  TIME:  21:34:02
 
 
 SYMBOL TABLE OF MODULE TIMER
 
 BASE    OFFSET TYPE SYMBOL               BASE    OFFSET TYPE SYMBOL       
 
-0010H   0045H  PUB  SERIAL_REC_ACTIO     0010H   0000H  PUB  START
+0010H   00A6H  PUB  SERIAL_REC_ACTIO     0010H   0000H  PUB  START
                    -N                                         
-0010H   0096H  PUB  TIMER2_ACTION        004CH   01C1H  PUB  CLEAR_LCD
-004CH   000FH  PUB  LCD_INIT             004CH   00F0H  PUB  MESSAGE_LCD
-004CH   020EH  PUB  UPDATE_LCD_INPUT     0077H   0000H  PUB  IODEFINE
-0077H   001FH  PUB  PRINT_2HEX           0077H   0033H  PUB  PRINT_CHAR
-0077H   008EH  PUB  SET_TIMER2
+0010H   00E6H  PUB  TIMER2_ACTION        004DH   01C1H  PUB  CLEAR_LCD
+004DH   000FH  PUB  LCD_INIT             004DH   00F0H  PUB  MESSAGE_LCD
+004DH   020EH  PUB  UPDATE_LCD_INPUT     0078H   0000H  PUB  IODEFINE
+0078H   001FH  PUB  PRINT_2HEX           0078H   0033H  PUB  PRINT_CHAR
+0078H   008EH  PUB  SET_TIMER2
 
 
 MEMORY MAP OF MODULE TIMER
@@ -29,12 +29,12 @@ SEGMENT MAP
 START     STOP     LENGTH ALIGN NAME            CLASS           OVERLAY
 
 00000H   0009FH     00A0H   A   INT_VEC_SEG                     
-00100H   001BFH     00C0H   G   CODE_SEG                        
-00200H   0022BH     002CH   G   ??SEG                           
-00230H   0032FH     0100H   G   STACK_SEG                       
-00330H   00383H     0054H   G   DATA_SEG                        
-00390H   0048FH     0100H   G   STACK_SEG_LCD                   
-00490H   004B0H     0021H   G   DATA_SEG_LCD                    
-004C0H   006DCH     021DH   G   CODE_SEG_LCD                    
-006E0H   00763H     0084H   G   INT_RAM_AREA                    
-00770H   008A7H     0138H   G   MISC_ROUTINE                    
+00100H   0020FH     0110H   G   CODE_SEG                        
+00210H   0023BH     002CH   G   ??SEG                           
+00240H   0033FH     0100H   G   STACK_SEG                       
+00340H   00393H     0054H   G   DATA_SEG                        
+003A0H   0049FH     0100H   G   STACK_SEG_LCD                   
+004A0H   004C0H     0021H   G   DATA_SEG_LCD                    
+004D0H   006ECH     021DH   G   CODE_SEG_LCD                    
+006F0H   00773H     0084H   G   INT_RAM_AREA                    
+00780H   008B7H     0138H   G   MISC_ROUTINE                    
