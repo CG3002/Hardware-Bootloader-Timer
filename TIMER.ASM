@@ -33,20 +33,25 @@ extrn   set_timer2:far
 	IMASK EQU 0FF28H
 
 STACK_SEG	SEGMENT
-		DB	256 DUP(?)
+		DB	512 DUP(?)
 	TOS	LABEL	WORD
 STACK_SEG	ENDS
 
 
 DATA_SEG	SEGMENT
 	TIMER0_MESS	DB	10,13,'TIMER2 INTERRUPT    '
-	T_COUNT		DB	2FH
-	T_COUNT_SET	DB	2FH
+	T_COUNT		DB	24
+	T_COUNT_SET	DB	24
 	REC_MESS	DB	10,13,'Period of timer0 =     '
 	MESSAGE     DB  32 dup('h')
+	BCD_MESSAGE DB  4,8,9,1,2,6
+	ENABLE_BYTE DB  11111110b
+	BCD_INDEX   DB  0
+	KEYPAD_INDEX DW 0
 	M_SIZE		DB  32
-	FLAG 		DB  0
+	FLAG 		DB  1
 	CHAR		DB  ?
+	REG_AL		DB  ?
 DATA_SEG	ENDS
 
 
@@ -61,12 +66,12 @@ START:
 		MOV	AX,STACK_SEG		
 		MOV	SS,AX
 		MOV	SP,TOS
-
+		
 ; Initialize the on-chip pheripherals
 		CALL	FAR PTR	IODEFINE
 		
-;call set_timer2
-                 STI
+call set_timer2
+               STI
 
 ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
    
@@ -85,7 +90,7 @@ START:
     MOV DX, LMCR
     MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 waits      
     OUT DX, AX
-
+	
 	MOV AX, DATA_SEG
 	MOV DS, AX
 			 
@@ -93,41 +98,54 @@ START:
 	MOV AX, 0082h
 	OUT DX, AX
 	
-	
-;	CALL FAR PTR LCD_INIT
-	
 NEXT:
-		; Begin	
-		
-		;CALL FAR PTR MESSAGE_LCD
-		
-		   MOV BL,03H
-	WAIT_1:MOV AX, 0000H
+	WAIT_1:MOV AH,03H
+		   MOV DS:REG_AL,AH
+		   
+	      MOV BX, 0000H
 		   MOV DX,C_8255
+		   MOV AL,BL
 		   OUT DX,AL
-		   MOV DX,B_8255
-		   IN AL,DX
-		   AND AL,0FCH
-		   CMP AL,0FCH
-		   JE WAIT_1
-		   CALL  FAR PTR DEBOUNCE
 		   
-		   MOV AL, 0FEH
-		   MOV BH, 04H
+		  MOV DX,B_8255
+		  IN AL,DX
+		  MOV BL,AL  
+		  AND BL,0FCH
+		  CMP BL,0FCH
+		 
+	JE WAIT_1
+	
+	CALL FAR PTR KEYPAD_LOOP
+JMP NEXT
+
+KEYPAD_LOOP PROC FAR
+PUSH AX
+PUSH BX
+PUSH CX
+PUSH DX
+			 
+		  CALL  FAR PTR DEBOUNCE
+		 
+		  MOV BL, 0FEH
+		  MOV BH, 04H
 		   
-	NXTROW: ROL AL,07H
-			MOV CH,AL
+	NXTROW: ROL BL,07H
+			MOV CH,BL
 			MOV DX,C_8255
+			CLI
+			MOV AL,BL
 			OUT DX,AL
+			STI
 			
 			MOV DX,B_8255
 			IN AL,DX
-			AND AL,0FCH
+			MOV BL,AL
+			AND BL,0FCH
 			MOV CL,06H
-			RCR AL,02H
-	NXTCOL: RCR AL,01H
+			RCR BL,02H
+	NXTCOL: RCR BL,01H
 			JNC CODEKY
-			DEC BL
+			DEC DS:REG_AL
 			DEC CL
 			CMP CL,03H
 			JE KEYPAD_2
@@ -136,32 +154,64 @@ NEXT:
 			JE SUBTRACT
 			JMP NXTCOL
 			
-			MOV AL,CH
+			MOV BL,CH
 			DEC BH
 			JNZ NXTROW
-			JMP WAIT_1
-	CODEKY: MOV AL,BL
-			NOT AL
-			MOV DX,A_8255
-			OUT DX,AL
-			NEXT2: JMP NEXT2
-			JMP WAIT_1
-	KEYPAD_2: ADD BL,0FH
+			JMP RETURN
+	 CODEKY:
+			MOV CL, DS:REG_AL
+		
+			MOV DL, DS:FLAG
+			CMP DL, 0
+			JE zero_part
+			MOV DL, 0
+			MOV DS:FLAG, DL
+			JMP non_zero_part
+			
+	 zero_part:
+			MOV DL, 1
+			MOV DS:FLAG, DL
+			JMP NEXT
+	non_zero_part:		
+			XOR BX, BX
+			MOV BX, DS:KEYPAD_INDEX
+			MOV DS:BCD_MESSAGE[BX], CL
+			
+			MOV AL, CL
+			CALL FAR PTR PRINT_2HEX
+			MOV AL, ':'
+			CALL FAR PTR PRINT_CHAR
+
+	
+			INC BX
+			CMP BX, 6
+			JNE skip_past
+			MOV BX, 0
+		skip_past:
+			MOV DS:KEYPAD_INDEX, BX
+			JMP RETURN
+	KEYPAD_2: 
+			  ADD DS:REG_AL,0FH
 			  JMP NXTCOL
-	ZERO_PRINT: MOV BL,00H
+	ZERO_PRINT: MOV DS:REG_AL,00H
 				JMP NXTCOL
-	SUBTRACT: SUB BL,06H
-			  MOV AL,CH
+	SUBTRACT: SUB DS:REG_AL,06H
+			  MOV BL,CH
 			  DEC BH
 			  JMP NXTROW
-	
-JMP NEXT
+	RETURN:
+			POP DX
+			POP CX
+			POP BX
+			POP AX
+			RET
 
+KEYPAD_LOOP ENDP
 	  
 DEBOUNCE PROC FAR
 		  PUSH CX
 		  
-		  MOV CX,094CH
+		  MOV CX, 89C4H
 BACK: 	  NOP
 		  LOOP BACK
 		  POP CX
@@ -221,14 +271,14 @@ S_RET:
 		RET
 SERIAL_REC_ACTION	ENDP
 
-
-
 TIMER2_ACTION	PROC	FAR
 		PUSH	AX
 		PUSH	DS
 		PUSH	BX
 		PUSH	CX
-
+		PUSH 	DX
+		
+		
 		MOV	AX,DATA_SEG
 		MOV	DS,AX
 	
@@ -237,22 +287,121 @@ TIMER2_ACTION	PROC	FAR
 		MOV	AL,DS:T_COUNT_SET
 		MOV	DS:T_COUNT,AL
 
-		MOV	CX,20
-		MOV	BX,0H
 T_NEXT0:
-		MOV	AL,DS:TIMER0_MESS[BX]
-		INC	BX
-		CALL 	FAR PTR PRINT_CHAR
-		LOOP	T_NEXT0
+		MOV AL, DS:ENABLE_BYTE
+		MOV DX, 180H
+		OUT DX, AL
+		
+		XOR BX, BX
+		MOV BL, DS:BCD_INDEX
+		MOV AL, DS:BCD_MESSAGE[BX]
+	
+		CALL FAR PTR BCD_TO_7SEG
 
-T_NEXT1:	
+		MOV DX, 200H
+		OUT DX, AL
+
+		INC BL
+		MOV AL, DS:ENABLE_BYTE
+		ROL AL, 1
+		CMP AL, 10111111b
+		JNE loopend
+		MOV AL, 11111110b 
+		MOV BL, 0
+
+		loopend:
+		MOV DS:ENABLE_BYTE, AL
+		MOV DS:BCD_INDEX, BL
+T_NEXT1:
+		
+		POP DX
 		POP	CX
 		POP	BX
 		POP	DS
-		POP 	AX
+		POP AX
+		
+		
 		RET
 TIMER2_ACTION	ENDP
 
+BCD_TO_7SEG PROC FAR
+
+	PUSH BX
+	PUSH CX
+	PUSH DX
+
+	CMP AL, 11
+	JNE zero
+	MOV AL, 00111111b;
+	JMP endfunc
+	
+	zero:
+	CMP AL, 0
+	JNE one
+	MOV AL, 00111111b;
+	JMP endfunc
+	
+	one:
+	CMP AL, 1
+	JNE two
+	MOV AL, 00000110b;
+	JMP endfunc
+	
+	two:
+	CMP AL,2
+	JNE three
+	MOV AL, 01011011b;
+	JMP endfunc
+	
+	three:
+	CMP AL,3
+	JNE four
+	MOV AL, 01001111b;
+	JMP endfunc
+	
+	four:
+	CMP AL,4
+	JNE five
+	MOV AL, 01100110b;
+	JMP endfunc
+	
+	five:
+	CMP AL,5
+	JNE six
+	MOV AL, 01101101b;
+	JMP endfunc
+	
+	six:
+	CMP AL,6
+	JNE seven
+	MOV AL, 01111101b;
+	JMP endfunc
+	
+	seven:
+	CMP AL,7
+	JNE eight
+	MOV AL, 00000111b;
+	JMP endfunc
+	
+	eight:
+	CMP AL,8
+	JNE nine
+	MOV AL, 01111111b;
+	JMP endfunc
+	
+	nine:
+	CMP AL,9
+	JNE endfunc
+	MOV AL, 01101111b;
+	JMP endfunc
+	
+	endfunc:
+	POP DX
+	POP CX
+	POP BX
+
+RET
+BCD_TO_7SEG ENDP
 
 CODE_SEG	ENDS
 END
