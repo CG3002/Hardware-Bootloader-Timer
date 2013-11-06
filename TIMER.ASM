@@ -31,6 +31,9 @@ extrn   set_timer2:far
 	INT0CON  EQU   0FF38H
 	EOI EQU 0FF22H
 	IMASK EQU 0FF28H
+	MMCS	EQU    0FFA6H 
+	DAC EQU 4000H
+
 
 STACK_SEG	SEGMENT
 		DB	512 DUP(?)
@@ -44,7 +47,8 @@ DATA_SEG	SEGMENT
 	T_COUNT_SET	DB	24
 	REC_MESS	DB	10,13,'Period of timer0 =     '
 	MESSAGE     DB  32 dup('h')
-	BCD_MESSAGE DB  4,8,9,1,2,6
+	KEYPAD_INPUT DB  0,0,0,0,0,0,0,0
+	BCD_MESSAGE DB  0,0,0,0,0,0
 	ENABLE_BYTE DB  11111110b
 	BCD_INDEX   DB  0
 	KEYPAD_INDEX DW 0
@@ -74,13 +78,19 @@ call set_timer2
                STI
 
 ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
-   
+
+;Initialize MMCS
+	
+	MOV DX, MMCS
+	MOV AX, 4003H
+	OUT DX, AX
+
 ; Initialize MPCS to MAP peripheral to IO address
 	
 	MOV DX, MPCS
-	MOV AX, 0083H
+	MOV AX, 2083H
 	OUT DX, AX
-
+   
 ; PCSBA initial, set the parallel port start from 00H
 	MOV DX, PCSBA
 	MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
@@ -173,22 +183,46 @@ PUSH DX
 			MOV DS:FLAG, DL
 			JMP NEXT
 	non_zero_part:		
-			XOR BX, BX
-			MOV BX, DS:KEYPAD_INDEX
-			MOV DS:BCD_MESSAGE[BX], CL
-			
-			MOV AL, CL
-			CALL FAR PTR PRINT_2HEX
-			MOV AL, ':'
-			CALL FAR PTR PRINT_CHAR
-
 	
+			MOV BX, DS:KEYPAD_INDEX
+			MOV DS:KEYPAD_INPUT[BX], CL
+			
 			INC BX
-			CMP BX, 6
+			CMP BX, 9
 			JNE skip_past
-			MOV BX, 0
+			MOV BX, 8
+			
 		skip_past:
 			MOV DS:KEYPAD_INDEX, BX
+		
+		MOV BX, DS:KEYPAD_INDEX
+		MOV DX, BX
+		CMP DX, 6
+		JLE update_display
+		MOV DX, 6
+		
+		update_display:
+			MOV CX, 5
+			DEC BX
+			MOV AL, DS:KEYPAD_INPUT[BX]
+			INC BX
+			
+			PUSH DX
+			MOV DX, DS:KEYPAD_INDEX
+			SUB DX, BX
+			
+			PUSH BX
+			
+			SUB CX, DX
+			MOV BX, CX
+			MOV DS:BCD_MESSAGE[BX], AL
+			
+			POP BX
+			POP DX
+		DEC BX
+		DEC DX
+		JNZ update_display
+			
 			JMP RETURN
 	KEYPAD_2: 
 			  ADD DS:REG_AL,0FH
@@ -211,7 +245,7 @@ KEYPAD_LOOP ENDP
 DEBOUNCE PROC FAR
 		  PUSH CX
 		  
-		  MOV CX, 89C4H
+		  MOV CX, 8FFFH
 BACK: 	  NOP
 		  LOOP BACK
 		  POP CX
