@@ -54,10 +54,14 @@ DATA_SEG	SEGMENT
 	KEYPAD_INDEX DW 0
 	M_SIZE		DB  32
 	FLAG 		DB  1
-	DAC_ADD     DB  10 dup(0)
-	DAC_HEAD    DB  0
+	DAC_ADDR    DB  10 dup(0)
+	DAC_LEN     DB  0
+	SI_PTR      DW  0
 	CHAR		DB  ?
 	REG_AL		DB  ?
+	REG_BH		DB  ?
+	REG_CL		DB  ?
+	KEY_FLAG    DB  1
 DATA_SEG	ENDS
 
 
@@ -111,23 +115,22 @@ call set_timer2
 	OUT DX, AX
 	
 NEXT:
-	WAIT_1:MOV AH,03H
-		   MOV DS:REG_AL,AH
-		   
-	      MOV BX, 0000H
-		   MOV DX,C_8255
-		   MOV AL,BL
-		   OUT DX,AL
-		   
-		  MOV DX,B_8255
-		  IN AL,DX
-		  MOV BL,AL  
-		  AND BL,0FCH
-		  CMP BL,0FCH
-		 
-	JE WAIT_1
-	
+	MOV DS:REG_AL, 0
+	MOV DS:KEY_FLAG, 1
 	CALL FAR PTR KEYPAD_LOOP
+	
+	;1s delay
+	MOV BX, 50
+	loop1sec:
+		 MOV CX, 910
+		 loop125us2:
+		 NOP
+		 DEC CX
+		 JNZ loop125us2
+	DEC BX
+	JNZ loop1sec
+
+	
 JMP NEXT
 
 KEYPAD_LOOP PROC FAR
@@ -135,43 +138,74 @@ PUSH AX
 PUSH BX
 PUSH CX
 PUSH DX
-			 
-		  CALL  FAR PTR DEBOUNCE
-		 
-		  MOV BL, 0FEH
-		  MOV BH, 04H
+	
+			
+	WAIT_1: MOV DS:REG_AL, 03H
+		    MOV BX, 0000H
+		    MOV DX,C_8255
+		    MOV AL,BL
+		    OUT DX,AL
 		   
-	NXTROW: ROL BL,07H
+		    MOV DX,B_8255
+		    IN AL,DX
+		    MOV BL,AL  
+		    AND BL,0FCH
+		    CMP BL,0FCH
+		 
+	JE WAIT_1
+			
+	;	    CALL  FAR PTR DEBOUNCE
+			
+		    MOV BL, 0FEH
+		    MOV DS:REG_BH, 04H
+		   
+	NXTROW: 
+	        ROL BL,07H
 			MOV CH,BL
 			MOV DX,C_8255
-			CLI
 			MOV AL,BL
 			OUT DX,AL
-			STI
 			
 			MOV DX,B_8255
 			IN AL,DX
 			MOV BL,AL
 			AND BL,0FCH
-			MOV CL,06H
+			MOV DS:REG_CL,06H
 			RCR BL,02H
 	NXTCOL: RCR BL,01H
 			JNC CODEKY
 			DEC DS:REG_AL
-			DEC CL
-			CMP CL,03H
+			DEC DS:REG_CL
+			CMP DS:REG_CL,03H
 			JE KEYPAD_2
 			
-			CMP CL, 0H
+			CMP DS:REG_CL, 0H
 			JE SUBTRACT
 			JMP NXTCOL
 			
 			MOV BL,CH
-			DEC BH
+			DEC DS:REG_BH
 			JNZ NXTROW
-			JMP RETURN
+			JMP WAIT_1
 	 CODEKY:
+		    CMP DS:REG_AL, 11
+			JNE bcd_upd
+			MOV DS:REG_AL, 0
+			
+	bcd_upd:
+			CMP DS:KEY_FLAG, 1
+			JNE RETURN
+			MOV DS:KEY_FLAG, 0
+			
 			CALL FAR PTR BCD_UPDATE
+			
+			; XOR BX, BX
+			; MOV BL, DS:DAC_LEN
+			; MOV DS:REG_AL, CL
+			; MOV DS:DAC_ADDR[BX], CL
+			; INC BL
+			; MOV DS:DAC_LEN, BL
+			
 			JMP RETURN
 	KEYPAD_2: 
 			  ADD DS:REG_AL,0FH
@@ -180,7 +214,7 @@ PUSH DX
 				JMP NXTCOL
 	SUBTRACT: SUB DS:REG_AL,06H
 			  MOV BL,CH
-			  DEC BH
+			  DEC DS:REG_BH
 			  JMP NXTROW
 	RETURN:
 			POP DX
@@ -253,7 +287,7 @@ BCD_UPDATE ENDP
 DEBOUNCE PROC FAR
 		  PUSH CX
 		  
-		  MOV CX, 8FFFH
+		  MOV CX, 094CH
 BACK: 	  NOP
 		  LOOP BACK
 		  POP CX
@@ -355,14 +389,12 @@ T_NEXT0:
 		MOV DS:ENABLE_BYTE, AL
 		MOV DS:BCD_INDEX, BL
 T_NEXT1:
-		
+
 		POP DX
 		POP	CX
 		POP	BX
 		POP	DS
 		POP AX
-		
-		
 		RET
 TIMER2_ACTION	ENDP
 
@@ -372,12 +404,6 @@ BCD_TO_7SEG PROC FAR
 	PUSH CX
 	PUSH DX
 
-	CMP AL, 11
-	JNE zero
-	MOV AL, 00111111b;
-	JMP endfunc
-	
-	zero:
 	CMP AL, 0
 	JNE one
 	MOV AL, 00111111b;
