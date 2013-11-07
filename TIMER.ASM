@@ -62,6 +62,7 @@ DATA_SEG	SEGMENT
 	REG_BH		DB  ?
 	REG_CL		DB  ?
 	KEY_FLAG    DB  1
+	LONG_PRESS_FLAG DB 0
 DATA_SEG	ENDS
 
 
@@ -120,7 +121,7 @@ NEXT:
 	CALL FAR PTR KEYPAD_LOOP
 	
 	;1s delay
-	MOV BX, 50
+	MOV BX, 25
 	loop1sec:
 		 MOV CX, 910
 		 loop125us2:
@@ -152,9 +153,7 @@ PUSH DX
 		    AND BL,0FCH
 		    CMP BL,0FCH
 		 
-	JE WAIT_1
-			
-	;	    CALL  FAR PTR DEBOUNCE
+	JE LONG_PRESS
 			
 		    MOV BL, 0FEH
 		    MOV DS:REG_BH, 04H
@@ -197,8 +196,12 @@ PUSH DX
 			JNE RETURN
 			MOV DS:KEY_FLAG, 0
 			
+			CMP DS:LONG_PRESS_FLAG, 0
+			JNE RETURN
+			
 			CALL FAR PTR BCD_UPDATE
 			
+			MOV DS:LONG_PRESS_FLAG, 1
 			; XOR BX, BX
 			; MOV BL, DS:DAC_LEN
 			; MOV DS:REG_AL, CL
@@ -206,6 +209,9 @@ PUSH DX
 			; INC BL
 			; MOV DS:DAC_LEN, BL
 			
+			JMP RETURN
+	LONG_PRESS:
+			MOV DS:LONG_PRESS_FLAG, 0
 			JMP RETURN
 	KEYPAD_2: 
 			  ADD DS:REG_AL,0FH
@@ -216,6 +222,8 @@ PUSH DX
 			  MOV BL,CH
 			  DEC DS:REG_BH
 			  JMP NXTROW
+	
+	
 	RETURN:
 			POP DX
 			POP CX
@@ -284,15 +292,15 @@ BCD_UPDATE PROC FAR
 RET
 BCD_UPDATE ENDP
 	  
-DEBOUNCE PROC FAR
-		  PUSH CX
+; DEBOUNCE PROC FAR
+		  ; PUSH CX
 		  
-		  MOV CX, 094CH
-BACK: 	  NOP
-		  LOOP BACK
-		  POP CX
-		  RET
-DEBOUNCE  ENDP
+		  ; MOV CX, 094CH
+; BACK: 	  NOP
+		  ; LOOP BACK
+		  ; POP CX
+		  ; RET
+; DEBOUNCE  ENDP
 
 
 ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
