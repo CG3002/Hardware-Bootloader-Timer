@@ -24,7 +24,6 @@ extrn   set_timer2:far
 	LMCR    EQU    0FFA2H ; Lower Memory control Register         
 	PCSBA   EQU    0FFA4H ; Peripheral Chip Select Base Address
 	MPCS    EQU    0FFA8H ; MMCS and PCS Alter Control Register
-	MMCS	EQU    0FFA6H 
 	A_8255  EQU    0080H
 	B_8255  EQU    0081H
 	C_8255  EQU    0082H
@@ -32,7 +31,6 @@ extrn   set_timer2:far
 	INT0CON  EQU   0FF38H
 	EOI EQU 0FF22H
 	IMASK EQU 0FF28H
-	DAC EQU 4000H
 
 STACK_SEG	SEGMENT
 		DB	256 DUP(?)
@@ -51,6 +49,7 @@ DATA_SEG	SEGMENT
 	CHAR		DB  ?
 DATA_SEG	ENDS
 
+
 CODE_SEG	SEGMENT
 
 	PUBLIC		START
@@ -62,9 +61,6 @@ START:
 		MOV	AX,STACK_SEG		
 		MOV	SS,AX
 		MOV	SP,TOS
-		
-		MOV AX, DATA_SEG
-		MOV DS, AX
 
 ; Initialize the on-chip pheripherals
 		CALL	FAR PTR	IODEFINE
@@ -73,86 +69,45 @@ START:
                  STI
 
 ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
-
-; Initialize LMCS 
-    MOV DX, LMCR
-    MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 waits      
-    OUT DX, AX
    
-;Initialize MMCS
-	
-	MOV DX, MMCS
-	MOV AX, 4003H
-	OUT DX, AX
-
 ; Initialize MPCS to MAP peripheral to IO address
 	
 	MOV DX, MPCS
-	MOV AX, 2083H
+	MOV AX, 0083H
 	OUT DX, AX
-	
+
 ; PCSBA initial, set the parallel port start from 00H
 	MOV DX, PCSBA
 	MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
 	OUT DX, AX
 
+; Initialize LMCS 
+    MOV DX, LMCR
+    MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 waits      
+    OUT DX, AX
+
+	MOV AX, DATA_SEG
+	MOV DS, AX
 			 
 	MOV DX, CWR_8255
-	MOV AX, 0082h
+	MOV AX, 0080h
 	OUT DX, AX
 	
+	MOV DX, A_8255
+	MOV AL, 23h
+	NOT AL
+	OUT DX, AL
+
 	
-;	CALL FAR PTR LCD_INIT
-MOV AX, 4000H
-MOV DS, AX
-MOV SI, 0H
-MOV BX, 0H
-
-
+	CALL FAR PTR LCD_INIT
+	
 NEXT:
-XOR AX, AX
-MOV AL, [SI]
-
-
-MOV DX, 110H
-OUT DX, AL
-
-;CALL FAR PTR PRINT_2HEX
-;125 us delay
-		 MOV CX, 45
-		 loop125us:
-		 NOP
-		 LOOP loop125us
+	; Begin	
 	
-; CALL FAR PTR PRINT_2HEX
-; MOV AL, ' '
-; CALL FAR PTR PRINT_CHAR
-
-INC SI
-CMP SI, 1000H
-JNE NEXT
-MOV SI, 0H
-; MOV AX, DS
-; ADD AX, 1
-; MOV DS, AX
-
-; CMP AX, 100
-; JNE NEXT
-; MOV AX, 100
-; MOV DS, AX
-; ;1s delay
-	; MOV BX, 10
-	; loop1sec:
-		 ; MOV CX, 910
-		 ; loop125us2:
-		 ; NOP
-		 ; DEC CX
-		 ; JNZ loop125us2
-	; DEC BX
-	; JNZ loop1sec
-
+	CALL FAR PTR MESSAGE_LCD
+	
+	
 JMP NEXT
-
 
 
 ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -164,14 +119,14 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV	BX,DATA_SEG		;initialize data segment register
 		MOV	DS,BX
 		
-		; CMP AL, '~'
-		; JNE resume
+		CMP AL, '~'
+		JNE resume
 		
-		; CALL FAR PTR CLEAR_LCD
-		; JMP S_RET
+		CALL FAR PTR CLEAR_LCD
+		JMP S_RET
 		
-		; resume:
-		; CALL FAR PTR UPDATE_LCD_INPUT
+		resume:
+		CALL FAR PTR UPDATE_LCD_INPUT
 		
 		continue3:
 		

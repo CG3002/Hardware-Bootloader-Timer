@@ -1,4 +1,5 @@
 $mod186
+$ep
 NAME MISC
 ; Interrupt and misc routines for uPD70208 microcomputer system
 ;
@@ -198,7 +199,7 @@ Set_timer2      proc Far
 	mov dx, T2_CNT;
 	OUT DX, AL
 
-	MOV AX, 250;
+	MOV AX, 240;
 	MOV DX, T2_CA;
 	OUT DX, AL
 
@@ -309,23 +310,16 @@ L_TX3:
 
 ; **************** Start of TIMER0_INTR service routine ******************
 TIMER2_INTR:
-		;PUSH 	AX
+		PUSH 	AX
 		
 ; Action to be taken on timer0 interrupt to be written by user
 		CALL	FAR PTR TIMER2_ACTION
               
-		PUSH	AX		;return interrupt
-		PUSH BX
-		PUSH CX
-		PUSH DX
+		POP	AX		;return interrupt
                 ;RESET_INT_CTL
                 MOV DX, EOI
                 MOV AX, 8
                 OUT DX, AL
-		POP DX
-		POP CX
-		POP BX
-		POP AX
 		IRET
 ; **************** End of TIMER2_INTR service routine ************************
 
