@@ -42,45 +42,40 @@ STACK_SEG	ENDS
 
 
 DATA_SEG	SEGMENT
-	TIMER0_MESS		DB	10,13,'TIMER2 INTERRUPT    '
-	T_COUNT			DB	24
-	T_COUNT_SET		DB	24
-	REC_MESS		DB	10,13,'Period of timer0 =     '
-	MESSAGE     	DB  32 dup('h')
-	KEYPAD_INPUT 	DB  0,0,0,0,0,0,0,0
-	BCD_MESSAGE 	DB  '-','-','-','-','-','-'
-	ENABLE_BYTE 	DB  11111110b
-	BCD_INDEX   	DB  0
-	KEYPAD_INDEX 	DW 	0
-	M_SIZE			DB  32
-	DAC_BASE    	DW  4000H
-	DAC_ADDR    	DB  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
-	DAC_LEN     	DB  0
-	SI_PTR      	DW  0
-	CHAR			DB  ?
-	REG_AL			DB  ?
-	REG_BH			DB  ?
-	REG_CL			DB  ?
-	FLAG        	DB  0
-	LONG_PRESS_FLAG DB 	0
-	MY_ID			DB	'r1'
+	TIMER0_MESS	DB	10,13,'TIMER2 INTERRUPT    '
+	T_COUNT		DB	24
+	T_COUNT_SET	DB	24
+	REC_MESS	DB	10,13,'Period of timer0 =     '
+	MESSAGE     DB  32 dup('h')
+	KEYPAD_INPUT DB  0,0,0,0,0,0,0,0
+	BCD_MESSAGE DB  '-','-','-','-','-','-'
+	ENABLE_BYTE DB  11111110b
+	BCD_INDEX   DB  0
+	KEYPAD_INDEX DW 0
+	M_SIZE		DB  32
+	DAC_BASE    DW  4000H
+	DAC_ADDR    DB  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+	DAC_LEN     DB  0
+	SI_PTR      DW  0
+	CHAR		DB  ?
+	REG_AL		DB  ?
+	REG_BH		DB  ?
+	REG_CL		DB  ?
+	FLAG        DB  0
+	LONG_PRESS_FLAG DB 0
+	MY_ID		DB	'r1'
 	ID_FLAG_@		DB	0
 	ID_FLAG_r		DB	0
 	REPLY_MESSAGE	DB	'@r1/'
-	FAIL_MESSAGE 	DB '@0/'
-	REPLY_COUNT		DB	4
-	FAIL_COUNT		DB	3
-	REPLY_FLAG		DB 	0
-	SEND_FLAG   	DB  0
-	SEND_BUFFER 	DB  13 dup(0)
-	SEND_BUFFER_LEN DW 	0
-	MAX_INPUT_SIZE 	DW 	0
-	QTY_FLAG 		DW 	0
-	RECEIVE_FLAG 	DW 	0
-	DAC_FLAG 		DW 	0
-	PRICE_FLAG   	DW 	0
-	DECIMAL_FLAG 	DW 	1
-	SCROLL_LEN   	DW 	0
+	FAIL_MESSAGE DB '@0/'
+	REPLY_COUNT	DB	4
+	FAIL_COUNT	DB	3
+	REPLY_FLAG	DB 	0
+	SEND_FLAG   DB  0
+	SEND_BUFFER DB  13 dup(0)
+	SEND_BUFFER_LEN DW 0
+	MAX_INPUT_SIZE DW 0
+	QTY_FLAG DW 0
 DATA_SEG	ENDS
 
 
@@ -207,63 +202,23 @@ bcd_upd:
 			CMP DS:REG_AL, 10
 			JNE BACKSPACE
 			CALL FAR PTR BCD_CLEAR
-			JMP UPDATE_7SEG2
+			JMP UPDATE_7SEG
 			
 BACKSPACE:	CMP DS:REG_AL, 12
 			JNE ENTER_DATA
 			CALL FAR PTR BCD_BACKSPACE
-			JMP UPDATE_7SEG2
+			JMP UPDATE_7SEG
 
 ENTER_DATA:	CMP DS:REG_AL, 13
-			JNE SCROLL_LEFT
-			CALL FAR PTR BCD_CLEAR
-			MOV DS:DECIMAL_FLAG, 0
+			JNE QTY_PROMPT
 			MOV DS:MAX_INPUT_SIZE, 8
-			JMP UPDATE_7SEG2
+			JMP UPDATE_7SEG
 			
 SUBTRACT2:   JMP SUBTRACT
 
 KEYPAD3: 	JMP KEYPAD_2
 
 RETURN2:    JMP RETURN
-			
-SCROLL_LEFT:
-			CMP DS:REG_AL, 21
-			JNE SCROLL_RIGHT
-			CMP DS:KEYPAD_INDEX, 6
-			JLE UPDATE_7SEG2
-			CMP DS:SCROLL_LEN, 0
-			JE UPDATE_7SEG2
-			DEC DS:SCROLL_LEN
-			DEC DS:KEYPAD_INDEX
-			MOV BX, DS:KEYPAD_INDEX
-			MOV AL, DS:KEYPAD_INPUT[BX]
-			MOV DS:REG_AL, AL
-			CALL FAR PTR BCD_UPDATE
-			MOV DS:REG_AL, 21
-			JMP UPDATE_7SEG2
-
-
-
-SCROLL_RIGHT:
-			CMP DS:REG_AL, 19
-			JNE QTY_PROMPT
-			CMP DS:KEYPAD_INDEX, 6
-			JLE UPDATE_7SEG2
-			MOV AX, DS:KEYPAD_INDEX
-			SUB AX, 6
-			CMP DS:SCROLL_LEN, AX
-			JE UPDATE_7SEG2
-			INC DS:SCROLL_LEN
-			DEC DS:KEYPAD_INDEX
-			MOV BX, DS:KEYPAD_INDEX
-			MOV AL, DS:KEYPAD_INPUT[BX]
-			MOV DS:REG_AL, AL
-			CALL FAR PTR BCD_UPDATE
-			MOV DS:REG_AL, 19
-			JMP UPDATE_7SEG2
-			
-UPDATE_7SEG2: JMP UPDATE_7SEG
 
 QTY_PROMPT:
 			CMP DS:KEYPAD_INDEX, 8
@@ -291,8 +246,9 @@ QUANTITY:
 			CALL FAR PTR UPDATE_THE_QUANTITY
 					
 			MOV DS:SEND_FLAG, 1
-			
-			;MOV DS:MAX_INPUT_SIZE, 0
+			CALL FAR PTR SEND_INPUT
+			MOV DS:SEND_BUFFER_LEN, 0
+			MOV DS:MAX_INPUT_SIZE, 0
 			MOV DS:QTY_FLAG, 0
 			CALL FAR PTR BCD_CLEAR
 				
@@ -422,27 +378,13 @@ PUSH DX
 		DEC BX
 	JNZ BCD_CLEAR_LOOP
 	
-	CMP DS:KEYPAD_INDEX, 1
-	JLE less_than_two
-	
-	DEC DS:KEYPAD_INDEX
-	DEC DS:KEYPAD_INDEX
-	MOV BX, DS:KEYPAD_INDEX
-	MOV AL, DS:KEYPAD_INPUT[BX]
-	MOV DS:REG_AL, AL
-	MOV DS:SCROLL_LEN, 0
-	CALL FAR PTR BCD_UPDATE
-	JMP RETURN_BACK
-	
-less_than_two:
 	DEC DS:KEYPAD_INDEX
 	MOV DS:REG_AL, '-'
-	MOV DS:SCROLL_LEN, 0
 	CALL FAR PTR BCD_UPDATE
 	DEC DS:KEYPAD_INDEX
 	
-RETURN_BACK:
 	MOV DS:REG_AL, DL
+RETURN_BACK:
 POP DX
 POP CX
 POP BX
@@ -471,7 +413,6 @@ PUSH DX
 	JNZ CLEAR_LOOP2
 
 	MOV DS:KEYPAD_INDEX, 0
-	MOV DS:SCROLL_LEN, 0
 POP DX
 POP CX
 POP BX
@@ -503,17 +444,13 @@ SKIP_PAST:
 		INC DS:KEYPAD_INDEX
 			
 		MOV BX, DS:KEYPAD_INDEX
-		
-		MOV AX, DS:SCROLL_LEN
-		SUB BX, AX
-		
-		MOV DX, DS:KEYPAD_INDEX
+		MOV DX, BX
 		CMP DX, 6
 		JLE update_display
 		MOV DX, 6
 		
 	update_display:
-	
+			
 		MOV CX, 5
 		DEC BX
 		MOV AL, DS:KEYPAD_INPUT[BX]
@@ -521,8 +458,6 @@ SKIP_PAST:
 			
 		PUSH DX
 		MOV DX, DS:KEYPAD_INDEX
-		SUB DX, DS:SCROLL_LEN
-		
 		SUB DX, BX
 			
 		PUSH BX
@@ -536,7 +471,7 @@ SKIP_PAST:
 	
 		DEC BX
 		DEC DX
-	JNZ update_display
+		JNZ update_display
 
 	BCD_RET:
 		POP DX
@@ -609,83 +544,69 @@ SERIAL_REC_ACTION	PROC	FAR
 		
 		CMP DS:REPLY_FLAG, 1
 		JNE next_id
-		
-		CMP DS:SEND_FLAG, 1
-		JE send_input_across
-		
-		CMP DS:RECEIVE_FLAG, 1
-		JNE terminate_session2
-		
-		CMP AL, '&'
-		JNE receive_price
-		MOV DS:PRICE_FLAG, 1
-		MOV DS:KEYPAD_INDEX, 0
-		MOV DS:MAX_INPUT_SIZE, 6
-		JMP id_skip2
-		
-	receive_price:
-		CMP DS:PRICE_FLAG, 1
-		JNE id_skip2
 		CMP AL, '/'
-		JNE update_keypad_input
-		MOV DS:PRICE_FLAG, 0
-		MOV DS:RECEIVE_FLAG, 0
-		JMP terminate_session2
+		JE reply
 		
-	update_keypad_input:
-		SUB AL, 30H
-		MOV DS:REG_AL, AL
-		MOV DS:DECIMAL_FLAG, 1
-				
-		CALL FAR PTR BCD_UPDATE
-		JMP id_skip2
+		CMP DS:SEND_FLAG, 0
+		JE id_skip2
 		
-	send_input_across:
+		CMP DS:KEYPAD_INDEX, 0
+		JE id_skip2
+		
 		CALL FAR PTR SEND_INPUT
-		
-		MOV DS:SEND_BUFFER_LEN, 0
-		
 		MOV DS:SEND_FLAG, 0
 		
-		MOV DS:RECEIVE_FLAG, 1
-		
 		JMP id_skip2
 		
-		terminate_session2: JMP terminate_session
-		id_skip2: JMP id_skip
+	reply:
+		XOR BX,BX
+	start_send:
+		XOR AX,AX
+		MOV AL, DS:REPLY_MESSAGE[BX]
+		CALL FAR PTR PRINT_CHAR
+		INC BX
+		CMP BL, DS:REPLY_COUNT
+		JNE start_send
+		
+		MOV DS:REPLY_FLAG, 0
+		MOV DS:ID_FLAG_r, 0
+		MOV DS:ID_FLAG_@, 0
+		JMP S_RET
+	
+	id_skip2:
+		JMP id_skip
 		
 	next_id:
 		
 		CMP DS:ID_FLAG_r, 1
 		JNE id_flag_label
 		CMP DS:MY_ID[1], AL
-		JNE id_skip
+		JNE id_not_equal
 		;start writing to pc
-		MOV DS:REPLY_FLAG, 1
+		INC DS:REPLY_FLAG
 		MOV DS:ID_FLAG_r, 0
 		JMP id_skip
-	
+		
 	id_flag_label:
 	
 		CMP DS:ID_FLAG_@, 1
 		JNE protocol_rec
 		CMP AL,'r'
 		JNE id_not_r
-		MOV DS:ID_FLAG_r,1
-		MOV DS:ID_FLAG_@, 0
+		MOV DX, 1
+		MOV DS:ID_FLAG_r,DL
 		JMP S_RET
 	id_not_r:
 		MOV DS:ID_FLAG_@, 0
 		JMP id_skip
 	
-	terminate_session:
+	id_not_equal:
 		MOV DS:ID_FLAG_r, 0
 		XOR BX,BX
 	start_send1:
 		XOR AX,AX
 		MOV AL, DS:FAIL_MESSAGE[BX]
 		CALL FAR PTR PRINT_CHAR
-		MOV DS:REPLY_FLAG, 0
 		INC BX
 		CMP BL, DS:FAIL_COUNT
 		JNE start_send1
@@ -693,11 +614,23 @@ SERIAL_REC_ACTION	PROC	FAR
 	protocol_rec:
 		CMP AL,'@'
 		JNE id_skip
-		MOV DS:ID_FLAG_@,1
+		MOV DX, 1
+		MOV DS:ID_FLAG_@,DL
 		JMP S_RET
 		
 	id_skip:
 	
+		CMP AL, '~'
+		JNE resume
+		
+		;CALL FAR PTR CLEAR_LCD
+		JMP S_RET
+		
+		resume:
+		;CALL FAR PTR UPDATE_LCD_INPUT
+		
+		continue3:
+		
 		CMP	AL,'<'
 		JNE	S_FAST
 
@@ -852,125 +785,70 @@ BCD_TO_7SEG PROC FAR
 	PUSH BX
 	PUSH CX
 	PUSH DX
-	
+
 	CMP AL, 0
 	JNE one
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal0
-	MOV AL, 00111111b
-	JMP endfunc
-decimal0:
-	MOV AL, 10111111b
+	MOV AL, 00111111b;
 	JMP endfunc
 	
 	one:
 	CMP AL, 1
 	JNE two
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal1
-	MOV AL, 00000110b
-	JMP endfunc
-decimal1:
-	MOV AL, 10000110b
+	MOV AL, 00000110b;
 	JMP endfunc
 	
 	two:
 	CMP AL,2
 	JNE three
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal2
-	MOV AL, 01011011b
-	JMP endfunc
-decimal2:
-	MOV AL, 11011011b
+	MOV AL, 01011011b;
 	JMP endfunc
 	
 	three:
 	CMP AL,3
 	JNE four
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal3
-	MOV AL, 01001111b
-	JMP endfunc
-decimal3:
-	MOV AL, 11001111b
+	MOV AL, 01001111b;
 	JMP endfunc
 	
 	four:
 	CMP AL,4
 	JNE five
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal4
-	MOV AL, 01100110b
-	JMP endfunc
-decimal4:
-	MOV AL, 11100110b
+	MOV AL, 01100110b;
 	JMP endfunc
 	
 	five:
 	CMP AL,5
 	JNE six
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal5
-	MOV AL, 01101101b
-	JMP endfunc
-decimal5:
-	MOV AL, 11101101b
+	MOV AL, 01101101b;
 	JMP endfunc
 	
 	six:
 	CMP AL,6
 	JNE seven
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal6
-	MOV AL, 01111101b
-	JMP endfunc
-decimal6:
-	MOV AL, 11111101b
+	MOV AL, 01111101b;
 	JMP endfunc
 	
 	seven:
 	CMP AL,7
 	JNE eight
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal7
-	MOV AL, 00000111b
-	JMP endfunc
-decimal7:
-	MOV AL, 10000111b
+	MOV AL, 00000111b;
 	JMP endfunc
 	
 	eight:
 	CMP AL,8
 	JNE nine
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal8
-	MOV AL, 01111111b
-	JMP endfunc
-decimal8:
-	MOV AL, 11111111b
+	MOV AL, 01111111b;
 	JMP endfunc
 	
 	nine:
 	CMP AL,9
 	JNE hifn
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal9
-	MOV AL, 01101111b
-	JMP endfunc
-decimal9:
-	MOV AL, 11101111b
+	MOV AL, 01101111b;
 	JMP endfunc
 	
 	hifn:
 	CMP AL,'-'
 	JNE endfunc
-	CMP DS:DECIMAL_FLAG, 1
-	JE decimal10
-	MOV AL, 01000000b
-	JMP endfunc
-decimal10:
-	MOV AL, 11000000b
+	MOV AL, 01000000b;
 	JMP endfunc
 	
 	endfunc:
