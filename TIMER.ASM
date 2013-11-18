@@ -16,7 +16,6 @@ NAME TIMER
 
 public	serial_rec_action, timer2_action
 extrn	print_char:far, print_2hex:far, iodefine:far
-extrn	LCD_INIT:far, MESSAGE_LCD:far, CLEAR_LCD:far, UPDATE_LCD_INPUT:far
 extrn   set_timer2:far
 
 ;IO Setup for 80C188 
@@ -81,6 +80,8 @@ DATA_SEG	SEGMENT
 	PRICE_FLAG   	DW 	0
 	DECIMAL_FLAG 	DW 	1
 	SCROLL_LEN   	DW 	0
+	DAC_DISABLE     DW  0
+	DECIMAL_INDEX   DW  3
 DATA_SEG	ENDS
 
 
@@ -217,7 +218,7 @@ BACKSPACE:	CMP DS:REG_AL, 12
 ENTER_DATA:	CMP DS:REG_AL, 13
 			JNE SCROLL_LEFT
 			CALL FAR PTR BCD_CLEAR
-			MOV DS:DECIMAL_FLAG, 0
+			MOV DS:DECIMAL_INDEX, 6
 			MOV DS:MAX_INPUT_SIZE, 8
 			JMP UPDATE_7SEG2
 			
@@ -235,11 +236,14 @@ SCROLL_LEFT:
 			CMP DS:SCROLL_LEN, 0
 			JE UPDATE_7SEG2
 			DEC DS:SCROLL_LEN
+			DEC DS:DECIMAL_INDEX
 			DEC DS:KEYPAD_INDEX
 			MOV BX, DS:KEYPAD_INDEX
 			MOV AL, DS:KEYPAD_INPUT[BX]
 			MOV DS:REG_AL, AL
+			MOV DS:DAC_DISABLE, 1
 			CALL FAR PTR BCD_UPDATE
+			MOV DS:DAC_DISABLE, 0
 			MOV DS:REG_AL, 21
 			JMP UPDATE_7SEG2
 
@@ -255,11 +259,14 @@ SCROLL_RIGHT:
 			CMP DS:SCROLL_LEN, AX
 			JE UPDATE_7SEG2
 			INC DS:SCROLL_LEN
+			INC DS:DECIMAL_INDEX
 			DEC DS:KEYPAD_INDEX
 			MOV BX, DS:KEYPAD_INDEX
 			MOV AL, DS:KEYPAD_INPUT[BX]
 			MOV DS:REG_AL, AL
+			MOV DS:DAC_DISABLE, 1
 			CALL FAR PTR BCD_UPDATE
+			MOV DS:DAC_DISABLE, 0
 			MOV DS:REG_AL, 19
 			JMP UPDATE_7SEG2
 			
@@ -292,7 +299,6 @@ QUANTITY:
 					
 			MOV DS:SEND_FLAG, 1
 			
-			;MOV DS:MAX_INPUT_SIZE, 0
 			MOV DS:QTY_FLAG, 0
 			CALL FAR PTR BCD_CLEAR
 				
@@ -431,7 +437,9 @@ PUSH DX
 	MOV AL, DS:KEYPAD_INPUT[BX]
 	MOV DS:REG_AL, AL
 	MOV DS:SCROLL_LEN, 0
+	MOV DS:DAC_DISABLE, 1
 	CALL FAR PTR BCD_UPDATE
+	MOV DS:DAC_DISABLE, 0
 	JMP RETURN_BACK
 	
 less_than_two:
@@ -491,6 +499,8 @@ PUSH DX
 		MOV CL, DS:REG_AL
 		CMP CL, 9
 		JG SKIP_PAST
+		CMP DS:DAC_DISABLE, 1
+		JE SKIP_PAST
 		CALL FAR PTR DAC_UPDATE
 
 SKIP_PAST:		
@@ -608,36 +618,64 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV	DS,BX
 		
 		CMP DS:REPLY_FLAG, 1
-		JNE next_id
+		JNE next_id1
 		
 		CMP DS:SEND_FLAG, 1
-		JE send_input_across
+		JE send_input_across1
 		
 		CMP DS:RECEIVE_FLAG, 1
-		JNE terminate_session2
+		JNE terminate_session3
 		
 		CMP AL, '&'
 		JNE receive_price
 		MOV DS:PRICE_FLAG, 1
 		MOV DS:KEYPAD_INDEX, 0
-		MOV DS:MAX_INPUT_SIZE, 6
+		MOV DS:MAX_INPUT_SIZE, 8
 		JMP id_skip2
 		
 	receive_price:
+		CMP AL, '#'
+		JNE check_price
+		MOV DS:DAC_FLAG, 1
+		MOV DS:PRICE_FLAG, 0
+		JMP id_skip2
+	
+	check_price:	
 		CMP DS:PRICE_FLAG, 1
-		JNE id_skip2
+		JE update_keypad_input
+		
+		CMP DS:DAC_FLAG, 1
+		JE dac_change
+		
 		CMP AL, '/'
-		JNE update_keypad_input
+		JNE id_skip2
 		MOV DS:PRICE_FLAG, 0
 		MOV DS:RECEIVE_FLAG, 0
+		JMP terminate_session2
+		
+	dac_change:
+		MOV BL, DS:REG_AL
+		SUB AL, 30H
+		MOV DS:REG_AL, AL
+		CALL FAR PTR DAC_UPDATE
+		MOV DS:REG_AL, BL
+		MOV DS:DAC_FLAG, 0
+		JMP id_skip2
+		
+	next_id1:
+		JMP next_id
+	send_input_across1:
+		JMP send_input_across
+	terminate_session3:
 		JMP terminate_session2
 		
 	update_keypad_input:
 		SUB AL, 30H
 		MOV DS:REG_AL, AL
-		MOV DS:DECIMAL_FLAG, 1
-				
+		MOV DS:DECIMAL_INDEX, 3
+		MOV DS:DAC_DISABLE, 1
 		CALL FAR PTR BCD_UPDATE
+		MOV DS:DAC_DISABLE, 0
 		JMP id_skip2
 		
 	send_input_across:
@@ -697,6 +735,7 @@ SERIAL_REC_ACTION	PROC	FAR
 		JMP S_RET
 		
 	id_skip:
+		JMP S_RET
 	
 		CMP	AL,'<'
 		JNE	S_FAST
@@ -754,8 +793,13 @@ T_NEXT0:
 		XOR BX, BX
 		MOV BL, DS:BCD_INDEX
 		MOV AL, DS:BCD_MESSAGE[BX]
-	
+		
+		CMP BX, DS:DECIMAL_INDEX
+		JNE CALL_FUNC
+		MOV DS:DECIMAL_FLAG, 1
+CALL_FUNC:
 		CALL FAR PTR BCD_TO_7SEG
+		MOV DS:DECIMAL_FLAG, 0
 
 		MOV DX, 200H
 		OUT DX, AL

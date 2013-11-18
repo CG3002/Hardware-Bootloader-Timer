@@ -1,4 +1,4 @@
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    1
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    1
 
 
 DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE TIMER
@@ -26,56 +26,55 @@ LOC  OBJ                  LINE     SOURCE
                             16     
                             17     public  serial_rec_action, timer2_action
                             18     extrn   print_char:far, print_2hex:far, iodefine:far
-                            19     extrn   LCD_INIT:far, MESSAGE_LCD:far, CLEAR_LCD:far, UPDATE_LCD_INPUT:far
-                            20     extrn   set_timer2:far
-                            21     
-                            22     ;IO Setup for 80C188 
-  FFA0                      23             UMCR    EQU    0FFA0H ; Upper Memory Control Register
-  FFA2                      24             LMCR    EQU    0FFA2H ; Lower Memory control Register         
-  FFA4                      25             PCSBA   EQU    0FFA4H ; Peripheral Chip Select Base Address
-  FFA8                      26             MPCS    EQU    0FFA8H ; MMCS and PCS Alter Control Register
-  0080                      27             A_8255  EQU    0080H
-  0081                      28             B_8255  EQU    0081H
-  0082                      29             C_8255  EQU    0082H
-  0083                      30             CWR_8255  EQU    0083H
-  FF38                      31             INT0CON  EQU   0FF38H
-  FF22                      32             EOI EQU 0FF22H
-  FF28                      33             IMASK EQU 0FF28H
-  FFA6                      34             MMCS    EQU    0FFA6H 
-  4000                      35             DAC EQU 4000H
+                            19     extrn   set_timer2:far
+                            20     
+                            21     ;IO Setup for 80C188 
+  FFA0                      22             UMCR    EQU    0FFA0H ; Upper Memory Control Register
+  FFA2                      23             LMCR    EQU    0FFA2H ; Lower Memory control Register         
+  FFA4                      24             PCSBA   EQU    0FFA4H ; Peripheral Chip Select Base Address
+  FFA8                      25             MPCS    EQU    0FFA8H ; MMCS and PCS Alter Control Register
+  0080                      26             A_8255  EQU    0080H
+  0081                      27             B_8255  EQU    0081H
+  0082                      28             C_8255  EQU    0082H
+  0083                      29             CWR_8255  EQU    0083H
+  FF38                      30             INT0CON  EQU   0FF38H
+  FF22                      31             EOI EQU 0FF22H
+  FF28                      32             IMASK EQU 0FF28H
+  FFA6                      33             MMCS    EQU    0FFA6H 
+  4000                      34             DAC EQU 4000H
+                            35     
                             36     
-                            37     
-----                        38     STACK_SEG       SEGMENT
-0000 (512                   39                     DB      512 DUP(?)
+----                        37     STACK_SEG       SEGMENT
+0000 (512                   38                     DB      512 DUP(?)
      ??
      )
-0200                        40             TOS     LABEL   WORD
-----                        41     STACK_SEG       ENDS
+0200                        39             TOS     LABEL   WORD
+----                        40     STACK_SEG       ENDS
+                            41     
                             42     
-                            43     
-----                        44     DATA_SEG        SEGMENT
-0000 0A                     45             TIMER0_MESS             DB      10,13,'TIMER2 INTERRUPT    '
+----                        43     DATA_SEG        SEGMENT
+0000 0A                     44             TIMER0_MESS             DB      10,13,'TIMER2 INTERRUPT    '
 0001 0D
 0002 54494D45523220
      494E5445525255
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    2
+     505420202020
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    2
 
 
 LOC  OBJ                  LINE     SOURCE
 
-     505420202020
-0016 18                     46             T_COUNT                 DB      24
-0017 18                     47             T_COUNT_SET             DB      24
-0018 0A                     48             REC_MESS                DB      10,13,'Period of timer0 =     '
+0016 18                     45             T_COUNT                 DB      24
+0017 18                     46             T_COUNT_SET             DB      24
+0018 0A                     47             REC_MESS                DB      10,13,'Period of timer0 =     '
 0019 0D
 001A 506572696F6420
      6F662074696D65
      7230203D202020
      2020
-0031 (32                    49             MESSAGE         DB  32 dup('h')
+0031 (32                    48             MESSAGE         DB  32 dup('h')
      68
      )
-0051 00                     50             KEYPAD_INPUT    DB  0,0,0,0,0,0,0,0
+0051 00                     49             KEYPAD_INPUT    DB  0,0,0,0,0,0,0,0
 0052 00
 0053 00
 0054 00
@@ -83,18 +82,18 @@ LOC  OBJ                  LINE     SOURCE
 0056 00
 0057 00
 0058 00
-0059 2D                     51             BCD_MESSAGE     DB  '-','-','-','-','-','-'
+0059 2D                     50             BCD_MESSAGE     DB  '-','-','-','-','-','-'
 005A 2D
 005B 2D
 005C 2D
 005D 2D
 005E 2D
-005F FE                     52             ENABLE_BYTE     DB  11111110b
-0060 00                     53             BCD_INDEX       DB  0
-0061 0000                   54             KEYPAD_INDEX    DW      0
-0063 20                     55             M_SIZE                  DB  32
-0064 0040                   56             DAC_BASE        DW  4000H
-0066 00                     57             DAC_ADDR        DB  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+005F FE                     51             ENABLE_BYTE     DB  11111110b
+0060 00                     52             BCD_INDEX       DB  0
+0061 0000                   53             KEYPAD_INDEX    DW      0
+0063 20                     54             M_SIZE                  DB  32
+0064 0040                   55             DAC_BASE        DW  4000H
+0066 00                     56             DAC_ADDR        DB  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
 0067 00
 0068 00
 0069 00
@@ -104,1021 +103,1071 @@ LOC  OBJ                  LINE     SOURCE
 006D 00
 006E 00
 006F 00
-0070 00                     58             DAC_LEN         DB  0
-0071 0000                   59             SI_PTR          DW  0
-0073 ??                     60             CHAR                    DB  ?
-0074 ??                     61             REG_AL                  DB  ?
-0075 ??                     62             REG_BH                  DB  ?
-0076 ??                     63             REG_CL                  DB  ?
-0077 00                     64             FLAG            DB  0
-0078 00                     65             LONG_PRESS_FLAG DB      0
-0079 7231                   66             MY_ID                   DB      'r1'
-007B 00                     67             ID_FLAG_@               DB      0
-007C 00                     68             ID_FLAG_r               DB      0
-007D 4072312F               69             REPLY_MESSAGE   DB      '@r1/'
-0081 40302F                 70             FAIL_MESSAGE    DB '@0/'
-0084 04                     71             REPLY_COUNT             DB      4
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    3
+0070 00                     57             DAC_LEN         DB  0
+0071 0000                   58             SI_PTR          DW  0
+0073 ??                     59             CHAR                    DB  ?
+0074 ??                     60             REG_AL                  DB  ?
+0075 ??                     61             REG_BH                  DB  ?
+0076 ??                     62             REG_CL                  DB  ?
+0077 00                     63             FLAG            DB  0
+0078 00                     64             LONG_PRESS_FLAG DB      0
+0079 7231                   65             MY_ID                   DB      'r1'
+007B 00                     66             ID_FLAG_@               DB      0
+007C 00                     67             ID_FLAG_r               DB      0
+007D 4072312F               68             REPLY_MESSAGE   DB      '@r1/'
+0081 40302F                 69             FAIL_MESSAGE    DB '@0/'
+0084 04                     70             REPLY_COUNT             DB      4
+0085 03                     71             FAIL_COUNT              DB      3
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    3
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0085 03                     72             FAIL_COUNT              DB      3
-0086 00                     73             REPLY_FLAG              DB      0
-0087 00                     74             SEND_FLAG       DB  0
-0088 (13                    75             SEND_BUFFER     DB  13 dup(0)
+0086 00                     72             REPLY_FLAG              DB      0
+0087 00                     73             SEND_FLAG       DB  0
+0088 (13                    74             SEND_BUFFER     DB  13 dup(0)
      00
      )
-0095 0000                   76             SEND_BUFFER_LEN DW      0
-0097 0000                   77             MAX_INPUT_SIZE  DW      0
-0099 0000                   78             QTY_FLAG                DW      0
-009B 0000                   79             RECEIVE_FLAG    DW      0
-009D 0000                   80             DAC_FLAG                DW      0
-009F 0000                   81             PRICE_FLAG      DW      0
-00A1 0100                   82             DECIMAL_FLAG    DW      1
-00A3 0000                   83             SCROLL_LEN      DW      0
-----                        84     DATA_SEG        ENDS
-                            85     
+0095 0000                   75             SEND_BUFFER_LEN DW      0
+0097 0000                   76             MAX_INPUT_SIZE  DW      0
+0099 0000                   77             QTY_FLAG                DW      0
+009B 0000                   78             RECEIVE_FLAG    DW      0
+009D 0000                   79             DAC_FLAG                DW      0
+009F 0000                   80             PRICE_FLAG      DW      0
+00A1 0100                   81             DECIMAL_FLAG    DW      1
+00A3 0000                   82             SCROLL_LEN      DW      0
+00A5 0000                   83             DAC_DISABLE     DW  0
+00A7 0300                   84             DECIMAL_INDEX   DW  3
+----                        85     DATA_SEG        ENDS
                             86     
-----                        87     CODE_SEG        SEGMENT
-                            88     
-                            89             PUBLIC          START
-                            90     
-                            91     ASSUME  CS:CODE_SEG, SS:STACK_SEG
-                            92     
-0000                        93     START:
-                            94     ;initialize stack area
-0000 B8----         R       95                     MOV     AX,STACK_SEG            
-0003 8ED0                   96                     MOV     SS,AX
-0005 368B260002             97                     MOV     SP,TOS
-                            98                     
-                            99     ; Initialize the on-chip pheripherals
-000A 9A0000----     E      100                     CALL    FAR PTR IODEFINE
-                           101                     
-000F 9A0000----     E      102     call set_timer2
-0014 FB                    103                    STI
-                           104     
-                           105     ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
-                           106     
-                           107     ;Initialize MMCS
-                           108             
-0015 BAA6FF                109             MOV DX, MMCS
-0018 B80340                110             MOV AX, 4003H
-001B EF                    111             OUT DX, AX
-                           112     
-                           113     ; Initialize MPCS to MAP peripheral to IO address
-                           114             
-001C BAA8FF                115             MOV DX, MPCS
-001F B88320                116             MOV AX, 2083H
-0022 EF                    117             OUT DX, AX
-                           118        
-                           119     ; PCSBA initial, set the parallel port start from 00H
-0023 BAA4FF                120             MOV DX, PCSBA
-0026 B80300                121             MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
-0029 EF                    122             OUT DX, AX
-                           123     
-                           124     ; Initialize LMCS 
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    4
+                            87     
+----                        88     CODE_SEG        SEGMENT
+                            89     
+                            90             PUBLIC          START
+                            91     
+                            92     ASSUME  CS:CODE_SEG, SS:STACK_SEG
+                            93     
+0000                        94     START:
+                            95     ;initialize stack area
+0000 B8----         R       96                     MOV     AX,STACK_SEG            
+0003 8ED0                   97                     MOV     SS,AX
+0005 368B260002             98                     MOV     SP,TOS
+                            99                     
+                           100     ; Initialize the on-chip pheripherals
+000A 9A0000----     E      101                     CALL    FAR PTR IODEFINE
+                           102                     
+000F 9A0000----     E      103     call set_timer2
+0014 FB                    104                    STI
+                           105     
+                           106     ; ^^^^^^^^^^^^^^^^^  Start of User Main Routine  ^^^^^^^^^^^^^^^^^^
+                           107     
+                           108     ;Initialize MMCS
+                           109             
+0015 BAA6FF                110             MOV DX, MMCS
+0018 B80340                111             MOV AX, 4003H
+001B EF                    112             OUT DX, AX
+                           113     
+                           114     ; Initialize MPCS to MAP peripheral to IO address
+                           115             
+001C BAA8FF                116             MOV DX, MPCS
+001F B88320                117             MOV AX, 2083H
+0022 EF                    118             OUT DX, AX
+                           119        
+                           120     ; PCSBA initial, set the parallel port start from 00H
+0023 BAA4FF                121             MOV DX, PCSBA
+0026 B80300                122             MOV AX, 0003H ; Peripheral starting address 00H no READY, No Waits
+0029 EF                    123             OUT DX, AX
+                           124     
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    4
 
 
 LOC  OBJ                  LINE     SOURCE
 
-002A BAA2FF                125         MOV DX, LMCR
-002D B8C401                126         MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 wai
+                           125     ; Initialize LMCS 
+002A BAA2FF                126         MOV DX, LMCR
+002D B8C401                127         MOV AX, 01C4H  ; Starting address 1FFFH, 8K, No waits, last shoud be 5H for 1 wai
                                    ts      
-0030 EF                    127         OUT DX, AX
-                           128             
-0031 B8----         R      129             MOV AX, DATA_SEG
-0034 8ED8                  130             MOV DS, AX
-                           131                              
-0036 BA8300                132             MOV DX, CWR_8255
-0039 B88200                133             MOV AX, 0082h
-003C EF                    134             OUT DX, AX
-                           135             
-003D                       136     NEXT:
-003D 9A4400----     R      137             CALL FAR PTR KEYPAD_LOOP
-                           138             
-0042 EBF9                  139     JMP NEXT
-                           140     
-0044                       141     KEYPAD_LOOP PROC FAR
-0044 50                    142     PUSH AX
-0045 53                    143     PUSH BX
-0046 51                    144     PUSH CX
-0047 52                    145     PUSH DX
-                           146             
-0048 9A9703----     R      147                             CALL FAR PTR DEBOUNCE           
-                           148                             
-004D C606740003            149     WAIT_1:         MOV DS:REG_AL, 03H
-0052 BB0000                150                         MOV BX, 0000H
-0055 BA8200                151                         MOV DX,C_8255
-0058 8AC3                  152                         MOV AL,BL
-005A EE                    153                         OUT DX,AL
-                           154                        
-005B BA8100                155                         MOV DX,B_8255
-005E EC                    156                         IN AL,DX
-005F 8AD8                  157                         MOV BL,AL  
-0061 80E3FC                158                         AND BL,0FCH
-0064 80FBFC                159                         CMP BL,0FCH
-                           160                      
-0067 7449                  161                     JE LONG_PRESS
-                           162                             
-0069 B3FE                  163                         MOV BL, 0FEH
-006B C606750004            164                         MOV DS:REG_BH, 04H
-                           165                        
-0070                       166     NXTROW: 
-0070 C0C307                167                     ROL BL,07H
-0073 8AEB                  168                             MOV CH,BL
-0075 BA8200                169                             MOV DX,C_8255
-0078 8AC3                  170                             MOV AL,BL
-007A EE                    171                             OUT DX,AL
-                           172                             
-007B BA8100                173                             MOV DX,B_8255
-007E EC                    174                             IN AL,DX
-007F 8AD8                  175                             MOV BL,AL
-0081 80E3FC                176                             AND BL,0FCH
-0084 C606760006            177                             MOV DS:REG_CL,06H
-0089 C0DB02                178                             RCR BL,02H
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    5
+0030 EF                    128         OUT DX, AX
+                           129             
+0031 B8----         R      130             MOV AX, DATA_SEG
+0034 8ED8                  131             MOV DS, AX
+                           132                              
+0036 BA8300                133             MOV DX, CWR_8255
+0039 B88200                134             MOV AX, 0082h
+003C EF                    135             OUT DX, AX
+                           136             
+003D                       137     NEXT:
+003D 9A4400----     R      138             CALL FAR PTR KEYPAD_LOOP
+                           139             
+0042 EBF9                  140     JMP NEXT
+                           141     
+0044                       142     KEYPAD_LOOP PROC FAR
+0044 50                    143     PUSH AX
+0045 53                    144     PUSH BX
+0046 51                    145     PUSH CX
+0047 52                    146     PUSH DX
+                           147             
+0048 9ACA03----     R      148                             CALL FAR PTR DEBOUNCE           
+                           149                             
+004D C606740003            150     WAIT_1:         MOV DS:REG_AL, 03H
+0052 BB0000                151                         MOV BX, 0000H
+0055 BA8200                152                         MOV DX,C_8255
+0058 8AC3                  153                         MOV AL,BL
+005A EE                    154                         OUT DX,AL
+                           155                        
+005B BA8100                156                         MOV DX,B_8255
+005E EC                    157                         IN AL,DX
+005F 8AD8                  158                         MOV BL,AL  
+0061 80E3FC                159                         AND BL,0FCH
+0064 80FBFC                160                         CMP BL,0FCH
+                           161                      
+0067 7449                  162                     JE LONG_PRESS
+                           163                             
+0069 B3FE                  164                         MOV BL, 0FEH
+006B C606750004            165                         MOV DS:REG_BH, 04H
+                           166                        
+0070                       167     NXTROW: 
+0070 C0C307                168                     ROL BL,07H
+0073 8AEB                  169                             MOV CH,BL
+0075 BA8200                170                             MOV DX,C_8255
+0078 8AC3                  171                             MOV AL,BL
+007A EE                    172                             OUT DX,AL
+                           173                             
+007B BA8100                174                             MOV DX,B_8255
+007E EC                    175                             IN AL,DX
+007F 8AD8                  176                             MOV BL,AL
+0081 80E3FC                177                             AND BL,0FCH
+0084 C606760006            178                             MOV DS:REG_CL,06H
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    5
 
 
 LOC  OBJ                  LINE     SOURCE
 
-008C D0DB                  179     NXTCOL:         RCR BL,01H
-008E 732A                  180                             JNC CODEKY
-0090 FE0E7400              181                             DEC DS:REG_AL
-0094 FE0E7600              182                             DEC DS:REG_CL
-0098 803E760003            183                             CMP DS:REG_CL,03H
-009D 746A                  184                             JE KEYPAD3
-                           185                             
-009F 803E760000            186                             CMP DS:REG_CL, 0H
-00A4 7460                  187                             JE SUBTRACT2
-00A6 EBE4                  188                             JMP NXTCOL
-                           189                             
-00A8 8ADD                  190                             MOV BL,CH
-00AA FE0E7500              191                             DEC DS:REG_BH
-00AE 75C0                  192                             JNZ NXTROW
-00B0 EB9B                  193                             JMP WAIT_1
-                           194                             
-00B2                       195     LONG_PRESS:
-00B2 C606780000            196                             MOV DS:LONG_PRESS_FLAG, 0
-00B7 EB5390                197                             JMP RETURN2
-00BA                       198     CODEKY:
-00BA 803E74000B            199                         CMP DS:REG_AL, 11
-00BF 7505                  200                             JNE bcd_upd
-00C1 C606740000            201                             MOV DS:REG_AL, 0
-                           202                             
-00C6                       203     bcd_upd:
-00C6 803E780000            204                             CMP DS:LONG_PRESS_FLAG, 0
-00CB 753F                  205                             JNE RETURN2
-                           206                             
-00CD 803E74000A            207                             CMP DS:REG_AL, 10
-00D2 7508                  208                             JNE BACKSPACE
-00D4 9AED02----     R      209                             CALL FAR PTR BCD_CLEAR
-00D9 E9A000                210                             JMP UPDATE_7SEG2
-                           211                             
-00DC 803E74000C            212     BACKSPACE:      CMP DS:REG_AL, 12
-00E1 7508                  213                             JNE ENTER_DATA
-00E3 9A8A02----     R      214                             CALL FAR PTR BCD_BACKSPACE
-00E8 E99100                215                             JMP UPDATE_7SEG2
-                           216     
-00EB 803E74000D            217     ENTER_DATA:     CMP DS:REG_AL, 13
-00F0 751D                  218                             JNE SCROLL_LEFT
-00F2 9AED02----     R      219                             CALL FAR PTR BCD_CLEAR
-00F7 C706A1000000          220                             MOV DS:DECIMAL_FLAG, 0
-00FD C70697000800          221                             MOV DS:MAX_INPUT_SIZE, 8
-0103 EB7790                222                             JMP UPDATE_7SEG2
-                           223                             
-0106 E9F500                224     SUBTRACT2:   JMP SUBTRACT
-                           225     
-0109 E9E200                226     KEYPAD3:        JMP KEYPAD_2
-                           227     
-010C E9FD00                228     RETURN2:    JMP RETURN
-                           229                             
-010F                       230     SCROLL_LEFT:
-010F 803E740015            231                             CMP DS:REG_AL, 21
-0114 752D                  232                             JNE SCROLL_RIGHT
-0116 833E610006            233                             CMP DS:KEYPAD_INDEX, 6
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    6
+0089 C0DB02                179                             RCR BL,02H
+008C D0DB                  180     NXTCOL:         RCR BL,01H
+008E 732A                  181                             JNC CODEKY
+0090 FE0E7400              182                             DEC DS:REG_AL
+0094 FE0E7600              183                             DEC DS:REG_CL
+0098 803E760003            184                             CMP DS:REG_CL,03H
+009D 746A                  185                             JE KEYPAD3
+                           186                             
+009F 803E760000            187                             CMP DS:REG_CL, 0H
+00A4 7460                  188                             JE SUBTRACT2
+00A6 EBE4                  189                             JMP NXTCOL
+                           190                             
+00A8 8ADD                  191                             MOV BL,CH
+00AA FE0E7500              192                             DEC DS:REG_BH
+00AE 75C0                  193                             JNZ NXTROW
+00B0 EB9B                  194                             JMP WAIT_1
+                           195                             
+00B2                       196     LONG_PRESS:
+00B2 C606780000            197                             MOV DS:LONG_PRESS_FLAG, 0
+00B7 EB5390                198                             JMP RETURN2
+00BA                       199     CODEKY:
+00BA 803E74000B            200                         CMP DS:REG_AL, 11
+00BF 7505                  201                             JNE bcd_upd
+00C1 C606740000            202                             MOV DS:REG_AL, 0
+                           203                             
+00C6                       204     bcd_upd:
+00C6 803E780000            205                             CMP DS:LONG_PRESS_FLAG, 0
+00CB 753F                  206                             JNE RETURN2
+                           207                             
+00CD 803E74000A            208                             CMP DS:REG_AL, 10
+00D2 7508                  209                             JNE BACKSPACE
+00D4 9A1903----     R      210                             CALL FAR PTR BCD_CLEAR
+00D9 E9C000                211                             JMP UPDATE_7SEG2
+                           212                             
+00DC 803E74000C            213     BACKSPACE:      CMP DS:REG_AL, 12
+00E1 7508                  214                             JNE ENTER_DATA
+00E3 9AAA02----     R      215                             CALL FAR PTR BCD_BACKSPACE
+00E8 E9B100                216                             JMP UPDATE_7SEG2
+                           217     
+00EB 803E74000D            218     ENTER_DATA:     CMP DS:REG_AL, 13
+00F0 751D                  219                             JNE SCROLL_LEFT
+00F2 9A1903----     R      220                             CALL FAR PTR BCD_CLEAR
+00F7 C706A7000600          221                             MOV DS:DECIMAL_INDEX, 6
+00FD C70697000800          222                             MOV DS:MAX_INPUT_SIZE, 8
+0103 E99600                223                             JMP UPDATE_7SEG2
+                           224                             
+0106 E91501                225     SUBTRACT2:   JMP SUBTRACT
+                           226     
+0109 E90201                227     KEYPAD3:        JMP KEYPAD_2
+                           228     
+010C E91D01                229     RETURN2:    JMP RETURN
+                           230                             
+010F                       231     SCROLL_LEFT:
+010F 803E740015            232                             CMP DS:REG_AL, 21
+0114 753D                  233                             JNE SCROLL_RIGHT
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    6
 
 
 LOC  OBJ                  LINE     SOURCE
 
-011B 7E5F                  234                             JLE UPDATE_7SEG2
-011D 833EA30000            235                             CMP DS:SCROLL_LEN, 0
-0122 7458                  236                             JE UPDATE_7SEG2
-0124 FF0EA300              237                             DEC DS:SCROLL_LEN
-0128 FF0E6100              238                             DEC DS:KEYPAD_INDEX
-012C 8B1E6100              239                             MOV BX, DS:KEYPAD_INDEX
-0130 8A4751                240                             MOV AL, DS:KEYPAD_INPUT[BX]
-0133 A27400                241                             MOV DS:REG_AL, AL
-0136 9A1803----     R      242                             CALL FAR PTR BCD_UPDATE
-013B C606740015            243                             MOV DS:REG_AL, 21
-0140 EB3A90                244                             JMP UPDATE_7SEG2
-                           245     
-                           246     
-                           247     
-0143                       248     SCROLL_RIGHT:
-0143 803E740013            249                             CMP DS:REG_AL, 19
-0148 7535                  250                             JNE QTY_PROMPT
-014A 833E610006            251                             CMP DS:KEYPAD_INDEX, 6
-014F 7E2B                  252                             JLE UPDATE_7SEG2
-0151 A16100                253                             MOV AX, DS:KEYPAD_INDEX
-0154 2D0600                254                             SUB AX, 6
-0157 3906A300              255                             CMP DS:SCROLL_LEN, AX
-015B 741F                  256                             JE UPDATE_7SEG2
-015D FF06A300              257                             INC DS:SCROLL_LEN
-0161 FF0E6100              258                             DEC DS:KEYPAD_INDEX
-0165 8B1E6100              259                             MOV BX, DS:KEYPAD_INDEX
-0169 8A4751                260                             MOV AL, DS:KEYPAD_INPUT[BX]
-016C A27400                261                             MOV DS:REG_AL, AL
-016F 9A1803----     R      262                             CALL FAR PTR BCD_UPDATE
-0174 C606740013            263                             MOV DS:REG_AL, 19
-0179 EB0190                264                             JMP UPDATE_7SEG2
-                           265                             
-017C EB5C90                266     UPDATE_7SEG2: JMP UPDATE_7SEG
-                           267     
-017F                       268     QTY_PROMPT:
-017F 833E610008            269                             CMP DS:KEYPAD_INDEX, 8
-0184 7527                  270                             JNE  QUANTITY
-0186 803E740016            271                             CMP DS:REG_AL, 22
-018B 7520                  272                             JNE QUANTITY
-018D 833E970008            273                             CMP DS:MAX_INPUT_SIZE, 8
-0192 7519                  274                             JNE QUANTITY
-0194 9A4302----     R      275                             CALL FAR PTR UPDATE_SEND_BUFFER
-0199 9AED02----     R      276                             CALL FAR PTR BCD_CLEAR
-019E C70697000200          277                             MOV DS:MAX_INPUT_SIZE, 2
-01A4 C70699000100          278                             MOV DS:QTY_FLAG, 1
-01AA EB2E90                279                             JMP UPDATE_7SEG
-                           280                     
-01AD                       281     QUANTITY:
-01AD 833E610000            282                             CMP DS:KEYPAD_INDEX, 0
-01B2 7426                  283                             JE  UPDATE_7SEG
-                           284                             
-01B4 803E74000E            285                             CMP DS:REG_AL, 14
-01B9 751F                  286                             JNE UPDATE_7SEG
-                           287                             
-01BB 833E990001            288                             CMP DS:QTY_FLAG, 1
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    7
+0116 833E610006            234                             CMP DS:KEYPAD_INDEX, 6
+011B 7E7F                  235                             JLE UPDATE_7SEG2
+011D 833EA30000            236                             CMP DS:SCROLL_LEN, 0
+0122 7478                  237                             JE UPDATE_7SEG2
+0124 FF0EA300              238                             DEC DS:SCROLL_LEN
+0128 FF0EA700              239                             DEC DS:DECIMAL_INDEX
+012C FF0E6100              240                             DEC DS:KEYPAD_INDEX
+0130 8B1E6100              241                             MOV BX, DS:KEYPAD_INDEX
+0134 8A4751                242                             MOV AL, DS:KEYPAD_INPUT[BX]
+0137 A27400                243                             MOV DS:REG_AL, AL
+013A C706A5000100          244                             MOV DS:DAC_DISABLE, 1
+0140 9A4403----     R      245                             CALL FAR PTR BCD_UPDATE
+0145 C706A5000000          246                             MOV DS:DAC_DISABLE, 0
+014B C606740015            247                             MOV DS:REG_AL, 21
+0150 EB4A90                248                             JMP UPDATE_7SEG2
+                           249     
+                           250     
+                           251     
+0153                       252     SCROLL_RIGHT:
+0153 803E740013            253                             CMP DS:REG_AL, 19
+0158 7545                  254                             JNE QTY_PROMPT
+015A 833E610006            255                             CMP DS:KEYPAD_INDEX, 6
+015F 7E3B                  256                             JLE UPDATE_7SEG2
+0161 A16100                257                             MOV AX, DS:KEYPAD_INDEX
+0164 2D0600                258                             SUB AX, 6
+0167 3906A300              259                             CMP DS:SCROLL_LEN, AX
+016B 742F                  260                             JE UPDATE_7SEG2
+016D FF06A300              261                             INC DS:SCROLL_LEN
+0171 FF06A700              262                             INC DS:DECIMAL_INDEX
+0175 FF0E6100              263                             DEC DS:KEYPAD_INDEX
+0179 8B1E6100              264                             MOV BX, DS:KEYPAD_INDEX
+017D 8A4751                265                             MOV AL, DS:KEYPAD_INPUT[BX]
+0180 A27400                266                             MOV DS:REG_AL, AL
+0183 C706A5000100          267                             MOV DS:DAC_DISABLE, 1
+0189 9A4403----     R      268                             CALL FAR PTR BCD_UPDATE
+018E C706A5000000          269                             MOV DS:DAC_DISABLE, 0
+0194 C606740013            270                             MOV DS:REG_AL, 19
+0199 EB0190                271                             JMP UPDATE_7SEG2
+                           272                             
+019C EB5C90                273     UPDATE_7SEG2: JMP UPDATE_7SEG
+                           274     
+019F                       275     QTY_PROMPT:
+019F 833E610008            276                             CMP DS:KEYPAD_INDEX, 8
+01A4 7527                  277                             JNE  QUANTITY
+01A6 803E740016            278                             CMP DS:REG_AL, 22
+01AB 7520                  279                             JNE QUANTITY
+01AD 833E970008            280                             CMP DS:MAX_INPUT_SIZE, 8
+01B2 7519                  281                             JNE QUANTITY
+01B4 9A6302----     R      282                             CALL FAR PTR UPDATE_SEND_BUFFER
+01B9 9A1903----     R      283                             CALL FAR PTR BCD_CLEAR
+01BE C70697000200          284                             MOV DS:MAX_INPUT_SIZE, 2
+01C4 C70699000100          285                             MOV DS:QTY_FLAG, 1
+01CA EB2E90                286                             JMP UPDATE_7SEG
+                           287                     
+01CD                       288     QUANTITY:
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    7
 
 
 LOC  OBJ                  LINE     SOURCE
 
-01C0 7518                  289                             JNE UPDATE_7SEG
-                           290                             
-01C2 9A1102----     R      291                             CALL FAR PTR UPDATE_THE_QUANTITY
-                           292                                             
-01C7 C606870001            293                             MOV DS:SEND_FLAG, 1
+01CD 833E610000            289                             CMP DS:KEYPAD_INDEX, 0
+01D2 7426                  290                             JE  UPDATE_7SEG
+                           291                             
+01D4 803E74000E            292                             CMP DS:REG_AL, 14
+01D9 751F                  293                             JNE UPDATE_7SEG
                            294                             
-                           295                             ;MOV DS:MAX_INPUT_SIZE, 0
-01CC C70699000000          296                             MOV DS:QTY_FLAG, 0
-01D2 9AED02----     R      297                             CALL FAR PTR BCD_CLEAR
-                           298                                     
-01D7 EB0190                299                             JMP UPDATE_7SEG
-                           300                             
-                           301     
-01DA                       302     UPDATE_7SEG:
-01DA 803E740009            303                             CMP DS:REG_AL, 9
-01DF 7F05                  304                             JG SET_PRESS_FLAG
-                           305                             
-01E1 9A1803----     R      306                             CALL FAR PTR BCD_UPDATE
-                           307                             
-01E6                       308     SET_PRESS_FLAG:
-01E6 C606780001            309                             MOV DS:LONG_PRESS_FLAG, 1
-01EB EB1F90                310                             JMP RETURN
-                           311             
-01EE                       312     KEYPAD_2: 
-01EE 800674000F            313                 ADD DS:REG_AL,0FH
-01F3 E996FE                314                             JMP NXTCOL
-01F6 C606740000            315     ZERO_PRINT: MOV DS:REG_AL,00H
-01FB E98EFE                316                             JMP NXTCOL
-01FE 802E740006            317     SUBTRACT:   SUB DS:REG_AL,06H
-0203 8ADD                  318                             MOV BL,CH
-0205 FE0E7500              319                             DEC DS:REG_BH
-0209 E964FE                320                             JMP NXTROW
-                           321             
-                           322             
-020C                       323     RETURN:
-020C 5A                    324                             POP DX
-020D 59                    325                             POP CX
-020E 5B                    326                             POP BX
-020F 58                    327                             POP AX
-0210 CB                    328                             RET
-                           329     
-                           330     KEYPAD_LOOP ENDP
-                           331     
-0211                       332     UPDATE_THE_QUANTITY PROC FAR
-0211 50                    333     PUSH AX
-0212 53                    334     PUSH BX
-0213 51                    335     PUSH CX
-0214 52                    336     PUSH DX
-0215 8B0E6100              337             MOV CX, DS:KEYPAD_INDEX
-0219 8B1E9500              338             MOV BX, DS:SEND_BUFFER_LEN
-                           339             
-021D                       340             UPD_QTY:
-021D 53                    341                     PUSH BX
-021E 8B1E6100              342                     MOV BX, DS:KEYPAD_INDEX
-0222 2BD9                  343                     SUB BX, CX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    8
+01DB 833E990001            295                             CMP DS:QTY_FLAG, 1
+01E0 7518                  296                             JNE UPDATE_7SEG
+                           297                             
+01E2 9A3102----     R      298                             CALL FAR PTR UPDATE_THE_QUANTITY
+                           299                                             
+01E7 C606870001            300                             MOV DS:SEND_FLAG, 1
+                           301                             
+01EC C70699000000          302                             MOV DS:QTY_FLAG, 0
+01F2 9A1903----     R      303                             CALL FAR PTR BCD_CLEAR
+                           304                                     
+01F7 EB0190                305                             JMP UPDATE_7SEG
+                           306                             
+                           307     
+01FA                       308     UPDATE_7SEG:
+01FA 803E740009            309                             CMP DS:REG_AL, 9
+01FF 7F05                  310                             JG SET_PRESS_FLAG
+                           311                             
+0201 9A4403----     R      312                             CALL FAR PTR BCD_UPDATE
+                           313                             
+0206                       314     SET_PRESS_FLAG:
+0206 C606780001            315                             MOV DS:LONG_PRESS_FLAG, 1
+020B EB1F90                316                             JMP RETURN
+                           317             
+020E                       318     KEYPAD_2: 
+020E 800674000F            319                 ADD DS:REG_AL,0FH
+0213 E976FE                320                             JMP NXTCOL
+0216 C606740000            321     ZERO_PRINT: MOV DS:REG_AL,00H
+021B E96EFE                322                             JMP NXTCOL
+021E 802E740006            323     SUBTRACT:   SUB DS:REG_AL,06H
+0223 8ADD                  324                             MOV BL,CH
+0225 FE0E7500              325                             DEC DS:REG_BH
+0229 E944FE                326                             JMP NXTROW
+                           327             
+                           328             
+022C                       329     RETURN:
+022C 5A                    330                             POP DX
+022D 59                    331                             POP CX
+022E 5B                    332                             POP BX
+022F 58                    333                             POP AX
+0230 CB                    334                             RET
+                           335     
+                           336     KEYPAD_LOOP ENDP
+                           337     
+0231                       338     UPDATE_THE_QUANTITY PROC FAR
+0231 50                    339     PUSH AX
+0232 53                    340     PUSH BX
+0233 51                    341     PUSH CX
+0234 52                    342     PUSH DX
+0235 8B0E6100              343             MOV CX, DS:KEYPAD_INDEX
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    8
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0224 8A4751                344                     MOV AL, DS:KEYPAD_INPUT[BX]
-0227 5B                    345                     POP BX
-0228 0430                  346                     ADD AL, 30H
-022A 88878800              347                     MOV DS:SEND_BUFFER[BX], AL
-                           348                     
-022E 43                    349                     INC BX
-022F FF069500              350                     INC DS:SEND_BUFFER_LEN
-                           351                     
-0233 E2E8                  352             LOOP UPD_QTY
-0235 C68788002F            353                     MOV DS:SEND_BUFFER[BX], '/'
-023A FF069500              354                     INC DS:SEND_BUFFER_LEN
-                           355     
-023E 5A                    356     POP DX
-023F 59                    357     POP CX
-0240 5B                    358     POP BX
-0241 58                    359     POP AX
-                           360     
-0242 CB                    361     RET
-                           362     UPDATE_THE_QUANTITY ENDP
-                           363     
-0243                       364     UPDATE_SEND_BUFFER PROC FAR
-0243 50                    365     PUSH AX
-0244 53                    366     PUSH BX
-0245 51                    367     PUSH CX
-0246 52                    368     PUSH DX
+0239 8B1E9500              344             MOV BX, DS:SEND_BUFFER_LEN
+                           345             
+023D                       346             UPD_QTY:
+023D 53                    347                     PUSH BX
+023E 8B1E6100              348                     MOV BX, DS:KEYPAD_INDEX
+0242 2BD9                  349                     SUB BX, CX
+0244 8A4751                350                     MOV AL, DS:KEYPAD_INPUT[BX]
+0247 5B                    351                     POP BX
+0248 0430                  352                     ADD AL, 30H
+024A 88878800              353                     MOV DS:SEND_BUFFER[BX], AL
+                           354                     
+024E 43                    355                     INC BX
+024F FF069500              356                     INC DS:SEND_BUFFER_LEN
+                           357                     
+0253 E2E8                  358             LOOP UPD_QTY
+0255 C68788002F            359                     MOV DS:SEND_BUFFER[BX], '/'
+025A FF069500              360                     INC DS:SEND_BUFFER_LEN
+                           361     
+025E 5A                    362     POP DX
+025F 59                    363     POP CX
+0260 5B                    364     POP BX
+0261 58                    365     POP AX
+                           366     
+0262 CB                    367     RET
+                           368     UPDATE_THE_QUANTITY ENDP
                            369     
-0247 8B0E6100              370             MOV CX, DS:KEYPAD_INDEX
-024B 83F900                371             CMP CX, 0
-024E 7435                  372             JE END_UPD_BUFFER
-0250 83C102                373             ADD CX, 2
-0253 890E9500              374             MOV DS:SEND_BUFFER_LEN, CX
-0257 BB0000                375             MOV BX, 0
-025A                       376             BUFFER_LOOP:
-025A 83FB00                377                     CMP BX, 0
-025D 7508                  378                     JNE ASTRISK
-025F C68788007E            379                     MOV DS:SEND_BUFFER[BX], '~'
-0264 EB1C90                380                     JMP END_BUFFER
-0267                       381             ASTRISK:
-0267 A16100                382                     MOV AX, DS:KEYPAD_INDEX
-026A 40                    383                     INC AX
-026B 3BD8                  384                     CMP BX, AX
-026D 7508                  385                     JNE CONT
-026F C68788002A            386                     MOV DS:SEND_BUFFER[BX], '*'
-0274 EB0C90                387                     JMP END_BUFFER
-0277                       388             CONT:
-0277 4B                    389                     DEC BX
-0278 8A4751                390                     MOV AL, DS:KEYPAD_INPUT[BX]
-027B 0430                  391                     ADD AL, 30H
-027D 43                    392                     INC BX
-027E 88878800              393                     MOV DS:SEND_BUFFER[BX], AL
-                           394                     
-0282                       395             END_BUFFER:
-0282 43                    396                     INC BX
-0283 E2D5                  397             LOOP BUFFER_LOOP
-0285                       398     END_UPD_BUFFER:
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE    9
+0263                       370     UPDATE_SEND_BUFFER PROC FAR
+0263 50                    371     PUSH AX
+0264 53                    372     PUSH BX
+0265 51                    373     PUSH CX
+0266 52                    374     PUSH DX
+                           375     
+0267 8B0E6100              376             MOV CX, DS:KEYPAD_INDEX
+026B 83F900                377             CMP CX, 0
+026E 7435                  378             JE END_UPD_BUFFER
+0270 83C102                379             ADD CX, 2
+0273 890E9500              380             MOV DS:SEND_BUFFER_LEN, CX
+0277 BB0000                381             MOV BX, 0
+027A                       382             BUFFER_LOOP:
+027A 83FB00                383                     CMP BX, 0
+027D 7508                  384                     JNE ASTRISK
+027F C68788007E            385                     MOV DS:SEND_BUFFER[BX], '~'
+0284 EB1C90                386                     JMP END_BUFFER
+0287                       387             ASTRISK:
+0287 A16100                388                     MOV AX, DS:KEYPAD_INDEX
+028A 40                    389                     INC AX
+028B 3BD8                  390                     CMP BX, AX
+028D 7508                  391                     JNE CONT
+028F C68788002A            392                     MOV DS:SEND_BUFFER[BX], '*'
+0294 EB0C90                393                     JMP END_BUFFER
+0297                       394             CONT:
+0297 4B                    395                     DEC BX
+0298 8A4751                396                     MOV AL, DS:KEYPAD_INPUT[BX]
+029B 0430                  397                     ADD AL, 30H
+029D 43                    398                     INC BX
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE    9
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0285 5A                    399     POP DX
-0286 59                    400     POP CX
-0287 5B                    401     POP BX
-0288 58                    402     POP AX
-0289 CB                    403     RET
-                           404     UPDATE_SEND_BUFFER ENDP
-                           405     
-028A                       406     BCD_BACKSPACE PROC FAR
-                           407     
-028A 50                    408     PUSH AX
-028B 53                    409     PUSH BX
-028C 51                    410     PUSH CX
-028D 52                    411     PUSH DX
-                           412     
-028E 8A167400              413             MOV DL, DS:REG_AL
-0292 833E610000            414             CMP DS:KEYPAD_INDEX, 0
-0297 744B                  415             JE RETURN_BACK
-                           416             
-0299 BB0600                417             MOV BX, 6
-029C                       418             BCD_CLEAR_LOOP:
-029C 4B                    419                     DEC BX
-029D C647592D              420                     MOV DS:BCD_MESSAGE[BX], '-'
-02A1 43                    421                     INC BX
-02A2 4B                    422                     DEC BX
-02A3 75F7                  423             JNZ BCD_CLEAR_LOOP
-                           424             
-02A5 833E610001            425             CMP DS:KEYPAD_INDEX, 1
-02AA 7E20                  426             JLE less_than_two
-                           427             
-02AC FF0E6100              428             DEC DS:KEYPAD_INDEX
-02B0 FF0E6100              429             DEC DS:KEYPAD_INDEX
-02B4 8B1E6100              430             MOV BX, DS:KEYPAD_INDEX
-02B8 8A4751                431             MOV AL, DS:KEYPAD_INPUT[BX]
-02BB A27400                432             MOV DS:REG_AL, AL
-02BE C706A3000000          433             MOV DS:SCROLL_LEN, 0
-02C4 9A1803----     R      434             CALL FAR PTR BCD_UPDATE
-02C9 EB1990                435             JMP RETURN_BACK
-                           436             
-02CC                       437     less_than_two:
-02CC FF0E6100              438             DEC DS:KEYPAD_INDEX
-02D0 C60674002D            439             MOV DS:REG_AL, '-'
-02D5 C706A3000000          440             MOV DS:SCROLL_LEN, 0
-02DB 9A1803----     R      441             CALL FAR PTR BCD_UPDATE
-02E0 FF0E6100              442             DEC DS:KEYPAD_INDEX
-                           443             
-02E4                       444     RETURN_BACK:
-02E4 88167400              445             MOV DS:REG_AL, DL
-02E8 5A                    446     POP DX
-02E9 59                    447     POP CX
-02EA 5B                    448     POP BX
-02EB 58                    449     POP AX
-                           450     
-02EC CB                    451     RET
-                           452     BCD_BACKSPACE ENDP
-                           453     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   10
+029E 88878800              399                     MOV DS:SEND_BUFFER[BX], AL
+                           400                     
+02A2                       401             END_BUFFER:
+02A2 43                    402                     INC BX
+02A3 E2D5                  403             LOOP BUFFER_LOOP
+02A5                       404     END_UPD_BUFFER:
+02A5 5A                    405     POP DX
+02A6 59                    406     POP CX
+02A7 5B                    407     POP BX
+02A8 58                    408     POP AX
+02A9 CB                    409     RET
+                           410     UPDATE_SEND_BUFFER ENDP
+                           411     
+02AA                       412     BCD_BACKSPACE PROC FAR
+                           413     
+02AA 50                    414     PUSH AX
+02AB 53                    415     PUSH BX
+02AC 51                    416     PUSH CX
+02AD 52                    417     PUSH DX
+                           418     
+02AE 8A167400              419             MOV DL, DS:REG_AL
+02B2 833E610000            420             CMP DS:KEYPAD_INDEX, 0
+02B7 7457                  421             JE RETURN_BACK
+                           422             
+02B9 BB0600                423             MOV BX, 6
+02BC                       424             BCD_CLEAR_LOOP:
+02BC 4B                    425                     DEC BX
+02BD C647592D              426                     MOV DS:BCD_MESSAGE[BX], '-'
+02C1 43                    427                     INC BX
+02C2 4B                    428                     DEC BX
+02C3 75F7                  429             JNZ BCD_CLEAR_LOOP
+                           430             
+02C5 833E610001            431             CMP DS:KEYPAD_INDEX, 1
+02CA 7E2C                  432             JLE less_than_two
+                           433             
+02CC FF0E6100              434             DEC DS:KEYPAD_INDEX
+02D0 FF0E6100              435             DEC DS:KEYPAD_INDEX
+02D4 8B1E6100              436             MOV BX, DS:KEYPAD_INDEX
+02D8 8A4751                437             MOV AL, DS:KEYPAD_INPUT[BX]
+02DB A27400                438             MOV DS:REG_AL, AL
+02DE C706A3000000          439             MOV DS:SCROLL_LEN, 0
+02E4 C706A5000100          440             MOV DS:DAC_DISABLE, 1
+02EA 9A4403----     R      441             CALL FAR PTR BCD_UPDATE
+02EF C706A5000000          442             MOV DS:DAC_DISABLE, 0
+02F5 EB1990                443             JMP RETURN_BACK
+                           444             
+02F8                       445     less_than_two:
+02F8 FF0E6100              446             DEC DS:KEYPAD_INDEX
+02FC C60674002D            447             MOV DS:REG_AL, '-'
+0301 C706A3000000          448             MOV DS:SCROLL_LEN, 0
+0307 9A4403----     R      449             CALL FAR PTR BCD_UPDATE
+030C FF0E6100              450             DEC DS:KEYPAD_INDEX
+                           451             
+0310                       452     RETURN_BACK:
+0310 88167400              453             MOV DS:REG_AL, DL
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   10
 
 
 LOC  OBJ                  LINE     SOURCE
 
-02ED                       454     BCD_CLEAR PROC FAR
-02ED 50                    455     PUSH AX
-02EE 53                    456     PUSH BX
-02EF 51                    457     PUSH CX
-02F0 52                    458     PUSH DX
-02F1 BB0800                459             MOV BX, 8
-02F4                       460             CLEAR_LOOP:
-02F4 C6475100              461             MOV DS:KEYPAD_INPUT[BX], 0
-02F8 4B                    462             DEC BX
-02F9 75F9                  463             JNZ CLEAR_LOOP
-                           464             
-02FB BB0600                465             MOV BX, 6
-02FE                       466             CLEAR_LOOP2:
-02FE 4B                    467                     DEC BX
-02FF C647592D              468                     MOV DS:BCD_MESSAGE[BX], '-'
-0303 43                    469                     INC BX
-0304 4B                    470                     DEC BX
-0305 75F7                  471             JNZ CLEAR_LOOP2
-                           472     
-0307 C70661000000          473             MOV DS:KEYPAD_INDEX, 0
-030D C706A3000000          474             MOV DS:SCROLL_LEN, 0
-0313 5A                    475     POP DX
-0314 59                    476     POP CX
-0315 5B                    477     POP BX
-0316 58                    478     POP AX
-0317 CB                    479     RET
-                           480     BCD_CLEAR ENDP
-                           481     
-0318                       482     BCD_UPDATE PROC FAR
-0318 50                    483     PUSH AX
-0319 53                    484     PUSH BX
-031A 51                    485     PUSH CX
-031B 52                    486     PUSH DX
-031C A19700                487                     MOV AX, DS:MAX_INPUT_SIZE
-031F 39066100              488                     CMP DS:KEYPAD_INDEX, AX
-0323 7453                  489                     JE BCD_RET
-                           490                     
-0325 8A0E7400              491                     MOV CL, DS:REG_AL
-0329 80F909                492                     CMP CL, 9
-032C 7F05                  493                     JG SKIP_PAST
-032E 9A7D03----     R      494                     CALL FAR PTR DAC_UPDATE
-                           495     
-0333                       496     SKIP_PAST:              
-0333 8A0E7400              497                     MOV CL, DS:REG_AL
-                           498     
-0337 8B1E6100              499                     MOV BX, DS:KEYPAD_INDEX
-                           500                             
-033B 884F51                501                     MOV DS:KEYPAD_INPUT[BX], CL
-                           502                             
-033E FF066100              503                     INC DS:KEYPAD_INDEX
-                           504                             
-0342 8B1E6100              505                     MOV BX, DS:KEYPAD_INDEX
-                           506                     
-0346 A1A300                507                     MOV AX, DS:SCROLL_LEN
-0349 2BD8                  508                     SUB BX, AX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   11
+0314 5A                    454     POP DX
+0315 59                    455     POP CX
+0316 5B                    456     POP BX
+0317 58                    457     POP AX
+                           458     
+0318 CB                    459     RET
+                           460     BCD_BACKSPACE ENDP
+                           461     
+0319                       462     BCD_CLEAR PROC FAR
+0319 50                    463     PUSH AX
+031A 53                    464     PUSH BX
+031B 51                    465     PUSH CX
+031C 52                    466     PUSH DX
+031D BB0800                467             MOV BX, 8
+0320                       468             CLEAR_LOOP:
+0320 C6475100              469             MOV DS:KEYPAD_INPUT[BX], 0
+0324 4B                    470             DEC BX
+0325 75F9                  471             JNZ CLEAR_LOOP
+                           472             
+0327 BB0600                473             MOV BX, 6
+032A                       474             CLEAR_LOOP2:
+032A 4B                    475                     DEC BX
+032B C647592D              476                     MOV DS:BCD_MESSAGE[BX], '-'
+032F 43                    477                     INC BX
+0330 4B                    478                     DEC BX
+0331 75F7                  479             JNZ CLEAR_LOOP2
+                           480     
+0333 C70661000000          481             MOV DS:KEYPAD_INDEX, 0
+0339 C706A3000000          482             MOV DS:SCROLL_LEN, 0
+033F 5A                    483     POP DX
+0340 59                    484     POP CX
+0341 5B                    485     POP BX
+0342 58                    486     POP AX
+0343 CB                    487     RET
+                           488     BCD_CLEAR ENDP
+                           489     
+0344                       490     BCD_UPDATE PROC FAR
+0344 50                    491     PUSH AX
+0345 53                    492     PUSH BX
+0346 51                    493     PUSH CX
+0347 52                    494     PUSH DX
+0348 A19700                495                     MOV AX, DS:MAX_INPUT_SIZE
+034B 39066100              496                     CMP DS:KEYPAD_INDEX, AX
+034F 745A                  497                     JE BCD_RET
+                           498                     
+0351 8A0E7400              499                     MOV CL, DS:REG_AL
+0355 80F909                500                     CMP CL, 9
+0358 7F0C                  501                     JG SKIP_PAST
+035A 833EA50001            502                     CMP DS:DAC_DISABLE, 1
+035F 7405                  503                     JE SKIP_PAST
+0361 9AB003----     R      504                     CALL FAR PTR DAC_UPDATE
+                           505     
+0366                       506     SKIP_PAST:              
+0366 8A0E7400              507                     MOV CL, DS:REG_AL
+                           508     
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   11
 
 
 LOC  OBJ                  LINE     SOURCE
 
-                           509                     
-034B 8B166100              510                     MOV DX, DS:KEYPAD_INDEX
-034F 83FA06                511                     CMP DX, 6
-0352 7E03                  512                     JLE update_display
-0354 BA0600                513                     MOV DX, 6
-                           514                     
-0357                       515             update_display:
-                           516             
-0357 B90500                517                     MOV CX, 5
-035A 4B                    518                     DEC BX
-035B 8A4751                519                     MOV AL, DS:KEYPAD_INPUT[BX]
-035E 43                    520                     INC BX
-                           521                             
-035F 52                    522                     PUSH DX
-0360 8B166100              523                     MOV DX, DS:KEYPAD_INDEX
-0364 2B16A300              524                     SUB DX, DS:SCROLL_LEN
-                           525                     
-0368 2BD3                  526                     SUB DX, BX
-                           527                             
-036A 53                    528                     PUSH BX
-                           529                             
-036B 2BCA                  530                     SUB CX, DX
-036D 8BD9                  531                     MOV BX, CX
-036F 884759                532                     MOV DS:BCD_MESSAGE[BX], AL
-                           533                             
-0372 5B                    534                     POP BX
-0373 5A                    535                     POP DX
-                           536             
-0374 4B                    537                     DEC BX
-0375 4A                    538                     DEC DX
-0376 75DF                  539             JNZ update_display
-                           540     
-0378                       541             BCD_RET:
-0378 5A                    542                     POP DX
-0379 59                    543                     POP CX
-037A 5B                    544                     POP BX
-037B 58                    545                     POP AX
-037C CB                    546     RET
-                           547     BCD_UPDATE ENDP
-                           548     
-037D                       549     DAC_UPDATE PROC FAR
-037D 50                    550             PUSH AX
-037E 53                    551             PUSH BX
-037F 51                    552             PUSH CX
-0380 52                    553             PUSH DX
-                           554             
-0381 BB0000                555             MOV BX, 0
-0384 8A1E7000              556             MOV BL, DS:DAC_LEN
-0388 A07400                557             MOV AL, DS:REG_AL
-                           558             
-038B 884766                559             MOV DS:DAC_ADDR[BX], AL
-                           560             
-038E FE067000              561             INC DS:DAC_LEN
-                           562     
-0392 5A                    563             POP DX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   12
+036A 8B1E6100              509                     MOV BX, DS:KEYPAD_INDEX
+                           510                             
+036E 884F51                511                     MOV DS:KEYPAD_INPUT[BX], CL
+                           512                             
+0371 FF066100              513                     INC DS:KEYPAD_INDEX
+                           514                             
+0375 8B1E6100              515                     MOV BX, DS:KEYPAD_INDEX
+                           516                     
+0379 A1A300                517                     MOV AX, DS:SCROLL_LEN
+037C 2BD8                  518                     SUB BX, AX
+                           519                     
+037E 8B166100              520                     MOV DX, DS:KEYPAD_INDEX
+0382 83FA06                521                     CMP DX, 6
+0385 7E03                  522                     JLE update_display
+0387 BA0600                523                     MOV DX, 6
+                           524                     
+038A                       525             update_display:
+                           526             
+038A B90500                527                     MOV CX, 5
+038D 4B                    528                     DEC BX
+038E 8A4751                529                     MOV AL, DS:KEYPAD_INPUT[BX]
+0391 43                    530                     INC BX
+                           531                             
+0392 52                    532                     PUSH DX
+0393 8B166100              533                     MOV DX, DS:KEYPAD_INDEX
+0397 2B16A300              534                     SUB DX, DS:SCROLL_LEN
+                           535                     
+039B 2BD3                  536                     SUB DX, BX
+                           537                             
+039D 53                    538                     PUSH BX
+                           539                             
+039E 2BCA                  540                     SUB CX, DX
+03A0 8BD9                  541                     MOV BX, CX
+03A2 884759                542                     MOV DS:BCD_MESSAGE[BX], AL
+                           543                             
+03A5 5B                    544                     POP BX
+03A6 5A                    545                     POP DX
+                           546             
+03A7 4B                    547                     DEC BX
+03A8 4A                    548                     DEC DX
+03A9 75DF                  549             JNZ update_display
+                           550     
+03AB                       551             BCD_RET:
+03AB 5A                    552                     POP DX
+03AC 59                    553                     POP CX
+03AD 5B                    554                     POP BX
+03AE 58                    555                     POP AX
+03AF CB                    556     RET
+                           557     BCD_UPDATE ENDP
+                           558     
+03B0                       559     DAC_UPDATE PROC FAR
+03B0 50                    560             PUSH AX
+03B1 53                    561             PUSH BX
+03B2 51                    562             PUSH CX
+03B3 52                    563             PUSH DX
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   12
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0393 59                    564             POP CX
-0394 5B                    565             POP BX
-0395 58                    566             POP AX
-0396 CB                    567     RET
-                           568     DAC_UPDATE ENDP
-                           569               
-0397                       570     DEBOUNCE PROC FAR
-0397 51                    571                       PUSH CX
-                           572                       
-0398 B94C09                573                       MOV CX, 094CH
-039B 90                    574     BACK:     NOP
-039C E2FD                  575                       LOOP BACK
-039E 59                    576                       POP CX
-039F CB                    577                       RET
-                           578     DEBOUNCE  ENDP
-                           579     
-03A0                       580     SEND_INPUT PROC FAR
-03A0 50                    581     PUSH AX
-03A1 53                    582     PUSH BX
-03A2 51                    583     PUSH CX
-03A3 52                    584     PUSH DX
-03A4 BB0000                585             MOV BX, 0
-03A7 8B0E9500              586             MOV CX, DS:SEND_BUFFER_LEN
-                           587             
-03AB                       588             S_BUFF:
-03AB 8A878800              589                     MOV AL, DS:SEND_BUFFER[BX]
-03AF 9A0000----     E      590                     CALL FAR PTR PRINT_CHAR
-03B4 43                    591                     INC BX
-03B5 E2F4                  592             LOOP S_BUFF
-                           593             
-03B7                       594     SEND_INPUT_END:
-03B7 5A                    595     POP DX
-03B8 59                    596     POP CX
-03B9 5B                    597     POP BX
-03BA 58                    598     POP AX
-03BB CB                    599     RET
-                           600     SEND_INPUT ENDP
-                           601     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
-03BC                       602     SERIAL_REC_ACTION       PROC    FAR
-03BC 51                    603                     PUSH    CX
-03BD 53                    604                     PUSH    BX
-03BE 1E                    605                     PUSH    DS
-                           606                     
-03BF BB----         R      607                     MOV     BX,DATA_SEG             ;initialize data segment register
-03C2 8EDB                  608                     MOV     DS,BX
-                           609                     
-03C4 803E860001            610                     CMP DS:REPLY_FLAG, 1
-03C9 7573                  611                     JNE next_id
-                           612                     
-03CB 803E870001            613                     CMP DS:SEND_FLAG, 1
-03D0 744D                  614                     JE send_input_across
-                           615                     
-03D2 833E9B0001            616                     CMP DS:RECEIVE_FLAG, 1
-03D7 755F                  617                     JNE terminate_session2
-                           618                     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   13
+                           564             
+03B4 BB0000                565             MOV BX, 0
+03B7 8A1E7000              566             MOV BL, DS:DAC_LEN
+03BB A07400                567             MOV AL, DS:REG_AL
+                           568             
+03BE 884766                569             MOV DS:DAC_ADDR[BX], AL
+                           570             
+03C1 FE067000              571             INC DS:DAC_LEN
+                           572     
+03C5 5A                    573             POP DX
+03C6 59                    574             POP CX
+03C7 5B                    575             POP BX
+03C8 58                    576             POP AX
+03C9 CB                    577     RET
+                           578     DAC_UPDATE ENDP
+                           579               
+03CA                       580     DEBOUNCE PROC FAR
+03CA 51                    581                       PUSH CX
+                           582                       
+03CB B94C09                583                       MOV CX, 094CH
+03CE 90                    584     BACK:     NOP
+03CF E2FD                  585                       LOOP BACK
+03D1 59                    586                       POP CX
+03D2 CB                    587                       RET
+                           588     DEBOUNCE  ENDP
+                           589     
+03D3                       590     SEND_INPUT PROC FAR
+03D3 50                    591     PUSH AX
+03D4 53                    592     PUSH BX
+03D5 51                    593     PUSH CX
+03D6 52                    594     PUSH DX
+03D7 BB0000                595             MOV BX, 0
+03DA 8B0E9500              596             MOV CX, DS:SEND_BUFFER_LEN
+                           597             
+03DE                       598             S_BUFF:
+03DE 8A878800              599                     MOV AL, DS:SEND_BUFFER[BX]
+03E2 9A0000----     E      600                     CALL FAR PTR PRINT_CHAR
+03E7 43                    601                     INC BX
+03E8 E2F4                  602             LOOP S_BUFF
+                           603             
+03EA                       604     SEND_INPUT_END:
+03EA 5A                    605     POP DX
+03EB 59                    606     POP CX
+03EC 5B                    607     POP BX
+03ED 58                    608     POP AX
+03EE CB                    609     RET
+                           610     SEND_INPUT ENDP
+                           611     ; ^^^^^^^^^^^^^^^ End of User main routine ^^^^^^^^^^^^^^^^^^^^^^^^^
+03EF                       612     SERIAL_REC_ACTION       PROC    FAR
+03EF 51                    613                     PUSH    CX
+03F0 53                    614                     PUSH    BX
+03F1 1E                    615                     PUSH    DS
+                           616                     
+03F2 BB----         R      617                     MOV     BX,DATA_SEG             ;initialize data segment register
+03F5 8EDB                  618                     MOV     DS,BX
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   13
 
 
 LOC  OBJ                  LINE     SOURCE
 
-03D9 3C26                  619                     CMP AL, '&'
-03DB 7515                  620                     JNE receive_price
-03DD C7069F000100          621                     MOV DS:PRICE_FLAG, 1
-03E3 C70661000000          622                     MOV DS:KEYPAD_INDEX, 0
-03E9 C70697000600          623                     MOV DS:MAX_INPUT_SIZE, 6
-03EF EB4A90                624                     JMP id_skip2
+                           619                     
+03F7 803E860001            620                     CMP DS:REPLY_FLAG, 1
+03FC 7576                  621                     JNE next_id1
+                           622                     
+03FE 803E870001            623                     CMP DS:SEND_FLAG, 1
+0403 7472                  624                     JE send_input_across1
                            625                     
-03F2                       626             receive_price:
-03F2 833E9F0001            627                     CMP DS:PRICE_FLAG, 1
-03F7 7542                  628                     JNE id_skip2
-03F9 3C2F                  629                     CMP AL, '/'
-03FB 750F                  630                     JNE update_keypad_input
-03FD C7069F000000          631                     MOV DS:PRICE_FLAG, 0
-0403 C7069B000000          632                     MOV DS:RECEIVE_FLAG, 0
-0409 EB2D90                633                     JMP terminate_session2
-                           634                     
-040C                       635             update_keypad_input:
-040C 2C30                  636                     SUB AL, 30H
-040E A27400                637                     MOV DS:REG_AL, AL
-0411 C706A1000100          638                     MOV DS:DECIMAL_FLAG, 1
-                           639                                     
-0417 9A1803----     R      640                     CALL FAR PTR BCD_UPDATE
-041C EB1D90                641                     JMP id_skip2
-                           642                     
-041F                       643             send_input_across:
-041F 9AA003----     R      644                     CALL FAR PTR SEND_INPUT
-                           645                     
-0424 C70695000000          646                     MOV DS:SEND_BUFFER_LEN, 0
-                           647                     
-042A C606870000            648                     MOV DS:SEND_FLAG, 0
+0405 833E9B0001            626                     CMP DS:RECEIVE_FLAG, 1
+040A 756E                  627                     JNE terminate_session3
+                           628                     
+040C 3C26                  629                     CMP AL, '&'
+040E 7515                  630                     JNE receive_price
+0410 C7069F000100          631                     MOV DS:PRICE_FLAG, 1
+0416 C70661000000          632                     MOV DS:KEYPAD_INDEX, 0
+041C C70697000800          633                     MOV DS:MAX_INPUT_SIZE, 8
+0422 E99300                634                     JMP id_skip2
+                           635                     
+0425                       636             receive_price:
+0425 3C23                  637                     CMP AL, '#'
+0427 750F                  638                     JNE check_price
+0429 C7069D000100          639                     MOV DS:DAC_FLAG, 1
+042F C7069F000000          640                     MOV DS:PRICE_FLAG, 0
+0435 E98000                641                     JMP id_skip2
+                           642             
+0438                       643             check_price:    
+0438 833E9F0001            644                     CMP DS:PRICE_FLAG, 1
+043D 743E                  645                     JE update_keypad_input
+                           646                     
+043F 833E9D0001            647                     CMP DS:DAC_FLAG, 1
+0444 7413                  648                     JE dac_change
                            649                     
-042F C7069B000100          650                     MOV DS:RECEIVE_FLAG, 1
-                           651                     
-0435 EB0490                652                     JMP id_skip2
-                           653                     
-0438 EB3E90                654                     terminate_session2: JMP terminate_session
-043B EB6590                655                     id_skip2: JMP id_skip
-                           656                     
-043E                       657             next_id:
-                           658                     
-043E 803E7C0001            659                     CMP DS:ID_FLAG_r, 1
-0443 7513                  660                     JNE id_flag_label
-0445 38067A00              661                     CMP DS:MY_ID[1], AL
-0449 7557                  662                     JNE id_skip
-                           663                     ;start writing to pc
-044B C606860001            664                     MOV DS:REPLY_FLAG, 1
-0450 C6067C0000            665                     MOV DS:ID_FLAG_r, 0
-0455 EB4B90                666                     JMP id_skip
-                           667             
-0458                       668             id_flag_label:
-                           669             
-0458 803E7B0001            670                     CMP DS:ID_FLAG_@, 1
-045D 7537                  671                     JNE protocol_rec
-045F 3C72                  672                     CMP AL,'r'
-0461 750D                  673                     JNE id_not_r
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   14
+0446 3C2F                  650                     CMP AL, '/'
+0448 756E                  651                     JNE id_skip2
+044A C7069F000000          652                     MOV DS:PRICE_FLAG, 0
+0450 C7069B000000          653                     MOV DS:RECEIVE_FLAG, 0
+0456 EB5D90                654                     JMP terminate_session2
+                           655                     
+0459                       656             dac_change:
+0459 8A1E7400              657                     MOV BL, DS:REG_AL
+045D 2C30                  658                     SUB AL, 30H
+045F A27400                659                     MOV DS:REG_AL, AL
+0462 9AB003----     R      660                     CALL FAR PTR DAC_UPDATE
+0467 881E7400              661                     MOV DS:REG_AL, BL
+046B C7069D000000          662                     MOV DS:DAC_FLAG, 0
+0471 EB4590                663                     JMP id_skip2
+                           664                     
+0474                       665             next_id1:
+0474 EB4590                666                     JMP next_id
+0477                       667             send_input_across1:
+0477 EB2390                668                     JMP send_input_across
+047A                       669             terminate_session3:
+047A EB3990                670                     JMP terminate_session2
+                           671                     
+047D                       672             update_keypad_input:
+047D 2C30                  673                     SUB AL, 30H
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   14
 
 
 LOC  OBJ                  LINE     SOURCE
 
-0463 C6067C0001            674                     MOV DS:ID_FLAG_r,1
-0468 C6067B0000            675                     MOV DS:ID_FLAG_@, 0
-046D EB6790                676                     JMP S_RET
-0470                       677             id_not_r:
-0470 C6067B0000            678                     MOV DS:ID_FLAG_@, 0
-0475 EB2B90                679                     JMP id_skip
-                           680             
-0478                       681             terminate_session:
-0478 C6067C0000            682                     MOV DS:ID_FLAG_r, 0
-047D 33DB                  683                     XOR BX,BX
-047F                       684             start_send1:
-047F 33C0                  685                     XOR AX,AX
-0481 8A878100              686                     MOV AL, DS:FAIL_MESSAGE[BX]
-0485 9A0000----     E      687                     CALL FAR PTR PRINT_CHAR
-048A C606860000            688                     MOV DS:REPLY_FLAG, 0
-048F 43                    689                     INC BX
-0490 3A1E8500              690                     CMP BL, DS:FAIL_COUNT
-0494 75E9                  691                     JNE start_send1
-                           692                     
-0496                       693             protocol_rec:
-0496 3C40                  694                     CMP AL,'@'
-0498 7508                  695                     JNE id_skip
-049A C6067B0001            696                     MOV DS:ID_FLAG_@,1
-049F EB3590                697                     JMP S_RET
-                           698                     
-04A2                       699             id_skip:
-                           700             
-04A2 3C3C                  701                     CMP     AL,'<'
-04A4 750B                  702                     JNE     S_FAST
-                           703     
-04A6 FE061700              704                     INC     DS:T_COUNT_SET
-04AA FE061700              705                     INC     DS:T_COUNT_SET
-                           706     
-04AE EB0D90                707                     JMP     S_NEXT0
-04B1                       708     S_FAST:
-04B1 3C3E                  709                     CMP     AL,'>'
-04B3 7521                  710                     JNE     S_RET
-                           711     
-04B5 FE0E1700              712                     DEC     DS:T_COUNT_SET
-04B9 FE0E1700              713                     DEC     DS:T_COUNT_SET
-                           714     
-04BD                       715     S_NEXT0:
-04BD B91600                716                     MOV     CX,22                   ;initialize counter for message
-04C0 BB0000                717                     MOV     BX,0
-                           718     
-04C3 8A4718                719     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
-04C6 9A0000----     E      720                     call    FAR ptr print_char
-04CB 43                    721                     INC     BX
-04CC E2F5                  722                     LOOP    S_NEXT1
-                           723     
-04CE A01700                724                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
-04D1 9A0000----     E      725                     CALL    FAR PTR PRINT_2HEX
-04D6                       726     S_RET:
-04D6 1F                    727                     POP     DS
-04D7 5B                    728                     POP     BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   15
+047F A27400                674                     MOV DS:REG_AL, AL
+0482 C706A7000300          675                     MOV DS:DECIMAL_INDEX, 3
+0488 C706A5000100          676                     MOV DS:DAC_DISABLE, 1
+048E 9A4403----     R      677                     CALL FAR PTR BCD_UPDATE
+0493 C706A5000000          678                     MOV DS:DAC_DISABLE, 0
+0499 EB1D90                679                     JMP id_skip2
+                           680                     
+049C                       681             send_input_across:
+049C 9AD303----     R      682                     CALL FAR PTR SEND_INPUT
+                           683                     
+04A1 C70695000000          684                     MOV DS:SEND_BUFFER_LEN, 0
+                           685                     
+04A7 C606870000            686                     MOV DS:SEND_FLAG, 0
+                           687                     
+04AC C7069B000100          688                     MOV DS:RECEIVE_FLAG, 1
+                           689                     
+04B2 EB0490                690                     JMP id_skip2
+                           691                     
+04B5 EB3E90                692                     terminate_session2: JMP terminate_session
+04B8 EB6590                693                     id_skip2: JMP id_skip
+                           694                     
+04BB                       695             next_id:
+                           696                     
+04BB 803E7C0001            697                     CMP DS:ID_FLAG_r, 1
+04C0 7513                  698                     JNE id_flag_label
+04C2 38067A00              699                     CMP DS:MY_ID[1], AL
+04C6 7557                  700                     JNE id_skip
+                           701                     ;start writing to pc
+04C8 C606860001            702                     MOV DS:REPLY_FLAG, 1
+04CD C6067C0000            703                     MOV DS:ID_FLAG_r, 0
+04D2 EB4B90                704                     JMP id_skip
+                           705             
+04D5                       706             id_flag_label:
+                           707             
+04D5 803E7B0001            708                     CMP DS:ID_FLAG_@, 1
+04DA 7537                  709                     JNE protocol_rec
+04DC 3C72                  710                     CMP AL,'r'
+04DE 750D                  711                     JNE id_not_r
+04E0 C6067C0001            712                     MOV DS:ID_FLAG_r,1
+04E5 C6067B0000            713                     MOV DS:ID_FLAG_@, 0
+04EA EB6A90                714                     JMP S_RET
+04ED                       715             id_not_r:
+04ED C6067B0000            716                     MOV DS:ID_FLAG_@, 0
+04F2 EB2B90                717                     JMP id_skip
+                           718             
+04F5                       719             terminate_session:
+04F5 C6067C0000            720                     MOV DS:ID_FLAG_r, 0
+04FA 33DB                  721                     XOR BX,BX
+04FC                       722             start_send1:
+04FC 33C0                  723                     XOR AX,AX
+04FE 8A878100              724                     MOV AL, DS:FAIL_MESSAGE[BX]
+0502 9A0000----     E      725                     CALL FAR PTR PRINT_CHAR
+0507 C606860000            726                     MOV DS:REPLY_FLAG, 0
+050C 43                    727                     INC BX
+050D 3A1E8500              728                     CMP BL, DS:FAIL_COUNT
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   15
 
 
 LOC  OBJ                  LINE     SOURCE
 
-04D8 59                    729                     POP     CX
-04D9 CB                    730                     RET
-                           731     SERIAL_REC_ACTION       ENDP
-                           732     
-04DA                       733     TIMER2_ACTION   PROC    FAR
-04DA 50                    734                     PUSH    AX
-04DB 1E                    735                     PUSH    DS
-04DC 53                    736                     PUSH    BX
-04DD 51                    737                     PUSH    CX
-04DE 52                    738                     PUSH    DX
-                           739                     
-                           740                     
-04DF B8----         R      741                     MOV     AX,DATA_SEG
-04E2 8ED8                  742                     MOV     DS,AX
-                           743             
-04E4 FE0E1600              744                     DEC     DS:T_COUNT
-04E8 7538                  745                     JNZ     T_NEXT1
-04EA A01700                746                     MOV     AL,DS:T_COUNT_SET
-04ED A21600                747                     MOV     DS:T_COUNT,AL
-                           748     
-04F0                       749     T_NEXT0:
-04F0 A05F00                750                     MOV AL, DS:ENABLE_BYTE
-04F3 BA8001                751                     MOV DX, 180H
-04F6 EE                    752                     OUT DX, AL
-                           753                     
-04F7 33DB                  754                     XOR BX, BX
-04F9 8A1E6000              755                     MOV BL, DS:BCD_INDEX
-04FD 8A4759                756                     MOV AL, DS:BCD_MESSAGE[BX]
-                           757             
-0500 9A9305----     R      758                     CALL FAR PTR BCD_TO_7SEG
-                           759     
-0505 BA0002                760                     MOV DX, 200H
-0508 EE                    761                     OUT DX, AL
+0511 75E9                  729                     JNE start_send1
+                           730                     
+0513                       731             protocol_rec:
+0513 3C40                  732                     CMP AL,'@'
+0515 7508                  733                     JNE id_skip
+0517 C6067B0001            734                     MOV DS:ID_FLAG_@,1
+051C EB3890                735                     JMP S_RET
+                           736                     
+051F                       737             id_skip:
+051F EB3590                738                     JMP S_RET
+                           739             
+0522 3C3C                  740                     CMP     AL,'<'
+0524 750B                  741                     JNE     S_FAST
+                           742     
+0526 FE061700              743                     INC     DS:T_COUNT_SET
+052A FE061700              744                     INC     DS:T_COUNT_SET
+                           745     
+052E EB0D90                746                     JMP     S_NEXT0
+0531                       747     S_FAST:
+0531 3C3E                  748                     CMP     AL,'>'
+0533 7521                  749                     JNE     S_RET
+                           750     
+0535 FE0E1700              751                     DEC     DS:T_COUNT_SET
+0539 FE0E1700              752                     DEC     DS:T_COUNT_SET
+                           753     
+053D                       754     S_NEXT0:
+053D B91600                755                     MOV     CX,22                   ;initialize counter for message
+0540 BB0000                756                     MOV     BX,0
+                           757     
+0543 8A4718                758     S_NEXT1:        MOV     AL,DS:REC_MESS[BX]      ;print message
+0546 9A0000----     E      759                     call    FAR ptr print_char
+054B 43                    760                     INC     BX
+054C E2F5                  761                     LOOP    S_NEXT1
                            762     
-0509 FE066000              763                     INC DS:BCD_INDEX
-050D D0065F00              764                     ROL DS:ENABLE_BYTE, 1
-0511 803E5F00BF            765                     CMP DS:ENABLE_BYTE, 10111111b
-0516 750A                  766                     JNE T_NEXT1
-0518 C6065F00FE            767                     MOV DS:ENABLE_BYTE, 11111110b 
-051D C606600000            768                     MOV DS:BCD_INDEX, 0
-                           769     
-                           770                     
-0522                       771     T_NEXT1:
-0522 803E700000            772                     CMP DS:DAC_LEN, 0
-0527 743C                  773                     JE ISR_END
-                           774                     
-                           775                     
-0529 8B367100              776                     MOV SI, DS:SI_PTR
-                           777                             
-052D BB0000                778                     MOV BX, 0
-0530 33C0                  779                     XOR AX, AX
-0532 8A4766                780                     MOV AL, DS:DAC_ADDR[BX]
-                           781                     
-0535 BB0001                782                     MOV BX, 100H
-0538 F7E3                  783                     MUL BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   16
+054E A01700                763                     MOV     AL,DS:T_COUNT_SET       ;print current period of timer0
+0551 9A0000----     E      764                     CALL    FAR PTR PRINT_2HEX
+0556                       765     S_RET:
+0556 1F                    766                     POP     DS
+0557 5B                    767                     POP     BX
+0558 59                    768                     POP     CX
+0559 CB                    769                     RET
+                           770     SERIAL_REC_ACTION       ENDP
+                           771     
+055A                       772     TIMER2_ACTION   PROC    FAR
+055A 50                    773                     PUSH    AX
+055B 1E                    774                     PUSH    DS
+055C 53                    775                     PUSH    BX
+055D 51                    776                     PUSH    CX
+055E 52                    777                     PUSH    DX
+                           778                     
+                           779                     
+055F B8----         R      780                     MOV     AX,DATA_SEG
+0562 8ED8                  781                     MOV     DS,AX
+                           782             
+0564 FE0E1600              783                     DEC     DS:T_COUNT
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   16
 
 
 LOC  OBJ                  LINE     SOURCE
 
-                           784                     
-053A 8B166400              785                     MOV DX, DS:DAC_BASE
-053E 03D0                  786                     ADD DX, AX
-                           787                     
-0540 1E                    788                     PUSH DS
-0541 8EDA                  789                     MOV DS, DX
-                           790                     
-0543 8B04                  791                     MOV AX, [SI]
+0568 754A                  784                     JNZ     T_NEXT1
+056A A01700                785                     MOV     AL,DS:T_COUNT_SET
+056D A21600                786                     MOV     DS:T_COUNT,AL
+                           787     
+0570                       788     T_NEXT0:
+0570 A05F00                789                     MOV AL, DS:ENABLE_BYTE
+0573 BA8001                790                     MOV DX, 180H
+0576 EE                    791                     OUT DX, AL
                            792                     
-0545 BA1001                793                     MOV DX, 110H
-0548 EE                    794                     OUT DX, AL
-                           795                     
-0549 1F                    796                     POP DS
-                           797                     
-054A FF067100              798                     INC DS:SI_PTR
-054E 813E71000010          799                     CMP DS:SI_PTR, 1000H
-0554 750F                  800                     JNE ISR_END
-                           801                     
-0556 C70671000000          802                     MOV DS:SI_PTR, 0
-055C FE0E7000              803                     DEC DS:DAC_LEN
-0560 9A6B05----     R      804                     CALL FAR PTR DAC_SHIFT
-                           805                     
-0565                       806     ISR_END:
-                           807                     
-0565 5A                    808                     POP DX
-0566 59                    809                     POP     CX
-0567 5B                    810                     POP     BX
-0568 1F                    811                     POP     DS
-0569 58                    812                     POP AX
-056A CB                    813                     RET
-                           814     TIMER2_ACTION   ENDP
-                           815     
-                           816     
-056B                       817     DAC_SHIFT PROC FAR
-056B 50                    818             PUSH AX
-056C 53                    819             PUSH BX
-056D 51                    820             PUSH CX
-056E 52                    821             PUSH DX
-                           822     
-056F 33C9                  823             XOR CX, CX
-0571 8A0E7000              824             MOV CL, DS:DAC_LEN
-0575 80F900                825             CMP CL, 0
-0578 7414                  826             JE END_SHIFT
-                           827     
-057A                       828             SHIFT_LOOP:
-                           829     
-057A 33DB                  830             XOR BX, BX
-057C 8A1E7000              831             MOV BL, DS:DAC_LEN
-0580 2BD9                  832             SUB BX, CX
-0582 43                    833             INC BX
-                           834             
-0583 33D2                  835             XOR DX, DX
-0585 8A5766                836             MOV DL, DS:DAC_ADDR[BX]
-0588 4B                    837             DEC BX
-0589 885766                838             MOV DS:DAC_ADDR[BX], DL
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   17
+0577 33DB                  793                     XOR BX, BX
+0579 8A1E6000              794                     MOV BL, DS:BCD_INDEX
+057D 8A4759                795                     MOV AL, DS:BCD_MESSAGE[BX]
+                           796                     
+0580 3B1EA700              797                     CMP BX, DS:DECIMAL_INDEX
+0584 7506                  798                     JNE CALL_FUNC
+0586 C706A1000100          799                     MOV DS:DECIMAL_FLAG, 1
+058C                       800     CALL_FUNC:
+058C 9A2506----     R      801                     CALL FAR PTR BCD_TO_7SEG
+0591 C706A1000000          802                     MOV DS:DECIMAL_FLAG, 0
+                           803     
+0597 BA0002                804                     MOV DX, 200H
+059A EE                    805                     OUT DX, AL
+                           806     
+059B FE066000              807                     INC DS:BCD_INDEX
+059F D0065F00              808                     ROL DS:ENABLE_BYTE, 1
+05A3 803E5F00BF            809                     CMP DS:ENABLE_BYTE, 10111111b
+05A8 750A                  810                     JNE T_NEXT1
+05AA C6065F00FE            811                     MOV DS:ENABLE_BYTE, 11111110b 
+05AF C606600000            812                     MOV DS:BCD_INDEX, 0
+                           813     
+                           814                     
+05B4                       815     T_NEXT1:
+05B4 803E700000            816                     CMP DS:DAC_LEN, 0
+05B9 743C                  817                     JE ISR_END
+                           818                     
+                           819                     
+05BB 8B367100              820                     MOV SI, DS:SI_PTR
+                           821                             
+05BF BB0000                822                     MOV BX, 0
+05C2 33C0                  823                     XOR AX, AX
+05C4 8A4766                824                     MOV AL, DS:DAC_ADDR[BX]
+                           825                     
+05C7 BB0001                826                     MOV BX, 100H
+05CA F7E3                  827                     MUL BX
+                           828                     
+05CC 8B166400              829                     MOV DX, DS:DAC_BASE
+05D0 03D0                  830                     ADD DX, AX
+                           831                     
+05D2 1E                    832                     PUSH DS
+05D3 8EDA                  833                     MOV DS, DX
+                           834                     
+05D5 8B04                  835                     MOV AX, [SI]
+                           836                     
+05D7 BA1001                837                     MOV DX, 110H
+05DA EE                    838                     OUT DX, AL
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   17
 
 
 LOC  OBJ                  LINE     SOURCE
 
-                           839     
-058C E2EC                  840             LOOP SHIFT_LOOP
-                           841             
-058E                       842             END_SHIFT:
-058E 5A                    843             POP DX
-058F 59                    844             POP CX
-0590 5B                    845             POP BX
-0591 58                    846             POP AX
-0592 CB                    847             RET
-                           848     DAC_SHIFT ENDP
-                           849     
-0593                       850     BCD_TO_7SEG PROC FAR
-                           851     
-0593 53                    852             PUSH BX
-0594 51                    853             PUSH CX
-0595 52                    854             PUSH DX
-                           855             
-0596 3C00                  856             CMP AL, 0
-0598 7511                  857             JNE one
-059A 833EA10001            858             CMP DS:DECIMAL_FLAG, 1
-059F 7405                  859             JE decimal0
-05A1 B03F                  860             MOV AL, 00111111b
-05A3 E9D700                861             JMP endfunc
-05A6                       862     decimal0:
-05A6 B0BF                  863             MOV AL, 10111111b
-05A8 E9D200                864             JMP endfunc
-                           865             
-05AB                       866             one:
-05AB 3C01                  867             CMP AL, 1
-05AD 7511                  868             JNE two
-05AF 833EA10001            869             CMP DS:DECIMAL_FLAG, 1
-05B4 7405                  870             JE decimal1
-05B6 B006                  871             MOV AL, 00000110b
-05B8 E9C200                872             JMP endfunc
-05BB                       873     decimal1:
-05BB B086                  874             MOV AL, 10000110b
-05BD E9BD00                875             JMP endfunc
-                           876             
-05C0                       877             two:
-05C0 3C02                  878             CMP AL,2
-05C2 7511                  879             JNE three
-05C4 833EA10001            880             CMP DS:DECIMAL_FLAG, 1
-05C9 7405                  881             JE decimal2
-05CB B05B                  882             MOV AL, 01011011b
-05CD E9AD00                883             JMP endfunc
-05D0                       884     decimal2:
-05D0 B0DB                  885             MOV AL, 11011011b
-05D2 E9A800                886             JMP endfunc
-                           887             
-05D5                       888             three:
-05D5 3C03                  889             CMP AL,3
-05D7 7511                  890             JNE four
-05D9 833EA10001            891             CMP DS:DECIMAL_FLAG, 1
-05DE 7405                  892             JE decimal3
-05E0 B04F                  893             MOV AL, 01001111b
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   18
+                           839                     
+05DB 1F                    840                     POP DS
+                           841                     
+05DC FF067100              842                     INC DS:SI_PTR
+05E0 813E71000010          843                     CMP DS:SI_PTR, 1000H
+05E6 750F                  844                     JNE ISR_END
+                           845                     
+05E8 C70671000000          846                     MOV DS:SI_PTR, 0
+05EE FE0E7000              847                     DEC DS:DAC_LEN
+05F2 9AFD05----     R      848                     CALL FAR PTR DAC_SHIFT
+                           849                     
+05F7                       850     ISR_END:
+                           851                     
+05F7 5A                    852                     POP DX
+05F8 59                    853                     POP     CX
+05F9 5B                    854                     POP     BX
+05FA 1F                    855                     POP     DS
+05FB 58                    856                     POP AX
+05FC CB                    857                     RET
+                           858     TIMER2_ACTION   ENDP
+                           859     
+                           860     
+05FD                       861     DAC_SHIFT PROC FAR
+05FD 50                    862             PUSH AX
+05FE 53                    863             PUSH BX
+05FF 51                    864             PUSH CX
+0600 52                    865             PUSH DX
+                           866     
+0601 33C9                  867             XOR CX, CX
+0603 8A0E7000              868             MOV CL, DS:DAC_LEN
+0607 80F900                869             CMP CL, 0
+060A 7414                  870             JE END_SHIFT
+                           871     
+060C                       872             SHIFT_LOOP:
+                           873     
+060C 33DB                  874             XOR BX, BX
+060E 8A1E7000              875             MOV BL, DS:DAC_LEN
+0612 2BD9                  876             SUB BX, CX
+0614 43                    877             INC BX
+                           878             
+0615 33D2                  879             XOR DX, DX
+0617 8A5766                880             MOV DL, DS:DAC_ADDR[BX]
+061A 4B                    881             DEC BX
+061B 885766                882             MOV DS:DAC_ADDR[BX], DL
+                           883     
+061E E2EC                  884             LOOP SHIFT_LOOP
+                           885             
+0620                       886             END_SHIFT:
+0620 5A                    887             POP DX
+0621 59                    888             POP CX
+0622 5B                    889             POP BX
+0623 58                    890             POP AX
+0624 CB                    891             RET
+                           892     DAC_SHIFT ENDP
+                           893     
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   18
 
 
 LOC  OBJ                  LINE     SOURCE
 
-05E2 E99800                894             JMP endfunc
-05E5                       895     decimal3:
-05E5 B0CF                  896             MOV AL, 11001111b
-05E7 E99300                897             JMP endfunc
-                           898             
-05EA                       899             four:
-05EA 3C04                  900             CMP AL,4
-05EC 7511                  901             JNE five
-05EE 833EA10001            902             CMP DS:DECIMAL_FLAG, 1
-05F3 7405                  903             JE decimal4
-05F5 B066                  904             MOV AL, 01100110b
-05F7 E98300                905             JMP endfunc
-05FA                       906     decimal4:
-05FA B0E6                  907             MOV AL, 11100110b
-05FC EB7F90                908             JMP endfunc
+0625                       894     BCD_TO_7SEG PROC FAR
+                           895     
+0625 53                    896             PUSH BX
+0626 51                    897             PUSH CX
+0627 52                    898             PUSH DX
+                           899             
+0628 3C00                  900             CMP AL, 0
+062A 7511                  901             JNE one
+062C 833EA10001            902             CMP DS:DECIMAL_FLAG, 1
+0631 7405                  903             JE decimal0
+0633 B03F                  904             MOV AL, 00111111b
+0635 E9D700                905             JMP endfunc
+0638                       906     decimal0:
+0638 B0BF                  907             MOV AL, 10111111b
+063A E9D200                908             JMP endfunc
                            909             
-05FF                       910             five:
-05FF 3C05                  911             CMP AL,5
-0601 7511                  912             JNE six
-0603 833EA10001            913             CMP DS:DECIMAL_FLAG, 1
-0608 7405                  914             JE decimal5
-060A B06D                  915             MOV AL, 01101101b
-060C EB6F90                916             JMP endfunc
-060F                       917     decimal5:
-060F B0ED                  918             MOV AL, 11101101b
-0611 EB6A90                919             JMP endfunc
+063D                       910             one:
+063D 3C01                  911             CMP AL, 1
+063F 7511                  912             JNE two
+0641 833EA10001            913             CMP DS:DECIMAL_FLAG, 1
+0646 7405                  914             JE decimal1
+0648 B006                  915             MOV AL, 00000110b
+064A E9C200                916             JMP endfunc
+064D                       917     decimal1:
+064D B086                  918             MOV AL, 10000110b
+064F E9BD00                919             JMP endfunc
                            920             
-0614                       921             six:
-0614 3C06                  922             CMP AL,6
-0616 7511                  923             JNE seven
-0618 833EA10001            924             CMP DS:DECIMAL_FLAG, 1
-061D 7405                  925             JE decimal6
-061F B07D                  926             MOV AL, 01111101b
-0621 EB5A90                927             JMP endfunc
-0624                       928     decimal6:
-0624 B0FD                  929             MOV AL, 11111101b
-0626 EB5590                930             JMP endfunc
+0652                       921             two:
+0652 3C02                  922             CMP AL,2
+0654 7511                  923             JNE three
+0656 833EA10001            924             CMP DS:DECIMAL_FLAG, 1
+065B 7405                  925             JE decimal2
+065D B05B                  926             MOV AL, 01011011b
+065F E9AD00                927             JMP endfunc
+0662                       928     decimal2:
+0662 B0DB                  929             MOV AL, 11011011b
+0664 E9A800                930             JMP endfunc
                            931             
-0629                       932             seven:
-0629 3C07                  933             CMP AL,7
-062B 7511                  934             JNE eight
-062D 833EA10001            935             CMP DS:DECIMAL_FLAG, 1
-0632 7405                  936             JE decimal7
-0634 B007                  937             MOV AL, 00000111b
-0636 EB4590                938             JMP endfunc
-0639                       939     decimal7:
-0639 B087                  940             MOV AL, 10000111b
-063B EB4090                941             JMP endfunc
+0667                       932             three:
+0667 3C03                  933             CMP AL,3
+0669 7511                  934             JNE four
+066B 833EA10001            935             CMP DS:DECIMAL_FLAG, 1
+0670 7405                  936             JE decimal3
+0672 B04F                  937             MOV AL, 01001111b
+0674 E99800                938             JMP endfunc
+0677                       939     decimal3:
+0677 B0CF                  940             MOV AL, 11001111b
+0679 E99300                941             JMP endfunc
                            942             
-063E                       943             eight:
-063E 3C08                  944             CMP AL,8
-0640 7511                  945             JNE nine
-0642 833EA10001            946             CMP DS:DECIMAL_FLAG, 1
-0647 7405                  947             JE decimal8
-0649 B07F                  948             MOV AL, 01111111b
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    15:50:41  11/17/;3  PAGE   19
+067C                       943             four:
+067C 3C04                  944             CMP AL,4
+067E 7511                  945             JNE five
+0680 833EA10001            946             CMP DS:DECIMAL_FLAG, 1
+0685 7405                  947             JE decimal4
+0687 B066                  948             MOV AL, 01100110b
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   19
 
 
 LOC  OBJ                  LINE     SOURCE
 
-064B EB3090                949             JMP endfunc
-064E                       950     decimal8:
-064E B0FF                  951             MOV AL, 11111111b
-0650 EB2B90                952             JMP endfunc
+0689 E98300                949             JMP endfunc
+068C                       950     decimal4:
+068C B0E6                  951             MOV AL, 11100110b
+068E EB7F90                952             JMP endfunc
                            953             
-0653                       954             nine:
-0653 3C09                  955             CMP AL,9
-0655 7511                  956             JNE hifn
-0657 833EA10001            957             CMP DS:DECIMAL_FLAG, 1
-065C 7405                  958             JE decimal9
-065E B06F                  959             MOV AL, 01101111b
-0660 EB1B90                960             JMP endfunc
-0663                       961     decimal9:
-0663 B0EF                  962             MOV AL, 11101111b
-0665 EB1690                963             JMP endfunc
+0691                       954             five:
+0691 3C05                  955             CMP AL,5
+0693 7511                  956             JNE six
+0695 833EA10001            957             CMP DS:DECIMAL_FLAG, 1
+069A 7405                  958             JE decimal5
+069C B06D                  959             MOV AL, 01101101b
+069E EB6F90                960             JMP endfunc
+06A1                       961     decimal5:
+06A1 B0ED                  962             MOV AL, 11101101b
+06A3 EB6A90                963             JMP endfunc
                            964             
-0668                       965             hifn:
-0668 3C2D                  966             CMP AL,'-'
-066A 7511                  967             JNE endfunc
-066C 833EA10001            968             CMP DS:DECIMAL_FLAG, 1
-0671 7405                  969             JE decimal10
-0673 B040                  970             MOV AL, 01000000b
-0675 EB0690                971             JMP endfunc
-0678                       972     decimal10:
-0678 B0C0                  973             MOV AL, 11000000b
-067A EB0190                974             JMP endfunc
+06A6                       965             six:
+06A6 3C06                  966             CMP AL,6
+06A8 7511                  967             JNE seven
+06AA 833EA10001            968             CMP DS:DECIMAL_FLAG, 1
+06AF 7405                  969             JE decimal6
+06B1 B07D                  970             MOV AL, 01111101b
+06B3 EB5A90                971             JMP endfunc
+06B6                       972     decimal6:
+06B6 B0FD                  973             MOV AL, 11111101b
+06B8 EB5590                974             JMP endfunc
                            975             
-067D                       976             endfunc:
-067D 5A                    977             POP DX
-067E 59                    978             POP CX
-067F 5B                    979             POP BX
-                           980     
-0680 CB                    981     RET
-                           982     BCD_TO_7SEG ENDP
-                           983     
-----                       984     CODE_SEG        ENDS
-                           985     END
+06BB                       976             seven:
+06BB 3C07                  977             CMP AL,7
+06BD 7511                  978             JNE eight
+06BF 833EA10001            979             CMP DS:DECIMAL_FLAG, 1
+06C4 7405                  980             JE decimal7
+06C6 B007                  981             MOV AL, 00000111b
+06C8 EB4590                982             JMP endfunc
+06CB                       983     decimal7:
+06CB B087                  984             MOV AL, 10000111b
+06CD EB4090                985             JMP endfunc
+                           986             
+06D0                       987             eight:
+06D0 3C08                  988             CMP AL,8
+06D2 7511                  989             JNE nine
+06D4 833EA10001            990             CMP DS:DECIMAL_FLAG, 1
+06D9 7405                  991             JE decimal8
+06DB B07F                  992             MOV AL, 01111111b
+06DD EB3090                993             JMP endfunc
+06E0                       994     decimal8:
+06E0 B0FF                  995             MOV AL, 11111111b
+06E2 EB2B90                996             JMP endfunc
+                           997             
+06E5                       998             nine:
+06E5 3C09                  999             CMP AL,9
+06E7 7511                 1000             JNE hifn
+06E9 833EA10001           1001             CMP DS:DECIMAL_FLAG, 1
+06EE 7405                 1002             JE decimal9
+06F0 B06F                 1003             MOV AL, 01101111b
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    11:49:01  11/18/;3  PAGE   20
+
+
+LOC  OBJ                  LINE     SOURCE
+
+06F2 EB1B90               1004             JMP endfunc
+06F5                      1005     decimal9:
+06F5 B0EF                 1006             MOV AL, 11101111b
+06F7 EB1690               1007             JMP endfunc
+                          1008             
+06FA                      1009             hifn:
+06FA 3C2D                 1010             CMP AL,'-'
+06FC 7511                 1011             JNE endfunc
+06FE 833EA10001           1012             CMP DS:DECIMAL_FLAG, 1
+0703 7405                 1013             JE decimal10
+0705 B040                 1014             MOV AL, 01000000b
+0707 EB0690               1015             JMP endfunc
+070A                      1016     decimal10:
+070A B0C0                 1017             MOV AL, 11000000b
+070C EB0190               1018             JMP endfunc
+                          1019             
+070F                      1020             endfunc:
+070F 5A                   1021             POP DX
+0710 59                   1022             POP CX
+0711 5B                   1023             POP BX
+                          1024     
+0712 CB                   1025     RET
+                          1026     BCD_TO_7SEG ENDP
+                          1027     
+----                      1028     CODE_SEG        ENDS
+                          1029     END
 
 ASSEMBLY COMPLETE, NO ERRORS FOUND
