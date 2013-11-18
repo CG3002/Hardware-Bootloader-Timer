@@ -53,7 +53,7 @@ DATA_SEG	SEGMENT
 	KEYPAD_INDEX 	DW 	0
 	M_SIZE			DB  32
 	DAC_BASE    	DW  4000H
-	DAC_ADDR    	DB  0, 0, 0, 0, 0, 0, 0, 0, 0, 0 
+	DAC_ADDR    	DB  15 dup(0) 
 	DAC_LEN     	DB  0
 	SI_PTR      	DW  0
 	CHAR			DB  ?
@@ -216,17 +216,28 @@ BACKSPACE:	CMP DS:REG_AL, 12
 			JMP UPDATE_7SEG2
 
 ENTER_DATA:	CMP DS:REG_AL, 13
-			JNE SCROLL_LEFT
+			JNE END_TRANS
 			CALL FAR PTR BCD_CLEAR
 			MOV DS:DECIMAL_INDEX, 6
 			MOV DS:MAX_INPUT_SIZE, 8
 			JMP UPDATE_7SEG2
-			
+
 SUBTRACT2:   JMP SUBTRACT
 
 KEYPAD3: 	JMP KEYPAD_2
 
 RETURN2:    JMP RETURN
+			
+END_TRANS:	CMP DS:REG_AL, 16
+			JNE SCROLL_LEFT
+			MOV BX, 0
+			MOV DS:SEND_BUFFER[BX], '$'
+			INC BX
+			MOV DS:SEND_BUFFER[BX], '/'
+			MOV DS:SEND_BUFFER_LEN, 2
+			MOV DS:SEND_FLAG, 1
+			JMP UPDATE_7SEG2
+			
 			
 SCROLL_LEFT:
 			CMP DS:REG_AL, 21
@@ -626,6 +637,13 @@ SERIAL_REC_ACTION	PROC	FAR
 		CMP DS:RECEIVE_FLAG, 1
 		JNE terminate_session3
 		
+		CMP AL, '/'
+		JNE CHECK_SEND
+		MOV DS:PRICE_FLAG, 0
+		MOV DS:RECEIVE_FLAG, 0
+		JMP terminate_session2
+	
+	CHECK_SEND:
 		CMP AL, '&'
 		JNE receive_price
 		MOV DS:PRICE_FLAG, 1
@@ -641,17 +659,13 @@ SERIAL_REC_ACTION	PROC	FAR
 		JMP id_skip2
 	
 	check_price:	
+	
 		CMP DS:PRICE_FLAG, 1
 		JE update_keypad_input
 		
 		CMP DS:DAC_FLAG, 1
 		JE dac_change
-		
-		CMP AL, '/'
-		JNE id_skip2
-		MOV DS:PRICE_FLAG, 0
-		MOV DS:RECEIVE_FLAG, 0
-		JMP terminate_session2
+		JMP id_skip2
 		
 	dac_change:
 		MOV BL, DS:REG_AL
@@ -662,6 +676,8 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV DS:DAC_FLAG, 0
 		JMP id_skip2
 		
+	id_skip3: JMP id_skip2
+	
 	next_id1:
 		JMP next_id
 	send_input_across1:
@@ -720,9 +736,11 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV DS:ID_FLAG_r, 0
 		XOR BX,BX
 	start_send1:
+		PUSH AX
 		XOR AX,AX
 		MOV AL, DS:FAIL_MESSAGE[BX]
 		CALL FAR PTR PRINT_CHAR
+		POP AX
 		MOV DS:REPLY_FLAG, 0
 		INC BX
 		CMP BL, DS:FAIL_COUNT
