@@ -82,6 +82,7 @@ DATA_SEG	SEGMENT
 	SCROLL_LEN   	DW 	0
 	DAC_DISABLE     DW  0
 	DECIMAL_INDEX   DW  3
+	LANG_FLAG     DW  1
 DATA_SEG	ENDS
 
 
@@ -220,6 +221,7 @@ ENTER_DATA:	CMP DS:REG_AL, 13
 			CALL FAR PTR BCD_CLEAR
 			MOV DS:DECIMAL_INDEX, 6
 			MOV DS:MAX_INPUT_SIZE, 8
+			MOV DS:LANG_FLAG, 0
 			JMP UPDATE_7SEG2
 
 SUBTRACT2:   JMP SUBTRACT
@@ -286,6 +288,8 @@ UPDATE_7SEG2: JMP UPDATE_7SEG
 LANG_TOGGLE:
 			CMP DS:REG_AL, 18
 			JNE QTY_PROMPT
+			CMP DS:LANG_FLAG, 1
+			JNE UPDATE_7SEG2
 			MOV AX, DS:DAC_BASE
 			CMP AX, 4000H
 			JE MANDRIN
@@ -331,7 +335,6 @@ QUANTITY:
 			
 			MOV DS:QTY_FLAG, 0
 			CALL FAR PTR BCD_CLEAR
-				
 			JMP UPDATE_7SEG
 			
 
@@ -524,7 +527,7 @@ PUSH CX
 PUSH DX
 		MOV AX, DS:MAX_INPUT_SIZE
 		CMP DS:KEYPAD_INDEX, AX
-		JE BCD_RET
+		JGE BCD_RET
 		
 		MOV CL, DS:REG_AL
 		CMP CL, 9
@@ -661,7 +664,8 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV DS:PRICE_FLAG, 0
 		MOV DS:RECEIVE_FLAG, 0
 		MOV DS:MAX_INPUT_SIZE, 0
-		JMP terminate_session2
+		MOV DS:LANG_FLAG, 1
+		JMP terminate_session3
 	
 	CHECK_SEND:
 		CMP AL, '&'
@@ -690,6 +694,9 @@ SERIAL_REC_ACTION	PROC	FAR
 	next_id1:
 		JMP next_id
 		
+	send_input_across1:
+		JMP send_input_across
+		
 	dac_change:
 		MOV BL, DS:REG_AL
 		SUB AL, 30H
@@ -698,13 +705,11 @@ SERIAL_REC_ACTION	PROC	FAR
 		MOV DS:REG_AL, BL
 		MOV DS:DAC_FLAG, 0
 		JMP id_skip2
-		
-	id_skip3: JMP id_skip2
-
-	send_input_across1:
-		JMP send_input_across
+	
 	terminate_session3:
 		JMP terminate_session2
+	id_skip3: JMP id_skip2
+
 		
 	update_keypad_input:
 		SUB AL, 30H
