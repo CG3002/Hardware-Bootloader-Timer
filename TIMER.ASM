@@ -1174,13 +1174,13 @@ update_normal:
 	MOV DS:TOTAL_PRICE_L, AX
 	
 	MOV DX, 0
-	CMP DS:TOTAL_PRICE_DEC, 9
-	JG DECIMAL_CONT
-	MOV CX, 10
-	MOV AX, DS:TOTAL_PRICE_DEC
-	MUL CX
-	MOV DS:TOTAL_PRICE_DEC, AX
-DECIMAL_CONT:
+	;CMP DS:TOTAL_PRICE_DEC, 9
+	;JG DECIMAL_CONT
+	;MOV CX, 10
+	;MOV AX, DS:TOTAL_PRICE_DEC
+	;MUL CX
+	;MOV DS:TOTAL_PRICE_DEC, AX
+;DECIMAL_CONT:
 	MOV AX, DS:TOTAL_PRICE_DEC
 	MOV CX, 10
 	DIV CX
@@ -1462,33 +1462,33 @@ SERIAL_REC_ACTION	PROC	FAR
 		JMP S_RET
 		
 	id_skip:
-		JMP S_RET
+		; JMP S_RET
 	
-		CMP	AL,'<'
-		JNE	S_FAST
+		; CMP	AL,'<'
+		; JNE	S_FAST
 
-		INC	DS:T_COUNT_SET
-		INC	DS:T_COUNT_SET
+		; INC	DS:T_COUNT_SET
+		; INC	DS:T_COUNT_SET
 
-		JMP	S_NEXT0
-S_FAST:
-		CMP	AL,'>'
-		JNE	S_RET
+		; JMP	S_NEXT0
+; S_FAST:
+		; CMP	AL,'>'
+		; JNE	S_RET
 
-		DEC	DS:T_COUNT_SET
-		DEC	DS:T_COUNT_SET
+		; DEC	DS:T_COUNT_SET
+		; DEC	DS:T_COUNT_SET
 
-S_NEXT0:
-		MOV	CX,22			;initialize counter for message
-		MOV	BX,0
+; S_NEXT0:
+		; MOV	CX,22			;initialize counter for message
+		; MOV	BX,0
 
-S_NEXT1:	MOV	AL,DS:REC_MESS[BX]	;print message
-		call	FAR ptr print_char
-		INC	BX
-		LOOP	S_NEXT1
+; S_NEXT1:	MOV	AL,DS:REC_MESS[BX]	;print message
+		; call	FAR ptr print_char
+		; INC	BX
+		; LOOP	S_NEXT1
 
-		MOV	AL,DS:T_COUNT_SET	;print current period of timer0
-		CALL	FAR PTR PRINT_2HEX
+		; MOV	AL,DS:T_COUNT_SET	;print current period of timer0
+		; CALL	FAR PTR PRINT_2HEX
 S_RET:
 		POP	DS
 		POP	BX
