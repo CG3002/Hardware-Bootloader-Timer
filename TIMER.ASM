@@ -254,7 +254,7 @@ bcd_upd:
 			LOOP SEND_CASH_PRINT
 			
 			INC BX
-			MOV DS:SEND_BUFFER[BX], ':'
+			MOV DS:SEND_BUFFER[BX], ')'
 			
 			MOV CX, 8
 			SEND_CHANGE_PRINT:

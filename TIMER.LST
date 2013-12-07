@@ -1,4 +1,4 @@
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    1
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    1
 
 
 DOS 5.0 (038-N) 8086/87/88/186 MACRO ASSEMBLER V3.1 ASSEMBLY OF MODULE TIMER
@@ -58,7 +58,7 @@ LOC  OBJ                  LINE     SOURCE
 0002 54494D45523220
      494E5445525255
      505420202020
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    2
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    2
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -118,7 +118,7 @@ LOC  OBJ                  LINE     SOURCE
      )
 00A1 0000                   75             SEND_BUFFER_LEN DW      0
 00A3 0000                   76             MAX_INPUT_SIZE  DW      0
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    3
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    3
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -178,7 +178,7 @@ LOC  OBJ                  LINE     SOURCE
 0000 B8----         R      121                     MOV     AX,STACK_SEG            
 0003 8ED0                  122                     MOV     SS,AX
 0005 368B260002            123                     MOV     SP,TOS
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    4
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    4
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -238,7 +238,7 @@ LOC  OBJ                  LINE     SOURCE
 004D C606790003            175     WAIT_1:         MOV DS:REG_AL, 03H
 0052 BB0000                176                         MOV BX, 0000H
 0055 BA8200                177                         MOV DX,C_8255
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    5
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    5
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -298,7 +298,7 @@ LOC  OBJ                  LINE     SOURCE
 00C7 C606790000            230                             MOV DS:REG_AL, 0
                            231                             
 00CC                       232     bcd_upd:
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    6
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    6
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -327,7 +327,7 @@ LOC  OBJ                  LINE     SOURCE
 00FE E2EC                  254                             LOOP SEND_CASH_PRINT
                            255                             
 0100 43                    256                             INC BX
-0101 C6878D003A            257                             MOV DS:SEND_BUFFER[BX], ':'
+0101 C6878D0029            257                             MOV DS:SEND_BUFFER[BX], ')'
                            258                             
 0106 B90800                259                             MOV CX, 8
 0109                       260                             SEND_CHANGE_PRINT:
@@ -358,7 +358,7 @@ LOC  OBJ                  LINE     SOURCE
 013A 803E790011            285                             CMP DS:REG_AL, 17
 013F 754C                  286                             JNE ENTER_CASH
                            287                             
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    7
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    7
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -418,7 +418,7 @@ LOC  OBJ                  LINE     SOURCE
 01E4 7508                  340                             JNE BACKSPACE
 01E6 9A1F06----     R      341                             CALL FAR PTR BCD_CLEAR
 01EB E99D01                342                             JMP UPDATE_7SEG2
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    8
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    8
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -478,7 +478,7 @@ LOC  OBJ                  LINE     SOURCE
 029D                       395     CANCEL_TRANS:   
 029D 803E79000F            396                             CMP DS:REG_AL, 15
 02A2 755A                  397                             JNE SCROLL_LEFT
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE    9
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE    9
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -538,7 +538,7 @@ LOC  OBJ                  LINE     SOURCE
 0360 FF06B300              450                             INC DS:DECIMAL_INDEX
 0364 FF0E6100              451                             DEC DS:KEYPAD_INDEX
 0368 8B1E6100              452                             MOV BX, DS:KEYPAD_INDEX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   10
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   10
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -598,7 +598,7 @@ LOC  OBJ                  LINE     SOURCE
                            505                             
 0408 833EFF0001            506                             CMP DS:TROLLEY_ID, 1
 040D 752C                  507                             JNE NORMAL_UPDATE
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   11
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   11
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -658,7 +658,7 @@ LOC  OBJ                  LINE     SOURCE
 049E FE0E7A00              560                             DEC DS:REG_BH
 04A2 E9CBFB                561                             JMP NXTROW
                            562             
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   12
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   12
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -718,7 +718,7 @@ LOC  OBJ                  LINE     SOURCE
 04F0 C687C1002D            615             MOV DS:TEMP_BCD_ARR[BX], '-'
 04F5 43                    616             INC BX
 04F6 C687C1002D            617             MOV DS:TEMP_BCD_ARR[BX], '-'
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   13
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   13
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -778,7 +778,7 @@ LOC  OBJ                  LINE     SOURCE
                            670             
 055B C6878D002F            671             MOV DS:SEND_BUFFER[BX], '/'
 0560 FF06A100              672             INC DS:SEND_BUFFER_LEN
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   14
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   14
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -838,7 +838,7 @@ LOC  OBJ                  LINE     SOURCE
                            725     
 05B0 50                    726     PUSH AX
 05B1 53                    727     PUSH BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   15
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   15
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -898,7 +898,7 @@ LOC  OBJ                  LINE     SOURCE
 0626                       780             CLEAR_LOOP:
 0626 C6475100              781             MOV DS:KEYPAD_INPUT[BX], 0
 062A 4B                    782             DEC BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   16
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   16
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -958,7 +958,7 @@ LOC  OBJ                  LINE     SOURCE
 068D BA0600                835                     MOV DX, 6
                            836                     
 0690                       837             update_display:
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   17
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   17
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1018,7 +1018,7 @@ LOC  OBJ                  LINE     SOURCE
                            890     DAC_UPDATE ENDP
                            891               
 06D0                       892     DEBOUNCE PROC FAR
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   18
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   18
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1078,7 +1078,7 @@ LOC  OBJ                  LINE     SOURCE
 0712 33C0                  945                     XOR AX, AX
 0714 8A4751                946                     MOV AL, DS:KEYPAD_INPUT[BX]
                            947                     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   19
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   19
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1138,7 +1138,7 @@ LOC  OBJ                  LINE     SOURCE
 0795 813E64000040         1000             CMP DS:DAC_BASE, 4000H
 079B 7517                 1001             JNE MANDARIN_CASH
                           1002             
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   20
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   20
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1198,7 +1198,7 @@ LOC  OBJ                  LINE     SOURCE
                           1055             
 081B                      1056             NEXT_DIGIT_TO_FIX:
                           1057             
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   21
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   21
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1258,7 +1258,7 @@ LOC  OBJ                  LINE     SOURCE
 08AA 9AB606----     R     1110             CALL FAR PTR DAC_UPDATE
                           1111             
 08AF                      1112     NEXT_PLACE:     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   22
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   22
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1318,7 +1318,7 @@ LOC  OBJ                  LINE     SOURCE
 094C 7518                 1165             JNE NOT_1_2
 094E C706CD000100         1166             MOV DS:DOLLAR_FLAG, 1
 0954 43                   1167             INC BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   23
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   23
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1378,7 +1378,7 @@ LOC  OBJ                  LINE     SOURCE
 09DE 740E                 1220             JE ENGLISH_END
 09E0 C706CB000100         1221             MOV DS:CENT_FLAG, 1
 09E6 A27900               1222             MOV DS:REG_AL, AL
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   24
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   24
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1438,7 +1438,7 @@ LOC  OBJ                  LINE     SOURCE
 0A9B                      1275     CONTINUE_MAND:  
 0A9B C706CD000100         1276             MOV DS:DOLLAR_FLAG, 1
 0AA1 C706C9000100         1277             MOV DS:THOUSAND_FLAG, 1
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   25
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   25
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1498,7 +1498,7 @@ LOC  OBJ                  LINE     SOURCE
 0B48 43                   1330             INC BX
 0B49 8A87C100             1331             MOV AL, DS:TEMP_BCD_ARR[BX]
 0B4D 3C00                 1332             CMP AL, 0
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   26
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   26
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1558,7 +1558,7 @@ LOC  OBJ                  LINE     SOURCE
                           1385     
 0BDB                      1386     CALC_UPD_PRICE PROC FAR
 0BDB 50                   1387     PUSH AX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   27
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   27
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1618,7 +1618,7 @@ LOC  OBJ                  LINE     SOURCE
 0C40 8887C100             1440             MOV DS:TEMP_BCD_ARR[BX], AL
                           1441             
 0C44 BB0600               1442             MOV BX, 6
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   28
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   28
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1678,7 +1678,7 @@ LOC  OBJ                  LINE     SOURCE
 0CA7                      1495             CONT_DIGIT_3:
 0CA7 8887C100             1496                     MOV DS:TEMP_BCD_ARR[BX], AL
 0CAB 4B                   1497                     DEC BX
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   29
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   29
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1738,7 +1738,7 @@ LOC  OBJ                  LINE     SOURCE
 0D24 C706B3000300         1550             MOV DS:DECIMAL_INDEX, 3
 0D2A B90800               1551             MOV CX, 8
 0D2D                      1552             UPD_BCD1:
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   30
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   30
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1798,7 +1798,7 @@ LOC  OBJ                  LINE     SOURCE
 0D92 2BD9                 1605                     SUB BX, CX
 0D94 8A87C100             1606                     MOV AL, DS:TEMP_BCD_ARR[BX]
 0D98 A27900               1607                     MOV DS:REG_AL, AL
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   31
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   31
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1858,7 +1858,7 @@ LOC  OBJ                  LINE     SOURCE
                           1660             
 0E1E                      1661             next_id1:
 0E1E E9E300               1662                     JMP next_id
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   32
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   32
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1918,7 +1918,7 @@ LOC  OBJ                  LINE     SOURCE
 0EA3 2C30                 1715                     SUB AL, 30H
 0EA5 A27900               1716                     MOV DS:REG_AL, AL
 0EA8 9AB606----     R     1717                     CALL FAR PTR DAC_UPDATE
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   33
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   33
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -1978,7 +1978,7 @@ LOC  OBJ                  LINE     SOURCE
                           1770             
 0F1E 803E800001           1771                     CMP DS:ID_FLAG_@, 1
 0F23 7539                 1772                     JNE protocol_rec
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   34
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   34
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -2038,7 +2038,7 @@ LOC  OBJ                  LINE     SOURCE
                           1825                     ; INC   BX
                           1826                     ; LOOP  S_NEXT1
                           1827     
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   35
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   35
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -2098,7 +2098,7 @@ LOC  OBJ                  LINE     SOURCE
                           1880     
                           1881                     
 0FC8                      1882     T_NEXT1:
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   36
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   36
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -2158,7 +2158,7 @@ LOC  OBJ                  LINE     SOURCE
 1017 8A0E7500             1935             MOV CL, DS:DAC_LEN
 101B 80F900               1936             CMP CL, 0
 101E 7414                 1937             JE END_SHIFT
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   37
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   37
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -2218,7 +2218,7 @@ LOC  OBJ                  LINE     SOURCE
 1068 7511                 1990             JNE three
 106A 833EAD0001           1991             CMP DS:DECIMAL_FLAG, 1
 106F 7405                 1992             JE decimal2
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   38
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   38
 
 
 LOC  OBJ                  LINE     SOURCE
@@ -2278,7 +2278,7 @@ LOC  OBJ                  LINE     SOURCE
 10D1 7511                 2045             JNE eight
 10D3 833EAD0001           2046             CMP DS:DECIMAL_FLAG, 1
 10D8 7405                 2047             JE decimal7
-8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:38:00  12/07/;3  PAGE   39
+8086/87/88/186 MACRO ASSEMBLER    TIMER                                                    23:48:05  12/07/;3  PAGE   39
 
 
 LOC  OBJ                  LINE     SOURCE
